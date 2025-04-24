@@ -6,13 +6,16 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
-import { BrownBlack } from './collections/Brown Black'
-import { Raskar } from './collections/Raskar'
-import { TodiMaster } from './collections/Todi Master'
 import { Users } from './collections/Users'
-import { Khanda } from './collections/Khanda'
-// import { Media } from './collections/Media'
-
+import { Accounts } from './collections/Accounts'
+import { Sites } from './collections/Sites'
+import { Parties } from './collections/Parties'
+import { Reminders } from './collections/Reminders'
+import { Reports } from './collections/Reports'
+import { Transactions } from './collections/Transactions'
+import { Media } from './collections/Media'
+import { Product } from './collections/Product'
+import { Labour } from './collections/Labour'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -23,7 +26,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users,BrownBlack,Raskar,TodiMaster,Khanda],
+  collections: [Users,Accounts,Sites,Parties,Reminders,Reports,Transactions,Media,Product,Labour],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

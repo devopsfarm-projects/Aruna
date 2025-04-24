@@ -68,10 +68,15 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
-    'Brown-Black': BrownBlack;
-    Raskar: Raskar;
-    'Todi-Master': TodiMaster;
-    Khanda: Khanda;
+    accounts: Account;
+    sites: Site;
+    parties: Party;
+    reminders: Reminder;
+    reports: Report;
+    transactions: Transaction;
+    media: Media;
+    product: Product;
+    labour: Labour;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -79,10 +84,15 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
-    'Brown-Black': BrownBlackSelect<false> | BrownBlackSelect<true>;
-    Raskar: RaskarSelect<false> | RaskarSelect<true>;
-    'Todi-Master': TodiMasterSelect<false> | TodiMasterSelect<true>;
-    Khanda: KhandaSelect<false> | KhandaSelect<true>;
+    accounts: AccountsSelect<false> | AccountsSelect<true>;
+    sites: SitesSelect<false> | SitesSelect<true>;
+    parties: PartiesSelect<false> | PartiesSelect<true>;
+    reminders: RemindersSelect<false> | RemindersSelect<true>;
+    reports: ReportsSelect<false> | ReportsSelect<true>;
+    transactions: TransactionsSelect<false> | TransactionsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    product: ProductSelect<false> | ProductSelect<true>;
+    labour: LabourSelect<false> | LabourSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -125,6 +135,8 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  name: string;
+  phone?: string | null;
   role: 'owner' | 'client' | 'sites-visitor';
   updatedAt: string;
   createdAt: string;
@@ -139,59 +151,153 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Brown-Black".
+ * via the `definition` "accounts".
  */
-export interface BrownBlack {
+export interface Account {
   id: number;
-  partyName: string;
-  partyAdvancePayment: number;
-  partyRemainingPayment: number;
-  stoneTotalPayment: number;
+  name: string;
+  type?: ('clinet' | 'vendor') | null;
+  site?: (number | null) | Site;
+  party?: (number | null) | Party;
+  opening_balance?: number | null;
+  current_balance?: number | null;
+  is_locked?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sites".
+ */
+export interface Site {
+  id: number;
+  site_name: string;
+  location?: string | null;
+  is_closed?: boolean | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "parties".
+ */
+export interface Party {
+  id: number;
+  name: string;
+  category?: ('block_supplier' | 'labour_contractor' | 'other') | null;
+  contact_person?: string | null;
+  phone?: string | null;
+  pan_number?: string | null;
+  gst?: string | null;
+  address?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reminders".
+ */
+export interface Reminder {
+  id: number;
+  user?: (number | null) | User;
+  message?: string | null;
+  due_date?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports".
+ */
+export interface Report {
+  id: number;
+  generated_by?: (number | null) | User;
+  type?: string | null;
+  filters?: string | null;
+  created_at?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transactions".
+ */
+export interface Transaction {
+  id: number;
+  referenceNumber: string;
+  product: number | Product;
+  amountPaid: number;
+  paymentDate: string;
+  paymentMethod: 'Cash' | 'Bank Transfer' | 'Cheque' | 'UPI';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product".
+ */
+export interface Product {
+  id: number;
+  vender?: string | null;
+  mines?: string | null;
+  date?: string | null;
+  bill?: string | null;
+  mainType: 'Stone' | 'Block';
+  stoneOptions?: {
+    subType?: ('khanda' | 'raskat') | null;
+  };
+  blockOptions?: {
+    subType?: ('brown' | 'white') | null;
+  };
+  addforward?:
+    | {
+        l?: number | null;
+        w?: number | null;
+        h?: number | null;
+        qty?: number | null;
+        labour?: (number | null) | Labour;
+        id?: string | null;
+      }[]
+    | null;
+  final_total?: number | null;
+  partyRemainingPayment?: number | null;
+  partyAdvancePayment?: number | null;
+  transportType?: ('Hydra' | 'Truck') | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Raskar".
+ * via the `definition` "labour".
  */
-export interface Raskar {
+export interface Labour {
   id: number;
-  partyName: string;
-  partyAdvancePayment: number;
-  partyRemainingPayment: number;
-  stoneTotalPayment: number;
-  createdBy?: (number | null) | User;
+  name?: string | null;
+  mobile?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Todi-Master".
+ * via the `definition` "media".
  */
-export interface TodiMaster {
+export interface Media {
   id: number;
-  partyName: string;
-  partyAdvancePayment: number;
-  partyRemainingPayment: number;
-  stoneTotalPayment: number;
-  createdBy?: (number | null) | User;
+  alt: string;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Khanda".
- */
-export interface Khanda {
-  id: number;
-  partyName: string;
-  partyAdvancePayment: number;
-  partyRemainingPayment: number;
-  stoneTotalPayment: number;
-  createdBy?: (number | null) | User;
-  updatedAt: string;
-  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -205,20 +311,40 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
-        relationTo: 'Brown-Black';
-        value: number | BrownBlack;
+        relationTo: 'accounts';
+        value: number | Account;
       } | null)
     | ({
-        relationTo: 'Raskar';
-        value: number | Raskar;
+        relationTo: 'sites';
+        value: number | Site;
       } | null)
     | ({
-        relationTo: 'Todi-Master';
-        value: number | TodiMaster;
+        relationTo: 'parties';
+        value: number | Party;
       } | null)
     | ({
-        relationTo: 'Khanda';
-        value: number | Khanda;
+        relationTo: 'reminders';
+        value: number | Reminder;
+      } | null)
+    | ({
+        relationTo: 'reports';
+        value: number | Report;
+      } | null)
+    | ({
+        relationTo: 'transactions';
+        value: number | Transaction;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'product';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'labour';
+        value: number | Labour;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -267,6 +393,8 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
   role?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -280,53 +408,146 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Brown-Black_select".
+ * via the `definition` "accounts_select".
  */
-export interface BrownBlackSelect<T extends boolean = true> {
-  partyName?: T;
-  partyAdvancePayment?: T;
+export interface AccountsSelect<T extends boolean = true> {
+  name?: T;
+  type?: T;
+  site?: T;
+  party?: T;
+  opening_balance?: T;
+  current_balance?: T;
+  is_locked?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sites_select".
+ */
+export interface SitesSelect<T extends boolean = true> {
+  site_name?: T;
+  location?: T;
+  is_closed?: T;
+  start_date?: T;
+  end_date?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "parties_select".
+ */
+export interface PartiesSelect<T extends boolean = true> {
+  name?: T;
+  category?: T;
+  contact_person?: T;
+  phone?: T;
+  pan_number?: T;
+  gst?: T;
+  address?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reminders_select".
+ */
+export interface RemindersSelect<T extends boolean = true> {
+  user?: T;
+  message?: T;
+  due_date?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports_select".
+ */
+export interface ReportsSelect<T extends boolean = true> {
+  generated_by?: T;
+  type?: T;
+  filters?: T;
+  created_at?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transactions_select".
+ */
+export interface TransactionsSelect<T extends boolean = true> {
+  referenceNumber?: T;
+  product?: T;
+  amountPaid?: T;
+  paymentDate?: T;
+  paymentMethod?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product_select".
+ */
+export interface ProductSelect<T extends boolean = true> {
+  vender?: T;
+  mines?: T;
+  date?: T;
+  bill?: T;
+  mainType?: T;
+  stoneOptions?:
+    | T
+    | {
+        subType?: T;
+      };
+  blockOptions?:
+    | T
+    | {
+        subType?: T;
+      };
+  addforward?:
+    | T
+    | {
+        l?: T;
+        w?: T;
+        h?: T;
+        qty?: T;
+        labour?: T;
+        id?: T;
+      };
+  final_total?: T;
   partyRemainingPayment?: T;
-  stoneTotalPayment?: T;
+  partyAdvancePayment?: T;
+  transportType?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Raskar_select".
+ * via the `definition` "labour_select".
  */
-export interface RaskarSelect<T extends boolean = true> {
-  partyName?: T;
-  partyAdvancePayment?: T;
-  partyRemainingPayment?: T;
-  stoneTotalPayment?: T;
-  createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Todi-Master_select".
- */
-export interface TodiMasterSelect<T extends boolean = true> {
-  partyName?: T;
-  partyAdvancePayment?: T;
-  partyRemainingPayment?: T;
-  stoneTotalPayment?: T;
-  createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Khanda_select".
- */
-export interface KhandaSelect<T extends boolean = true> {
-  partyName?: T;
-  partyAdvancePayment?: T;
-  partyRemainingPayment?: T;
-  stoneTotalPayment?: T;
-  createdBy?: T;
+export interface LabourSelect<T extends boolean = true> {
+  name?: T;
+  mobile?: T;
   updatedAt?: T;
   createdAt?: T;
 }

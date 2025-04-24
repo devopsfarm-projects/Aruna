@@ -31,6 +31,8 @@ export const Users: CollectionConfig = {
   },
 
   fields: [
+    { name: 'name', type: 'text', defaultValue: "trilok", required: true },
+    { name: 'phone', type: 'text', defaultValue: "1111111111" },
     {
       name: 'role',
       type: 'select',
