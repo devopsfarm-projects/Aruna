@@ -9,8 +9,19 @@ export const Mines: CollectionConfig = {
     { name: 'Mines_name', type: 'text', required: true },
     { name: 'address', type: 'textarea' },
     { name: 'GST', type: 'text' },
-    { name: 'phone', type: 'text' },
-    { name: 'phone2', type: 'text' },
+    {
+      name: 'phone',
+      type: 'array',
+      label: 'Phone Numbers',
+      fields: [
+        {
+          name: 'number',
+          type: 'text',
+          label: 'Phone Number',
+        }
+      ]
+    },
+    
     { name: 'mail_id', type: 'email' },
   ],
 }

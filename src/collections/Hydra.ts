@@ -8,7 +8,7 @@ export const Truck: CollectionConfig = {
   fields: [
     { name: 'driver_name', label: 'Driver Name', type: 'text', required: true },
     { name: 'phone', label: 'Driver Mobile No.', type: 'text' },
-    { name: 'truck_no', label: 'Truck No', type: 'textarea' },
+    { name: 'truck_no', label: 'Truck No', type: 'text' },
     { name: 'truck_cost', label: 'Truck Cost', type: 'text' },
   ],
 }

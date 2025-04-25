@@ -24,7 +24,7 @@ export const Product: CollectionConfig = {
   },
   fields: [
     { name: 'vender_id', label: 'Vendor Id', type: 'relationship', relationTo: 'accounts'  },
-    { name: 'mines', label: 'Mines', type: 'text' },
+    { name: 'mines', label: 'Mines', type: 'relationship', relationTo: 'Mines' },
     { name: 'date', label: 'Date', type: 'date' },
     { name: 'bill', label: 'Bill No.', type: 'text' },
     
@@ -86,7 +86,6 @@ export const Product: CollectionConfig = {
             type: 'relationship',
             relationTo: 'labour',
         },
-        
       ],
     },
     {
@@ -94,7 +93,7 @@ export const Product: CollectionConfig = {
       label: 'Statement',
       type: 'group', 
       fields: [
-        { name: 'bill', label: 'Bill No.', type:'text'},
+        { name: 'bill', label: 'Bill No.', type: 'text'},
         { name: 'date', label: 'Date', type: 'date' },
         {
           name: 'thodi',

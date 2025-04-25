@@ -288,6 +288,7 @@ export interface Product {
       }[]
     | null;
   statement?: {
+    bill?: string | null;
     date?: string | null;
     thodi?:
       | {
@@ -597,6 +598,7 @@ export interface ProductSelect<T extends boolean = true> {
   statement?:
     | T
     | {
+        bill?: T;
         date?: T;
         thodi?:
           | T
