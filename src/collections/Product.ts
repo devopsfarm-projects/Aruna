@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Product: CollectionConfig = {
   slug: 'product',
   admin: {
-    useAsTitle: 'vender',
+    useAsTitle: 'vender_id',
   },
   access: {
     create: ({ req: { user } }) => user?.role === 'owner' || user?.role === 'sites-visitor',
@@ -23,7 +23,7 @@ export const Product: CollectionConfig = {
     },
   },
   fields: [
-    { name: 'vender', label: 'Vendor Name', type: 'text' },
+    { name: 'vender_id', label: 'Vendor Id', type: 'relationship', relationTo: 'accounts'  },
     { name: 'mines', label: 'Mines', type: 'text' },
     { name: 'date', label: 'Date', type: 'date' },
     { name: 'bill', label: 'Bill No.', type: 'text' },
@@ -86,9 +86,33 @@ export const Product: CollectionConfig = {
             type: 'relationship',
             relationTo: 'labour',
         },
+        
       ],
     },
-
+    {
+      name: 'statement',
+      label: 'Statement',
+      type: 'group', 
+      fields: [
+        { name: 'bill', label: 'Bill No.', type:'text'},
+        { name: 'date', label: 'Date', type: 'date' },
+        {
+          name: 'thodi',
+          label: 'Todi',
+          type: 'array',
+          fields: [
+            { name: 'thodi', label: 'Todi', type: 'text' },
+          ],
+        },
+        { name: 'hydra', label: 'hydra', type: 'relationship', relationTo: 'truck' },
+        { name: 'quantity', label: 'Quantity', type: 'text' },
+        { name: 'total_amount', label: 'Total Amount', type: 'text' },
+      ],
+    },
+    
+    { name: 'total_quantity', label: 'Total Quantity', type: 'number' },
+    { name: 'issued_quantity', label: 'Issued Quantity', type: 'number' },
+    { name: 'left_quantity', label: 'Left Quantity', type: 'number' },
     { name: 'final_total', label: 'Final Total', type: 'number' },
     { name: 'partyRemainingPayment', label: 'Party Remaining Payment', type: 'number' },
     { name: 'partyAdvancePayment', label: 'Party Advance Payment', type: 'number' },

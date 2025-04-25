@@ -14,8 +14,10 @@ import { Reminders } from './collections/Reminders'
 import { Reports } from './collections/Reports'
 import { Transactions } from './collections/Transactions'
 import { Media } from './collections/Media'
+import { Mines } from './collections/Mines'
 import { Product } from './collections/Product'
 import { Labour } from './collections/Labour'
+import { Truck } from './collections/Hydra'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -26,7 +28,20 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users,Accounts,Sites,Parties,Reminders,Reports,Transactions,Media,Product,Labour],
+  collections: [
+    Users,
+    Accounts,
+    Sites,
+    Parties,
+    Reminders,
+    Reports,
+    Transactions,
+    Media,
+    Product,
+    Labour,
+    Mines,
+    Truck,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
