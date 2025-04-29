@@ -267,7 +267,6 @@ export interface Media {
 export interface Product {
   id: number;
   vender_id?: (number | null) | Account;
-  mines?: string | null;
   date?: string | null;
   bill?: string | null;
   mainType: 'Stone' | 'Block';
@@ -344,8 +343,12 @@ export interface Mine {
   Mines_name: string;
   address?: string | null;
   GST?: string | null;
-  phone?: string | null;
-  phone2?: string | null;
+  phone?:
+    | {
+        number?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   mail_id?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -571,7 +574,6 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ProductSelect<T extends boolean = true> {
   vender_id?: T;
-  mines?: T;
   date?: T;
   bill?: T;
   mainType?: T;
@@ -639,8 +641,12 @@ export interface MinesSelect<T extends boolean = true> {
   Mines_name?: T;
   address?: T;
   GST?: T;
-  phone?: T;
-  phone2?: T;
+  phone?:
+    | T
+    | {
+        number?: T;
+        id?: T;
+      };
   mail_id?: T;
   updatedAt?: T;
   createdAt?: T;

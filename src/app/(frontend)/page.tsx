@@ -3,9 +3,7 @@ import Image from 'next/image'
 import { getPayload } from 'payload'
 import React from 'react'
 import { fileURLToPath } from 'url'
-
 import config from '@/payload.config'
-import './styles.css'
 
 export default async function HomePage() {
   const headers = await getHeaders()
@@ -16,44 +14,39 @@ export default async function HomePage() {
   const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`
 
   return (
-    <div className="home">
-      <div className="content">
-        <picture>
-          <source srcSet="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg" />
-          <Image
-            alt="Payload Logo"
-            height={65}
-            src="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg"
-            width={65}
-          />
-        </picture>
-        {!user && <h1>Welcome to your new project.</h1>}
-        {user && <h1>Welcome back, {user.email}</h1>}
-        <div className="links">
-          <a
-            className="admin"
-            href={payloadConfig.routes.admin}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Go to admin panel
-          </a>
-          <a
-            className="docs"
-            href="https://payloadcms.com/docs"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Documentation
-          </a>
+    <div className="bg-gray-100 min-h-screen flex flex-col justify-center items-center">
+      <div className="content flex-grow text-center">
+        <div className="p-8">
+          <picture>
+            <Image
+              alt="Payload Logo"
+              height={205}
+              src="/image.png"
+              width={205}
+              className="mx-auto mb-4"
+            />
+          </picture>
+          {!user && <h1 className="text-2xl font-bold text-gray-800">Welcome to your new project.</h1>}
+          {user && <h1 className="text-2xl font-bold text-gray-800">Welcome back, {user.email}</h1>}
+          <div className="mt-8 flex justify-center space-x-4">
+            <a
+              className="bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition duration-200"
+              href={payloadConfig.routes.admin}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Go to admin panel
+            </a>
+          </div>
         </div>
       </div>
-      <div className="footer">
-        <p>Update this page by editing</p>
-        <a className="codeLink" href={fileURL}>
+      <div className="footer bg-gray-200 p-4 text-center w-full">
+        {/* <p className="text-gray-600">Update this page by editing</p>
+        <a className="text-blue-600 hover:underline" href={fileURL}>
           <code>app/(frontend)/page.tsx</code>
-        </a>
+        </a> */}
       </div>
     </div>
   )
 }
+

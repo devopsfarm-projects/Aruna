@@ -34,6 +34,7 @@ export const Users: CollectionConfig = {
     { name: 'name', type: 'text', defaultValue: "trilok", required: true },
     { name: 'phone', type: 'text', defaultValue: "1111111111" },
     {
+      saveToJWT: true,
       name: 'role',
       type: 'select',
       required: true,

@@ -24,7 +24,7 @@ export const Product: CollectionConfig = {
   },
   fields: [
     { name: 'vender_id', label: 'Vendor Id', type: 'relationship', relationTo: 'accounts'  },
-    { name: 'mines', label: 'Mines', type: 'relationship', relationTo: 'Mines' },
+    // { name: 'mines', label: 'Mines', type: 'relationship', relationTo: 'Mines' },
     { name: 'date', label: 'Date', type: 'date' },
     { name: 'bill', label: 'Bill No.', type: 'text' },
     

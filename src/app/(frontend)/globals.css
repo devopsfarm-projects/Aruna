@@ -1,0 +1,9 @@
+/* globals.css or any global stylesheet */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-black text-white;
+}
