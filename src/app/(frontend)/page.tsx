@@ -31,7 +31,8 @@ export default async function HomePage() {
           <div className="mt-8 flex justify-center space-x-4">
             <a
               className="bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition duration-200"
-              href={payloadConfig.routes.admin}
+              // href={payloadConfig.routes.admin}
+              href='/login'
               rel="noopener noreferrer"
               target="_blank"
             >

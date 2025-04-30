@@ -1,8 +1,8 @@
-// components/LoginForm.tsx
-'use client'; // If you're using Next.js 13+ App Router
+'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // If using Next.js, otherwise adjust
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -17,18 +17,17 @@ export default function LoginForm() {
     try {
       const res = await fetch('/api/users/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
       });
 
-      if (res.ok) {
-        // Login successful
-        router.push('/dashboard'); 
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        router.push('/dashboard');
       } else {
-        const data = await res.json();
         setError(data.message || 'Login failed.');
       }
     } catch (err) {
@@ -38,37 +37,51 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <form onSubmit={handleSubmit} className="p-8 border rounded-lg shadow-md w-80">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-white to-pink-100">
+      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md animate-fadeIn">
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/image.png"
+            alt="Payload Logo"
+            width={100}
+            height={100}
+            className=""
+          />
+        </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-          className="w-full p-2 mb-4 border rounded"
-        />
+        <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">Welcome Back</h2>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          className="w-full p-2 mb-4 border rounded"
-        />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
 
-        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
-        >
-          Login
-        </button>
-      </form>
+          {error && (
+            <div className="text-red-600 text-sm text-center">{error}</div>
+          )}
+
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 transition-colors text-white font-semibold p-3 rounded-lg"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
