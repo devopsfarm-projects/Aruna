@@ -1,7 +1,7 @@
 // collections/Parties.ts
 import type { CollectionConfig } from 'payload'
-export const Vender: CollectionConfig = {
-  slug: 'Vender',
+export const Vendor: CollectionConfig = {
+  slug: 'vendor',
   admin: {
     useAsTitle: 'Mines_name',
   },
@@ -10,10 +10,10 @@ export const Vender: CollectionConfig = {
     { name: 'address', label: 'Address', type: 'textarea' },
     { name: 'vendor', label:'Vendor Name', type: 'text' },
     { name: 'GST', label:'GST No.', type: 'text' },
-    { name: 'vendor_no.', label: 'Vendor Mobile No.', type: 'text' },
+    { name: 'vendor_no', label: 'Vendor Mobile No.', type: 'text' },
     { name: 'Company_no', label: 'Company Mobile No.', type: 'text' },
     { name: 'mail_id', label:'Mail id', type: 'email' },
   ],
 }
 
-export default Vender
+export default Vendor

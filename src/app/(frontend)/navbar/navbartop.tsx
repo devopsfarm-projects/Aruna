@@ -29,7 +29,7 @@ export default function Navbar() {
      
         <div className="flex items-center gap-3">
           <span className="text-gray-600 text-sm md:text-base font-medium">
-            {user?.email || 'user@email.com'}
+            {user?.email || ''}
           </span>
           <RiAccountCircle2Fill className="text-gray-700 w-8 h-8" />
         </div>

@@ -79,6 +79,7 @@ export interface Config {
     labour: Labour;
     Mines: Mine;
     truck: Truck;
+    vendor: Vendor;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -97,6 +98,7 @@ export interface Config {
     labour: LabourSelect<false> | LabourSelect<true>;
     Mines: MinesSelect<false> | MinesSelect<true>;
     truck: TruckSelect<false> | TruckSelect<true>;
+    vendor: VendorSelect<false> | VendorSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -355,6 +357,22 @@ export interface Mine {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vendor".
+ */
+export interface Vendor {
+  id: number;
+  Mines_name: number | Mine;
+  address?: string | null;
+  vendor?: string | null;
+  GST?: string | null;
+  vendor_no?: string | null;
+  Company_no?: string | null;
+  mail_id?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -407,6 +425,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'truck';
         value: number | Truck;
+      } | null)
+    | ({
+        relationTo: 'vendor';
+        value: number | Vendor;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -660,6 +682,21 @@ export interface TruckSelect<T extends boolean = true> {
   phone?: T;
   truck_no?: T;
   truck_cost?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vendor_select".
+ */
+export interface VendorSelect<T extends boolean = true> {
+  Mines_name?: T;
+  address?: T;
+  vendor?: T;
+  GST?: T;
+  vendor_no?: T;
+  Company_no?: T;
+  mail_id?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -1,9 +1,9 @@
 
 'use client';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { RiAccountCircle2Fill } from 'react-icons/ri';
 
-export default function Navbar({ collections }:{collections:any}) {
+export default function Navbar({ collections }: { collections: string[] }) {
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
  
 
@@ -30,7 +30,11 @@ export default function Navbar({ collections }:{collections:any}) {
         <div className="text-pink-500 font-bold mb-4">
           Logged in as {user?.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : 'User'}
         </div>
-
+       <Link href='/dashboard'> <div className="text-pink-500 cursor-pointer font-bold mb-4">
+          Dashboard
+        </div>
+      </Link>
+       
         <nav className="flex flex-col gap-4 text-gray-700 font-medium">
         {collections.slice(0, 12).map((col) => (
           <a key={col} href={`/${col}`} className="hover:text-blue-600 capitalize">
