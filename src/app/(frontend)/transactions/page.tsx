@@ -8,7 +8,7 @@ export default async function TransactionsPage() {
 
   const transactionsData = await payload.find({
     collection: 'transactions',
-    limit: 100, // optional: change as needed
+    limit: 100, 
   });
 
   return (

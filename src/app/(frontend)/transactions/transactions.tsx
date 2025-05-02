@@ -7,14 +7,14 @@ export default function transactions({ transactionsItems }: { transactionsItems:
   const [editId, setEditId] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
-    account: '', // from dropdown
-    type: '', // credit or debit
-    amount: '', // number input
-    mode: '', // cash / upi / bank / cheque
-    description: '', // textarea
-    txn_date: '', // date input
-    document: '', // upload ID or URL (if handling uploads separately)
-    entered_by: '', // current logged-in user ID
+    account: '',
+    type: '', 
+    amount: '', 
+    mode: '', 
+    description: '', 
+    txn_date: '', 
+    document: '', 
+    entered_by: '', 
   })
 
   const handleDelete = async (id: string) => {

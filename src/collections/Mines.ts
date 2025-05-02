@@ -8,7 +8,6 @@ export const Mines: CollectionConfig = {
   fields: [
     { name: 'Mines_name', type: 'text', required: true },
     { name: 'address', type: 'textarea' },
-    { name: 'GST', type: 'text' },
     {
       name: 'phone',
       type: 'array',

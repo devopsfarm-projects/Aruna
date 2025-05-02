@@ -218,7 +218,6 @@ export interface Mine {
   id: number;
   Mines_name: string;
   address?: string | null;
-  GST?: string | null;
   phone?:
     | {
         number?: string | null;
@@ -287,7 +286,6 @@ export interface Vendor {
   Mines_name?: (number | null) | Mine;
   address?: string | null;
   vendor?: string | null;
-  GST?: string | null;
   vendor_no?: string | null;
   Company_no?: string | null;
   mail_id?: string | null;
@@ -498,7 +496,6 @@ export interface LabourSelect<T extends boolean = true> {
 export interface MinesSelect<T extends boolean = true> {
   Mines_name?: T;
   address?: T;
-  GST?: T;
   phone?:
     | T
     | {
@@ -564,7 +561,6 @@ export interface VendorSelect<T extends boolean = true> {
   Mines_name?: T;
   address?: T;
   vendor?: T;
-  GST?: T;
   vendor_no?: T;
   Company_no?: T;
   mail_id?: T;

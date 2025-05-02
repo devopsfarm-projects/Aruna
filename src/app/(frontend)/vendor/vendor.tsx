@@ -10,7 +10,6 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
     Mines_name: '',
     address: '',
     vendor: '',
-    GST: '',
     vendor_no: '',
     Company_no: '',
     mail_id: '',
@@ -37,7 +36,6 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
     const payload = {
       Mines_name: formData.Mines_name,
       address: formData.address,
-      GST: formData.GST,
       mail_id: formData.mail_id,
       phone: formData.phone.filter(num => num).map(number => ({ number })),
     };
@@ -99,7 +97,6 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
               <th className="p-3">S.No.</th>
               <th className="p-3 text-left">Mine Name</th>
               <th className="p-3 text-left">Address</th>
-              <th className="p-3 text-left">GST No</th>
               <th className="p-3">Mobile 1</th>
               <th className="p-3">Mobile 2</th>
               <th className="p-3 text-left">Email</th>
@@ -113,7 +110,6 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
                 <td className="p-3 text-center">{index + 1}</td>
                 <td className="p-3">{item.Mines_name}</td>
                 <td className="p-3">{item.address}</td>
-                <td className="p-3">{item.GST}</td>
                 <td className="p-3 text-center">{item.phone?.[0]?.number ?? "-"}</td>
                 <td className="p-3 text-center">{item.phone?.[1]?.number ?? "-"}</td>
                 <td className="p-3">{item.mail_id}</td>
@@ -123,7 +119,6 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
                       setFormData({
                         Mines_name: item.Mines_name,
                         address: item.address,
-                        GST: item.GST,
                         mail_id: item.mail_id,
                         phone: item.phone?.map((p: { number: string }) => p.number) || ["", ""],
                         vendor: item.vendor || '',

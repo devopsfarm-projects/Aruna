@@ -1,59 +1,142 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
-type TruckItem = {
-  id: string;
-  driver_name: string;
-  phone: string;
-  truck_no: string;
-  truck_cost: string;
-};
+export default function TruckPage() {
+  const [trucks, setTrucks] = useState<any[]>([])
+  const [form, setForm] = useState({
+    driver_name: '',
+    phone: '',
+    truck_no: '',
+    truck_cost: '',
+  })
+  const [editId, setEditId] = useState<string | null>(null)
 
-export default function TruckList() {
-  const [trucks, setTrucks] = useState<TruckItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Fetch truck data
+  const fetchTrucks = async () => {
+    try {
+      const res = await axios.get('/api/truck')
+      setTrucks(res.data.docs || [])
+    } catch (error) {
+      console.error('Error fetching trucks:', error)
+    }
+  }
 
   useEffect(() => {
-    const fetchTrucks = async () => {
-      const res = await fetch('/api/truck'); 
-      const data = await res.json();
-      setTrucks(data.docs || []);
-      setLoading(false);
-    };
-    fetchTrucks();
-  }, []);
+    fetchTrucks()
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      if (editId) {
+        await axios.patch(`/api/truck/${editId}`, form)
+      } else {
+        await axios.post('/api/truck', form)
+      }
+      setForm({ driver_name: '', phone: '', truck_no: '', truck_cost: '' })
+      setEditId(null)
+      fetchTrucks()
+    } catch (error) {
+      console.error('Submit failed:', error)
+    }
+  }
+
+  const handleEdit = (truck: any) => {
+    setEditId(truck.id)
+    setForm({
+      driver_name: truck.driver_name || '',
+      phone: truck.phone || '',
+      truck_no: truck.truck_no || '',
+      truck_cost: truck.truck_cost || '',
+    })
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this truck?')) {
+      try {
+        await axios.delete(`/api/truck/${id}`)
+        fetchTrucks()
+      } catch (error) {
+        console.error('Delete failed:', error)
+      }
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Truck List</h1>
+    <div className="p-8 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">{editId ? 'Edit Truck' : 'Add New Truck'}</h1>
 
-      {loading ? (
-        <p className="text-center">Loading trucks...</p>
-      ) : (
-        <div className="space-y-4">
-          {trucks.map((truck) => (
-            <div
-              key={truck.id}
-              className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 flex flex-col md:flex-row items-center justify-between"
-            >
-              <div className="mb-4 md:mb-0">
-                <h3 className="text-xl font-medium text-gray-800">{truck.driver_name}</h3>
-                <p className="text-gray-600">Truck No: {truck.truck_no}</p>
-                <p className="text-gray-600">Cost: {truck.truck_cost}</p>
-              </div>
-              <div className="flex space-x-4">
-                <a
-                  href={`tel:${truck.phone}`}
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-                >
-                  Call Driver
-                </a>
-              </div>
+      <form onSubmit={handleSubmit} className="grid gap-4 bg-gray-100 p-6 rounded-lg shadow-md">
+        <input
+          type="text"
+          name="driver_name"
+          placeholder="Driver Name"
+          value={form.driver_name}
+          onChange={handleChange}
+          className="p-2 border rounded"
+          required
+        />
+        <input
+          type="text"
+          name="phone"
+          placeholder="Driver Mobile No."
+          value={form.phone}
+          onChange={handleChange}
+          className="p-2 border rounded"
+        />
+        <input
+          type="text"
+          name="truck_no"
+          placeholder="Truck No"
+          value={form.truck_no}
+          onChange={handleChange}
+          className="p-2 border rounded"
+        />
+        <input
+          type="text"
+          name="truck_cost"
+          placeholder="Truck Cost"
+          value={form.truck_cost}
+          onChange={handleChange}
+          className="p-2 border rounded"
+        />
+
+        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          {editId ? 'Update Truck' : 'Add Truck'}
+        </button>
+      </form>
+
+      <h2 className="text-xl font-bold mt-8 mb-4">Truck List</h2>
+      <div className="grid gap-4">
+        {trucks.map((truck) => (
+          <div key={truck.id} className="p-4 bg-white shadow-md rounded-xl">
+            <p><strong>Driver Name:</strong> {truck.driver_name}</p>
+            <p><strong>Phone:</strong> {truck.phone}</p>
+            <p><strong>Truck No:</strong> {truck.truck_no}</p>
+            <p><strong>Truck Cost:</strong> {truck.truck_cost}</p>
+            <div className="mt-2 flex gap-4">
+              <button
+                onClick={() => handleEdit(truck)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(truck.id)}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              >
+                Delete
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
-  );
+  )
 }

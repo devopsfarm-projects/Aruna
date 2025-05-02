@@ -10,7 +10,6 @@ export default function Mines({ MineItems }: { MineItems: any[] }) {
   const [formData, setFormData] = useState({
     Mines_name: "",
     address: "",
-    GST: "",
     phone: ["", ""],
     mail_id: "",
   });
@@ -32,7 +31,6 @@ export default function Mines({ MineItems }: { MineItems: any[] }) {
     const payload = {
       Mines_name: formData.Mines_name,
       address: formData.address,
-      GST: formData.GST,
       mail_id: formData.mail_id,
       phone: formData.phone.filter(num => num).map(number => ({ number })),
     };
@@ -97,7 +95,6 @@ export default function Mines({ MineItems }: { MineItems: any[] }) {
               <th className="py-3 px-4">S.No.</th>
               <th className="py-3 px-4">Mine Name</th>
               <th className="py-3 px-4">Address</th>
-              <th className="py-3 px-4">GST No</th>
               <th className="py-3 px-4">Mobile 1</th>
               <th className="py-3 px-4">Mobile 2</th>
               <th className="py-3 px-4">Email</th>
@@ -111,7 +108,6 @@ export default function Mines({ MineItems }: { MineItems: any[] }) {
                 <td className="py-2 px-4">{index + 1}</td>
                 <td className="py-2 px-4">{item.Mines_name}</td>
                 <td className="py-2 px-4">{item.address}</td>
-                <td className="py-2 px-4">{item.GST}</td>
                 <td className="py-2 px-4">{item.phone?.[0]?.number ?? ""}</td>
                 <td className="py-2 px-4">{item.phone?.[1]?.number ?? ""}</td>
                 <td className="py-2 px-4">{item.mail_id}</td>
@@ -121,7 +117,6 @@ export default function Mines({ MineItems }: { MineItems: any[] }) {
                       setFormData({
                         Mines_name: item.Mines_name,
                         address: item.address,
-                        GST: item.GST,
                         mail_id: item.mail_id,
                         phone: item.phone?.map((p: { number: string }) => p.number) || ["", ""],
                       });

@@ -5,12 +5,13 @@ import config from '@payload-config'
 import HomeClient from './dashboard'
 const HomeServer = async () => {
   const payload = await getPayload({ config })
-  const { docs } = await payload.find({ collection: 'users' })
+
+  const collectionNames = Object.keys(payload.collections || {})
 
 
   return (
     <>
-      <HomeClient data={docs} />
+      <HomeClient data={collectionNames} />
     </>
   )
 }

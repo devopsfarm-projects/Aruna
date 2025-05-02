@@ -21,7 +21,7 @@ export default function AccountsPage() {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const res = await fetch('/api/accounts'); // Adjust to your API route
+        const res = await fetch('/api/accounts'); 
         if (!res.ok) throw new Error('Failed to fetch accounts');
         const data = await res.json();
         setAccounts(data.docs || []);

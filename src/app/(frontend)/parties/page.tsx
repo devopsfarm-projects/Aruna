@@ -53,7 +53,6 @@ export default function PartiesPage() {
                 {party.contact_person && <p><strong>Contact:</strong> {party.contact_person}</p>}
                 {party.phone && <p><strong>Phone:</strong> {party.phone}</p>}
                 {party.pan_number && <p><strong>PAN:</strong> {party.pan_number}</p>}
-                {party.gst && <p><strong>GST:</strong> {party.gst}</p>}
                 {party.address && <p><strong>Address:</strong> {party.address}</p>}
               </div>
             </div>

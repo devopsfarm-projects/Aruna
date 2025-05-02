@@ -8,7 +8,6 @@ type VendorItem = {
   Mines_name: string;
   address: string;
   vendor: string;
-  GST: string;
   vendor_no: string;
   Company_no: string;
   mail_id: string;
@@ -86,16 +85,7 @@ export default function EditVendor() {
                 className="w-full p-3 border rounded-lg mt-2"
               />
             </div>
-            <div>
-              <label className="block font-medium text-gray-700">GST No.</label>
-              <input
-                type="text"
-                name="GST"
-                value={vendor.GST}
-                onChange={handleChange}
-                className="w-full p-3 border rounded-lg mt-2"
-              />
-            </div>
+
             <div>
               <label className="block font-medium text-gray-700">Vendor Mobile No.</label>
               <input

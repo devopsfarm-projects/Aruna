@@ -7,6 +7,7 @@ type User = {
   email: string;
   phone?: string;
   role: string;
+  password: string;
 };
 
 export default function UsersPage() {
@@ -14,6 +15,14 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
+
+  const [newUser, setNewUser] = useState<Omit<User, "id">>({
+    name: "",
+    email: "",
+    phone: "",
+    role: "owner",
+    password: "",
+  });
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -67,10 +76,107 @@ export default function UsersPage() {
     }
   };
 
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+      if (!res.ok) throw new Error("Failed to add user");
+      const createdUser = await res.json();
+
+      setUsers((prev) => [...prev, createdUser]);
+      setNewUser({ name: "", email: "", phone: "", role: "owner", password:'' });
+    } catch (err) {
+      alert("Failed to add user");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-2xl font-bold mb-6 text-center">Users Directory</h1>
 
+      {/* Add User Form */}
+      <div className="mb-6 bg-white p-6 rounded shadow-md max-w-md mx-auto">
+  <h2 className="text-xl font-bold mb-4">Add New User</h2>
+  <form
+    onSubmit={async (e) => {
+      e.preventDefault();
+      try {
+        const res = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newUser),
+        });
+        if (!res.ok) throw new Error("Failed to add user");
+        const created = await res.json();
+        setUsers((prev) => [...prev, created]);
+        setNewUser({
+          name: "",
+          email: "",
+          phone: "",
+          role: "user",
+          password: "",
+        });
+      } catch (err) {
+        alert("Failed to create user");
+      }
+    }}
+    className="space-y-4"
+  >
+    <input
+      type="text"
+      value={newUser.name}
+      onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+      className="w-full border px-4 py-2 rounded"
+      placeholder="Name"
+      required
+    />
+    <input
+      type="email"
+      value={newUser.email}
+      onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+      className="w-full border px-4 py-2 rounded"
+      placeholder="Email"
+      required
+    />
+    <input
+      type="text"
+      value={newUser.phone}
+      onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+      className="w-full border px-4 py-2 rounded"
+      placeholder="Phone"
+    />
+    <input
+      type="password"
+      value={newUser.password}
+      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+      className="w-full border px-4 py-2 rounded"
+      placeholder="Password"
+      required
+    />
+    <select
+      value={newUser.role}
+      onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+      className="w-full border px-4 py-2 rounded"
+    >
+      <option value="owner">Owner</option>
+      <option value="client">Client</option>
+      <option value="sites-visitor">Sites Visitor</option>
+    </select>
+    <button
+      type="submit"
+      className="w-full bg-green-600 text-white py-2 rounded"
+    >
+      Add User
+    </button>
+  </form>
+</div>
+
+
+      {/* User Table + Edit Logic */}
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : error ? (
@@ -113,6 +219,7 @@ export default function UsersPage() {
             </tbody>
           </table>
 
+          {/* Edit Form */}
           {editingUser && (
             <div className="mt-6 bg-white p-6 rounded shadow-md max-w-md mx-auto">
               <h2 className="text-xl font-bold mb-4">Edit User</h2>
@@ -153,9 +260,9 @@ export default function UsersPage() {
                   }
                   className="w-full border px-4 py-2 rounded"
                 >
-                  <option value="admin">Owner</option>
-                  <option value="user">Client</option>
-                  <option value="user">Sites Visitor</option>
+                  <option value="owner">Owner</option>
+                  <option value="client">Client</option>
+                  <option value="sites-visitor">Sites Visitor</option>
                 </select>
                 <div className="flex justify-end gap-2">
                   <button
@@ -180,5 +287,4 @@ export default function UsersPage() {
     </div>
   );
 }
-
 
