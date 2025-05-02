@@ -12,7 +12,7 @@ export default function DashboardPage({ data }:{data:any}) {
       title: 'Mine',
       color: 'bg-yellow-400',
       icon: <GiGoldMine size={24} />,
-      link: '/mine',
+      link: '/Mines',
     },
     {
       title: 'Vendor',
@@ -21,16 +21,22 @@ export default function DashboardPage({ data }:{data:any}) {
       link: '/vendor',
     },
     {
-      title: 'Stone & Black Category',
+      title: 'Block Category',
       color: 'bg-lime-500',
       icon: <GiStonePile size={24} />,
-      link: '/mine',
+      link: '/block',
+    },
+    {
+      title: 'Stone',
+      color: 'bg-lime-900',
+      icon: <GiStonePile size={24} />,
+      link: '/stone',
     },
     {
       title: 'Account Statement',
       color: 'bg-gray-400',
       icon: <MdAccountBalance size={24} />,
-      link: '/mine',
+      link: '/transactions',
     },
   ];
 

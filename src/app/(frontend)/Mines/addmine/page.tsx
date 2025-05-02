@@ -45,7 +45,7 @@ const AddMineForm = () => {
       if (response.ok) {
         alert('Mine data added successfully!')
         // Navigate to /mine
-        router.push('/mine')  // ✅ Navigate after success
+        router.push('/Mines')  // ✅ Navigate after success
       } else {
         console.error('Error:', result)
         alert('Failed to add mine data.')

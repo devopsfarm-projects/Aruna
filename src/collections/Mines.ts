@@ -1,4 +1,4 @@
-// collections/Parties.ts
+// collections/Mines.ts
 import type { CollectionConfig } from 'payload'
 export const Mines: CollectionConfig = {
   slug: 'Mines',

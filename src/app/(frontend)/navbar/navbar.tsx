@@ -36,7 +36,7 @@ export default function Navbar({ collections }: { collections: string[] }) {
       </Link>
        
         <nav className="flex flex-col gap-4 text-gray-700 font-medium">
-        {collections.slice(0, 12).map((col) => (
+        {collections.slice(0, 14).map((col) => (
           <a key={col} href={`/${col}`} className="hover:text-blue-600 capitalize">
             {col}
           </a>

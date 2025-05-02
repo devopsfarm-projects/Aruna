@@ -19,6 +19,7 @@ import { Product } from './collections/Product'
 import { Labour } from './collections/Labour'
 import { Truck } from './collections/Hydra'
 import { Vendor } from './collections/Vendor'
+import { Stone } from './collections/Stone'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -43,6 +44,7 @@ export default buildConfig({
     Mines,
     Truck,
     Vendor,
+    Stone,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

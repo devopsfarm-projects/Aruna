@@ -1,12 +1,14 @@
-// collections/Parties.ts
+
+
+// collections/vendor.ts
 import type { CollectionConfig } from 'payload'
 export const Vendor: CollectionConfig = {
   slug: 'vendor',
   admin: {
-    useAsTitle: 'Mines_name',
+    useAsTitle: 'vendor',
   },
   fields: [
-    { name: 'Mines_name', label:'Mines Name', type: 'relationship', relationTo: 'Mines', required: true },
+    { name: 'Mines_name', label:'Mines Name', type: 'relationship', relationTo: 'Mines' },
     { name: 'address', label: 'Address', type: 'textarea' },
     { name: 'vendor', label:'Vendor Name', type: 'text' },
     { name: 'GST', label:'GST No.', type: 'text' },

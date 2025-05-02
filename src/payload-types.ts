@@ -80,6 +80,7 @@ export interface Config {
     Mines: Mine;
     truck: Truck;
     vendor: Vendor;
+    stone: Stone;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -99,6 +100,7 @@ export interface Config {
     Mines: MinesSelect<false> | MinesSelect<true>;
     truck: TruckSelect<false> | TruckSelect<true>;
     vendor: VendorSelect<false> | VendorSelect<true>;
+    stone: StoneSelect<false> | StoneSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -232,7 +234,7 @@ export interface Report {
  */
 export interface Transaction {
   id: number;
-  account: number | Account;
+  account?: (number | null) | Account;
   type?: ('credit' | 'debit') | null;
   amount?: number | null;
   mode?: ('cash' | 'upi' | 'bank' | 'cheque') | null;
@@ -361,13 +363,46 @@ export interface Mine {
  */
 export interface Vendor {
   id: number;
-  Mines_name: number | Mine;
+  Mines_name?: (number | null) | Mine;
   address?: string | null;
   vendor?: string | null;
   GST?: string | null;
   vendor_no?: string | null;
   Company_no?: string | null;
   mail_id?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stone".
+ */
+export interface Stone {
+  id: number;
+  stoneType: 'Khanda' | 'khanda';
+  date?: string | null;
+  vender_id?: (number | null) | Account;
+  mines?: (number | null) | Mine;
+  addmeasures?:
+    | {
+        qty?: number | null;
+        l?: number | null;
+        w?: number | null;
+        h?: number | null;
+        rate?: number | null;
+        labour?: (number | null) | Labour;
+        hydra?: (number | null) | Truck;
+        id?: string | null;
+      }[]
+    | null;
+  total_quantity?: number | null;
+  issued_quantity?: number | null;
+  left_quantity?: number | null;
+  final_total?: number | null;
+  partyRemainingPayment?: number | null;
+  partyAdvancePayment?: number | null;
+  transportType?: ('Hydra' | 'Truck') | null;
+  createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -429,6 +464,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'vendor';
         value: number | Vendor;
+      } | null)
+    | ({
+        relationTo: 'stone';
+        value: number | Stone;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -697,6 +736,38 @@ export interface VendorSelect<T extends boolean = true> {
   vendor_no?: T;
   Company_no?: T;
   mail_id?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stone_select".
+ */
+export interface StoneSelect<T extends boolean = true> {
+  stoneType?: T;
+  date?: T;
+  vender_id?: T;
+  mines?: T;
+  addmeasures?:
+    | T
+    | {
+        qty?: T;
+        l?: T;
+        w?: T;
+        h?: T;
+        rate?: T;
+        labour?: T;
+        hydra?: T;
+        id?: T;
+      };
+  total_quantity?: T;
+  issued_quantity?: T;
+  left_quantity?: T;
+  final_total?: T;
+  partyRemainingPayment?: T;
+  partyAdvancePayment?: T;
+  transportType?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }

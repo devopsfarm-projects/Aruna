@@ -1,4 +1,4 @@
-// collections/Parties.ts
+// collections/truck.ts
 import type { CollectionConfig } from 'payload'
 export const Truck: CollectionConfig = {
   slug: 'truck',
