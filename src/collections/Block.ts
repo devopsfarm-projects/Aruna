@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 export const Block: CollectionConfig = {
-  slug: 'block',
+  slug: 'Block',
   admin: {
     useAsTitle: 'vender_id',
   },
@@ -32,25 +32,29 @@ export const Block: CollectionConfig = {
     },
 
     { name: 'date', label: 'Date', type: 'date' },
-    { name: 'vender_id', label: 'Vendor Id', type: 'relationship', relationTo: 'accounts'  },
+    { name: 'vender_id', label: 'Vendor Id', type: 'relationship', relationTo: 'accounts' },
     { name: 'mines', label: 'Mines', type: 'relationship', relationTo: 'Mines' },
-
+    { name: 'qty', label: 'Quantity', type: 'number' },
 
     {
-      name: 'addmeasures',
-      label: 'Add Measures',
+      name: 'todi',
+      label: 'Add Todi',
       type: 'array',
       fields: [
-        { name: 'qty', label: 'Quantity', type: 'number' },
-        { name: 'l', label: 'L', type: 'number' },
-        { name: 'w', label: 'W', type: 'number' },
-        { name: 'h', label: 'H', type: 'number' },
-        { name: 'rate', label: 'Rate', type: 'number' },
-        { name: 'labour', type: 'relationship', relationTo: 'labour'},
-        { name: 'hydra', label: 'hydra', type: 'relationship', relationTo: 'truck' },
+        { name: 'todicost', label: 'Todi Cost', type: 'number' },
+        {
+          name: 'addmeasures',
+          label: 'Add Measures',
+          type: 'array',
+          fields: [
+            { name: 'l', label: 'L', type: 'number' },
+            { name: 'b', label: 'B', type: 'number' },
+            { name: 'h', label: 'H', type: 'number' },
+  
+          ],
+        },
       ],
     },
-
     { name: 'total_quantity', label: 'Total Quantity', type: 'number' },
     { name: 'issued_quantity', label: 'Issued Quantity', type: 'number' },
     { name: 'left_quantity', label: 'Left Quantity', type: 'number' },
@@ -83,16 +87,23 @@ export const Block: CollectionConfig = {
     beforeChange: [
       ({ data }) => {
         let finalTotal = 0;
+        const qty = data.qty || 0;
   
-        if (Array.isArray(data.addmeasures)) {
-          finalTotal = data.addmeasures.reduce((sum, item) => {
-            const l = item.l || 0;
-            const w = item.w || 0;
-            const h = item.h || 0;
-            const qty = item.qty || 0;
-            const rate = item.rate || 0;
-            return sum + (l * w * h * qty*rate);
-          }, 0);
+        if (Array.isArray(data.todi)) {
+          for (const todiItem of data.todi) {
+            const todicost = todiItem.todicost || 0;
+  
+            if (Array.isArray(todiItem.addmeasures)) {
+              for (const item of todiItem.addmeasures) {
+                const l = item.l || 0;
+                const b = item.b || 0;
+                const h = item.h || 0;
+                const rate = item.rate || 1; 
+  
+                finalTotal += l * b * h * qty * rate * todicost;
+              }
+            }
+          }
         }
   
         const partyAdvance = data.partyAdvancePayment || 0;
@@ -100,10 +111,11 @@ export const Block: CollectionConfig = {
   
         return {
           ...data,
-          final_total: finalTotal.toString(), 
+          final_total: finalTotal,
           partyRemainingPayment: partyRemaining,
         };
       },
     ],
   },
+  
 }

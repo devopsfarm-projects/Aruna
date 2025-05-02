@@ -1,7 +1,6 @@
 import React from 'react';
 import './globals.css';
 import Navbar from './navbar/page';
-import NavbarTop from './navbar/navbartop';
 import { headers } from 'next/headers';
 
 export const metadata = {
@@ -17,7 +16,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body>
         <div className="min-h-screen bg-gray-100 flex">
-          {shouldShowNavbar && <NavbarTop />}
           {shouldShowNavbar && <Navbar />}
           <main className="flex-1">{children}</main>
         </div>

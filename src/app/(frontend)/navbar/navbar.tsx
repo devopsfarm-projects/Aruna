@@ -1,142 +1,92 @@
-
 'use client';
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { RiAccountCircle2Fill } from 'react-icons/ri';
 
 export default function Navbar({ collections }: { collections: string[] }) {
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
- 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
+    const fetchUser = () => {
       try {
-        setUser(JSON.parse(userData));
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          setUser(JSON.parse(userData));
+        }
       } catch (err) {
         console.error('Failed to parse user data from localStorage', err);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
+    fetchUser();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = '/api/logout';
+  };
+
+  if (loading || !user) return null;
+
   return (
-    <div className="flex">
-      <aside className="w-64 bg-white p-6 shadow-md hidden md:block min-h-screen">
-        <div className="flex items-center gap-2 mb-6">
-          <img src="/image.png" alt="Logo" className="h-10" />
-          <span className="text-xl font-bold">ARUNA</span>
-        </div>
+    <>
+      <header className="bg-white border-b border-gray-200 fixed top-0 left-0 w-full z-50 shadow">
+        <nav className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-3 text-gray-800 hover:text-black">
+            <img src="/image.png" alt="The Jodhpur Mine Logo" className="h-10 w-auto object-contain" />
+            <span className="text-2xl font-semibold tracking-wide text-green-600">
+              The Jodhpur Mine
+            </span>
+          </Link>
 
-        <div className="text-pink-500 font-bold mb-4">
-          Logged in as {user?.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : 'User'}
-        </div>
-       <Link href='/dashboard'> <div className="text-pink-500 cursor-pointer font-bold mb-4">
-          Dashboard
-        </div>
-      </Link>
-       
-        <nav className="flex flex-col gap-4 text-gray-700 font-medium">
-        {collections.slice(0, 14).map((col) => (
-          <a key={col} href={`/${col}`} className="hover:text-blue-600 capitalize">
-            {col}
-          </a>
-        ))}
-
-                <a
-            href="/api/logout"
-            className="text-red-500 font-semibold"
-            onClick={() => {
-              localStorage.clear()
-            }}
-          >
-            Logout
-          </a>
+          <div className="flex items-center gap-3">
+            {user?.email && (
+              <span className="text-sm text-gray-700 font-medium">{user.email}</span>
+            )}
+            <RiAccountCircle2Fill className="text-gray-600 w-8 h-8" title="User Account" />
+          </div>
         </nav>
-      </aside>
-    </div>
+      </header>
+
+      <div className="flex pt-[72px]">
+        <aside className="w-64 bg-white p-6 shadow-md hidden md:flex flex-col min-h-screen">
+          <div className="flex items-center gap-2 mb-8">
+            <img src="/image.png" alt="The Jodhpur Mine Logo" className="h-10 w-auto" />
+          </div>
+
+          <div className="mb-6 text-sm text-gray-600">
+            Logged in as{' '}
+            <span className="font-semibold text-pink-500">
+              {user?.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : 'User'}
+            </span>
+          </div>
+
+          <nav className="flex flex-col gap-3 text-gray-700 font-medium">
+            <Link href="/dashboard">
+              <span className="hover:text-blue-600 transition-colors cursor-pointer">Dashboard</span>
+            </Link>
+
+            {collections.slice(0, 10).map((col) => (
+              <Link key={col} href={`/${col}`}>
+                <span className="capitalize hover:text-blue-600 transition-colors cursor-pointer">
+                  {col}
+                </span>
+              </Link>
+            ))}
+
+            <button
+              onClick={handleLogout}
+              className="mt-6 text-left text-red-500 hover:text-red-600 font-semibold"
+            >
+              Logout
+            </button>
+          </nav>
+        </aside>
+      </div>
+    </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-// 'use client';
-// import { cookies } from 'next/headers';
-// import { useState, useEffect } from 'react';
-// import { GiGoldMine, GiStonePile } from 'react-icons/gi';
-// import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md';
-// import { RiAccountCircle2Fill } from 'react-icons/ri';
-
-// export default function Navbar({ data }:{data:any}) {
-//   const [userName, setUserName] = useState<string | null>(null);
-
-//   useEffect(() => {
-//     const userData = localStorage.getItem('user'); // adjust key based on how you store user
-//     if (userData) {
-//       try {
-//         const parsed = JSON.parse(userData);
-//         setUserName(parsed.name);
-//       } catch (e) {
-//         console.error('Error parsing user from localStorage', e);
-//       }
-//     }
-//   }, []);
-//   return (
-   
-//       <>
-//       <aside className="w-64 bg-white p-6 shadow-md hidden md:block">
-//         <div className="flex items-center gap-2 mb-6">
-//           <img src="/image.png" alt="Logo" className="h-10" />
-//           <span className="text-xl font-bold">ARUNA</span>
-//         </div>
-//         <div className="text-pink-500 font-bold mb-4">
-//         Logged in as {userName ? userName.charAt(0).toUpperCase() + userName.slice(1) : 'User'}
-//       </div>
-
-
-//         <nav className="flex flex-col gap-4 text-gray-700 font-medium">
-//           <a href="#">User</a>
-//           <a href="#">Accounts</a>
-//           <a href="#">Sites</a>
-//           <a href="#">Parties</a>
-//           <a href="#">Reminders</a>
-//           <a href="#">Reports</a>
-//           <a href="#">Transactions</a>
-//           <a href="#">Media</a>
-//           <a href="#">Product</a>
-//           <a href="#">Labour</a>
-//           <a href="#">Mines</a>
-//           <a href="#">Trucks</a>
-//           <a
-//             href="/api/logout"
-//             className="text-red-500 font-semibold"
-//             onClick={() => {
-//               localStorage.clear()
-//             }}
-//           >
-//             Logout
-//           </a>
-
-
-//         </nav>
-//       </aside>
-//       {/* <main className="flex-1 p-6">
-//         <div className="flex justify-between items-center mb-6">
-//           <h1 className="text-2xl text-gray-800 font-bold">Dashboard</h1>
-//           <div className="flex items-center gap-2">
-//             <span className="text-gray-600">{userData?.email}</span>
-//             <RiAccountCircle2Fill className="w-10 h-10 text-gray-700" />
-//           </div>
-//         </div>
-//       </main> */}
-//       </>
-
-//   );
-// }

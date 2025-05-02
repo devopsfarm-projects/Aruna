@@ -11,15 +11,14 @@ import { Accounts } from './collections/Accounts'
 import { Sites } from './collections/Sites'
 import { Parties } from './collections/Parties'
 import { Reminders } from './collections/Reminders'
-import { Reports } from './collections/Reports'
 import { Transactions } from './collections/Transactions'
 import { Media } from './collections/Media'
 import { Mines } from './collections/Mines'
-import { Product } from './collections/Product'
 import { Labour } from './collections/Labour'
 import { Truck } from './collections/Hydra'
 import { Vendor } from './collections/Vendor'
 import { Stone } from './collections/Stone'
+import { Block } from './collections/Block'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -33,15 +32,11 @@ export default buildConfig({
   collections: [
     Users,
     Accounts,
-    Sites,
-    Parties,
-    Reminders,
-    Reports,
     Transactions,
     Media,
-    Product,
     Labour,
     Mines,
+    Block,
     Truck,
     Vendor,
     Stone,

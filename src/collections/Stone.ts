@@ -43,7 +43,7 @@ export const Stone: CollectionConfig = {
       fields: [
         { name: 'qty', label: 'Quantity', type: 'number' },
         { name: 'l', label: 'L', type: 'number' },
-        { name: 'w', label: 'W', type: 'number' },
+        { name: 'b', label: 'B', type: 'number' },
         { name: 'h', label: 'H', type: 'number' },
         { name: 'rate', label: 'Rate', type: 'number' },
         { name: 'labour', type: 'relationship', relationTo: 'labour'},
@@ -87,11 +87,11 @@ export const Stone: CollectionConfig = {
         if (Array.isArray(data.addmeasures)) {
           finalTotal = data.addmeasures.reduce((sum, item) => {
             const l = item.l || 0;
-            const w = item.w || 0;
+            const b = item.b || 0;
             const h = item.h || 0;
             const qty = item.qty || 0;
             const rate = item.rate || 0;
-            return sum + (l * w * h * qty*rate);
+            return sum + (l * b * h * qty*rate);
           }, 0);
         }
   

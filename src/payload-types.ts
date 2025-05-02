@@ -69,15 +69,11 @@ export interface Config {
   collections: {
     users: User;
     accounts: Account;
-    sites: Site;
-    parties: Party;
-    reminders: Reminder;
-    reports: Report;
     transactions: Transaction;
     media: Media;
-    product: Product;
     labour: Labour;
     Mines: Mine;
+    Block: Block;
     truck: Truck;
     vendor: Vendor;
     stone: Stone;
@@ -89,15 +85,11 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     accounts: AccountsSelect<false> | AccountsSelect<true>;
-    sites: SitesSelect<false> | SitesSelect<true>;
-    parties: PartiesSelect<false> | PartiesSelect<true>;
-    reminders: RemindersSelect<false> | RemindersSelect<true>;
-    reports: ReportsSelect<false> | ReportsSelect<true>;
     transactions: TransactionsSelect<false> | TransactionsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    product: ProductSelect<false> | ProductSelect<true>;
     labour: LabourSelect<false> | LabourSelect<true>;
     Mines: MinesSelect<false> | MinesSelect<true>;
+    Block: BlockSelect<false> | BlockSelect<true>;
     truck: TruckSelect<false> | TruckSelect<true>;
     vendor: VendorSelect<false> | VendorSelect<true>;
     stone: StoneSelect<false> | StoneSelect<true>;
@@ -165,66 +157,9 @@ export interface Account {
   id: number;
   name: string;
   type?: ('clinet' | 'vendor') | null;
-  site?: (number | null) | Site;
-  party?: (number | null) | Party;
   opening_balance?: number | null;
   current_balance?: number | null;
   is_locked?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sites".
- */
-export interface Site {
-  id: number;
-  site_name: string;
-  location?: string | null;
-  is_closed?: boolean | null;
-  start_date?: string | null;
-  end_date?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "parties".
- */
-export interface Party {
-  id: number;
-  name: string;
-  category?: ('block_supplier' | 'labour_contractor' | 'other') | null;
-  contact_person?: string | null;
-  phone?: string | null;
-  pan_number?: string | null;
-  gst?: string | null;
-  address?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reminders".
- */
-export interface Reminder {
-  id: number;
-  user?: (number | null) | User;
-  message?: string | null;
-  due_date?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reports".
- */
-export interface Report {
-  id: number;
-  generated_by?: (number | null) | User;
-  type?: string | null;
-  filters?: string | null;
-  created_at?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -266,75 +201,12 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "product".
- */
-export interface Product {
-  id: number;
-  vender_id?: (number | null) | Account;
-  date?: string | null;
-  bill?: string | null;
-  mainType: 'Stone' | 'Block';
-  stoneOptions?: {
-    subType?: ('khanda' | 'raskat') | null;
-  };
-  blockOptions?: {
-    subType?: ('brown' | 'white') | null;
-  };
-  addforward?:
-    | {
-        l?: number | null;
-        w?: number | null;
-        h?: number | null;
-        qty?: number | null;
-        labour?: (number | null) | Labour;
-        id?: string | null;
-      }[]
-    | null;
-  statement?: {
-    bill?: string | null;
-    date?: string | null;
-    thodi?:
-      | {
-          thodi?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    hydra?: (number | null) | Truck;
-    quantity?: string | null;
-    total_amount?: string | null;
-  };
-  total_quantity?: number | null;
-  issued_quantity?: number | null;
-  left_quantity?: number | null;
-  final_total?: number | null;
-  partyRemainingPayment?: number | null;
-  partyAdvancePayment?: number | null;
-  transportType?: ('Hydra' | 'Truck') | null;
-  createdBy?: (number | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "labour".
  */
 export interface Labour {
   id: number;
   name?: string | null;
   mobile?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "truck".
- */
-export interface Truck {
-  id: number;
-  driver_name: string;
-  phone?: string | null;
-  truck_no?: string | null;
-  truck_cost?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -354,6 +226,55 @@ export interface Mine {
       }[]
     | null;
   mail_id?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Block".
+ */
+export interface Block {
+  id: number;
+  BlockType: 'Brown' | 'White';
+  date?: string | null;
+  vender_id?: (number | null) | Account;
+  mines?: (number | null) | Mine;
+  qty?: number | null;
+  todi?:
+    | {
+        todicost?: number | null;
+        addmeasures?:
+          | {
+              l?: number | null;
+              b?: number | null;
+              h?: number | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  total_quantity?: number | null;
+  issued_quantity?: number | null;
+  left_quantity?: number | null;
+  final_total?: number | null;
+  partyRemainingPayment?: number | null;
+  partyAdvancePayment?: number | null;
+  transportType?: ('Hydra' | 'Truck') | null;
+  createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "truck".
+ */
+export interface Truck {
+  id: number;
+  driver_name: string;
+  phone?: string | null;
+  truck_no?: string | null;
+  truck_cost?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -387,7 +308,7 @@ export interface Stone {
     | {
         qty?: number | null;
         l?: number | null;
-        w?: number | null;
+        b?: number | null;
         h?: number | null;
         rate?: number | null;
         labour?: (number | null) | Labour;
@@ -422,22 +343,6 @@ export interface PayloadLockedDocument {
         value: number | Account;
       } | null)
     | ({
-        relationTo: 'sites';
-        value: number | Site;
-      } | null)
-    | ({
-        relationTo: 'parties';
-        value: number | Party;
-      } | null)
-    | ({
-        relationTo: 'reminders';
-        value: number | Reminder;
-      } | null)
-    | ({
-        relationTo: 'reports';
-        value: number | Report;
-      } | null)
-    | ({
         relationTo: 'transactions';
         value: number | Transaction;
       } | null)
@@ -446,16 +351,16 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'product';
-        value: number | Product;
-      } | null)
-    | ({
         relationTo: 'labour';
         value: number | Labour;
       } | null)
     | ({
         relationTo: 'Mines';
         value: number | Mine;
+      } | null)
+    | ({
+        relationTo: 'Block';
+        value: number | Block;
       } | null)
     | ({
         relationTo: 'truck';
@@ -536,62 +441,9 @@ export interface UsersSelect<T extends boolean = true> {
 export interface AccountsSelect<T extends boolean = true> {
   name?: T;
   type?: T;
-  site?: T;
-  party?: T;
   opening_balance?: T;
   current_balance?: T;
   is_locked?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sites_select".
- */
-export interface SitesSelect<T extends boolean = true> {
-  site_name?: T;
-  location?: T;
-  is_closed?: T;
-  start_date?: T;
-  end_date?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "parties_select".
- */
-export interface PartiesSelect<T extends boolean = true> {
-  name?: T;
-  category?: T;
-  contact_person?: T;
-  phone?: T;
-  pan_number?: T;
-  gst?: T;
-  address?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reminders_select".
- */
-export interface RemindersSelect<T extends boolean = true> {
-  user?: T;
-  message?: T;
-  due_date?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reports_select".
- */
-export interface ReportsSelect<T extends boolean = true> {
-  generated_by?: T;
-  type?: T;
-  filters?: T;
-  created_at?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -631,61 +483,6 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "product_select".
- */
-export interface ProductSelect<T extends boolean = true> {
-  vender_id?: T;
-  date?: T;
-  bill?: T;
-  mainType?: T;
-  stoneOptions?:
-    | T
-    | {
-        subType?: T;
-      };
-  blockOptions?:
-    | T
-    | {
-        subType?: T;
-      };
-  addforward?:
-    | T
-    | {
-        l?: T;
-        w?: T;
-        h?: T;
-        qty?: T;
-        labour?: T;
-        id?: T;
-      };
-  statement?:
-    | T
-    | {
-        bill?: T;
-        date?: T;
-        thodi?:
-          | T
-          | {
-              thodi?: T;
-              id?: T;
-            };
-        hydra?: T;
-        quantity?: T;
-        total_amount?: T;
-      };
-  total_quantity?: T;
-  issued_quantity?: T;
-  left_quantity?: T;
-  final_total?: T;
-  partyRemainingPayment?: T;
-  partyAdvancePayment?: T;
-  transportType?: T;
-  createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "labour_select".
  */
 export interface LabourSelect<T extends boolean = true> {
@@ -709,6 +506,41 @@ export interface MinesSelect<T extends boolean = true> {
         id?: T;
       };
   mail_id?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Block_select".
+ */
+export interface BlockSelect<T extends boolean = true> {
+  BlockType?: T;
+  date?: T;
+  vender_id?: T;
+  mines?: T;
+  qty?: T;
+  todi?:
+    | T
+    | {
+        todicost?: T;
+        addmeasures?:
+          | T
+          | {
+              l?: T;
+              b?: T;
+              h?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  total_quantity?: T;
+  issued_quantity?: T;
+  left_quantity?: T;
+  final_total?: T;
+  partyRemainingPayment?: T;
+  partyAdvancePayment?: T;
+  transportType?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -753,7 +585,7 @@ export interface StoneSelect<T extends boolean = true> {
     | {
         qty?: T;
         l?: T;
-        w?: T;
+        b?: T;
         h?: T;
         rate?: T;
         labour?: T;
