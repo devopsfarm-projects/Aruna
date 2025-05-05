@@ -28,7 +28,7 @@ export const Stone: CollectionConfig = {
       label: 'Stone Type',
       type: 'select',
       required: true,
-      options: ['Khanda', 'khanda'],
+      options: ['Khanda', 'Raskat'],
     },
 
     { name: 'date', label: 'Date', type: 'date' },

@@ -298,7 +298,7 @@ export interface Vendor {
  */
 export interface Stone {
   id: number;
-  stoneType: 'Khanda' | 'khanda';
+  stoneType: 'Khanda' | 'Raskat';
   date?: string | null;
   vender_id?: (number | null) | Account;
   mines?: (number | null) | Mine;

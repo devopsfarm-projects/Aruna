@@ -77,7 +77,7 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 p-8">
+    <div className="min-h-screen bg-gray-100  text-gray-900 p-8">
       <h1 className="text-3xl font-semibold text-center mb-6">Vendor Directory</h1>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -108,7 +108,7 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
             {VendorItems.map((item, index) => (
               <tr key={item.id || index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="p-3 text-center">{index + 1}</td>
-                <td className="p-3">{item.Mines_name}</td>
+                <td className="p-3">{item.Mines_name?.Mines_name}</td>
                 <td className="p-3">{item.address}</td>
                 <td className="p-3 text-center">{item.phone?.[0]?.number ?? "-"}</td>
                 <td className="p-3 text-center">{item.phone?.[1]?.number ?? "-"}</td>

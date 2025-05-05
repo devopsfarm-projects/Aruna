@@ -2,18 +2,16 @@
 import Link from 'next/link';
 import { GiGoldMine, GiStonePile } from 'react-icons/gi';
 import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md';
-import { RiAccountCircle2Fill } from 'react-icons/ri';
-
+import Mine from './mine/page'
 export default function DashboardPage({ data }:{data:any}) {
-  const userData = data?.[1]; 
 
   const cards = [
-    {
-      title: 'Mine',
-      color: 'bg-yellow-400',
-      icon: <GiGoldMine size={24} />,
-      link: '/Mines',
-    },
+    // {
+    //   title: 'Mine',
+    //   color: 'bg-yellow-400',
+    //   icon: <GiGoldMine size={24} />,
+    //   link: '/Mines',
+    // },
     {
       title: 'Vendor',
       color: 'bg-rose-400',
@@ -21,23 +19,25 @@ export default function DashboardPage({ data }:{data:any}) {
       link: '/vendor',
     },
     {
-      title: 'Block Category',
-      color: 'bg-lime-500',
-      icon: <GiStonePile size={24} />,
-      link: '/block',
-    },
-    {
-      title: 'Stone',
-      color: 'bg-lime-900',
-      icon: <GiStonePile size={24} />,
-      link: '/stone',
-    },
-    {
       title: 'Account Statement',
       color: 'bg-gray-400',
       icon: <MdAccountBalance size={24} />,
       link: '/transactions',
     },
+    {
+      title: 'Stone Category',
+      color: 'bg-lime-900',
+      icon: <GiStonePile size={24} />,
+      link: '/stone',
+    },
+    {
+      title: 'Block Category',
+      color: 'bg-lime-500',
+      icon: <GiStonePile size={24} />,
+      link: '/block',
+    },
+   
+   
   ];
 
   return (
@@ -45,7 +45,7 @@ export default function DashboardPage({ data }:{data:any}) {
 
 
       <main className="flex-1 mt-20 p-6">
-      
+      <Mine/>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {cards.map((card, index) => (
             <div
