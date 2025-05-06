@@ -300,7 +300,7 @@ export interface Stone {
   id: number;
   stoneType: 'Khanda' | 'Raskat';
   date?: string | null;
-  vender_id?: (number | null) | Account;
+  vender_id?: (number | null) | Vendor;
   mines?: (number | null) | Mine;
   addmeasures?:
     | {

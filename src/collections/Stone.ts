@@ -32,9 +32,18 @@ export const Stone: CollectionConfig = {
     },
 
     { name: 'date', label: 'Date', type: 'date' },
-    { name: 'vender_id', label: 'Vendor Id', type: 'relationship', relationTo: 'accounts'  },
-    { name: 'mines', label: 'Mines', type: 'relationship', relationTo: 'Mines' },
-
+    {
+      name: 'vender_id',
+      label: 'Vendor Id',
+      type: 'relationship',
+      relationTo: 'vendor',
+    },
+    {
+      name: 'mines',
+      label: 'Mines',
+      type: 'relationship',
+      relationTo: 'Mines',
+    },
 
     {
       name: 'addmeasures',
