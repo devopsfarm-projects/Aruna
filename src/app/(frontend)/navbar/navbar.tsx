@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { RiAccountCircle2Fill } from 'react-icons/ri'
+import Image from 'next/image'
 
 export default function Navbar({ collections }: { collections: string[] }) {
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null)
@@ -60,13 +61,13 @@ export default function Navbar({ collections }: { collections: string[] }) {
           <div
             className="fusion-section-separator section-separator paper fusion-section-separator-1"
             style={{
-              ['--awb-spacer-height' as any]: '20px',
-              ['--awb-divider-height' as any]: '20px',
-              ['--awb-spacer-padding-top' as any]: 'inherit',
-              ['--awb-bg-size' as any]: '100% 20px',
-              ['--awb-bg-size-medium' as any]: '100% 100%',
-              ['--awb-bg-size-small' as any]: '100% 100%',
-            }}
+              '--awb-spacer-height': '20px',
+              '--awb-divider-height': '20px',
+              '--awb-spacer-padding-top': 'inherit',
+              '--awb-bg-size': '100% 20px',
+              '--awb-bg-size-medium': '100% 100%',
+              '--awb-bg-size-small': '100% 100%',
+            } as React.CSSProperties}
           >
             <div className="fusion-section-separator-svg fusion-section-separator-fullwidth">
               <div
@@ -89,9 +90,11 @@ export default function Navbar({ collections }: { collections: string[] }) {
             href="/dashboard"
             className="flex items-center gap-3 text-gray-800 hover:text-black"
           >
-            <img
+            <Image
               src="/image.png"
               alt="The Jodhpur Mine Logo"
+              width={205}
+              height={205}
               className="h-10 w-auto object-contain"
             />
             <span className="text-2xl font-semibold tracking-wide text-green-600">
@@ -109,7 +112,7 @@ export default function Navbar({ collections }: { collections: string[] }) {
       <div className="flex pt-[72px]">
         <aside className="w-64 bg-white p-6 shadow-md hidden md:flex flex-col min-h-screen">
           <div className="flex items-center gap-2 mb-8">
-            <img src="/image.png" alt="The Jodhpur Mine Logo" className="h-10 w-auto" />
+            <Image src="/image.png" alt="The Jodhpur Mine Logo" width={205} height={205} className="h-10 w-auto object-contain" />
           </div>
 
           <div className="mb-6 text-sm text-gray-600">

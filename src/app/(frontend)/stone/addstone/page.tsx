@@ -48,7 +48,7 @@ type NewStone = {
 }
 
 export default function StoneListPage() {
-  const [stones, setStones] = useState<Stone[]>([])
+  const [, setStones] = useState<Stone[]>([])
   const [newStone, setNewStone] = useState<NewStone>({
     vender_id: '',
     stoneType: '',
@@ -91,36 +91,6 @@ export default function StoneListPage() {
     }
   }
 
-  const handleAdd = async () => {
-    if (!newStone.vender_id || !newStone.stoneType || !newStone.date) {
-      return alert('Please fill all required fields')
-    }
-
-    const totals = calculateTotals()
-
-    try {
-      await axios.post('/api/stone', { ...newStone, ...totals })
-      setNewStone({
-        vender_id: '',
-        stoneType: '',
-        date: '',
-        mines: '',
-        addmeasures: [],
-        total_quantity: 0,
-        issued_quantity: 0,
-        left_quantity: 0,
-        final_total: 0,
-        partyRemainingPayment: 0,
-        partyAdvancePayment: 0,
-        transportType: '',
-        createdBy: '',
-      })
-      fetchAllData()
-    } catch (err) {
-      console.error(err)
-      alert('Error adding stone')
-    }
-  }
 
   const updateMeasure = (index: number, field: keyof Measure, value: string) => {
     const updated = [...newStone.addmeasures]

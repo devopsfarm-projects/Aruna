@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import payload from './lib/payload'
+import { Block } from '../../../payload-types'
 
 export default function EditBlock() {
   const router = useRouter()
   const { id } = router.query
-  const [block, setBlock] = useState<any>({})
+  const [block, setBlock] = useState<Partial<Block>>({})
 
   useEffect(() => {
     if (id) {
