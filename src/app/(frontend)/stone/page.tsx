@@ -4,29 +4,54 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 
-type Measure = { qty: number; l: number; b: number; h: number; rate: number }
+type Measure = { qty: number; l: number; b: number; h: number; rate: number; labour?: string; hydra?: string }
 
 type Stone = {
-  id: string
-  vender_id?: { name: string }
+  id: number | string
+  vender_id: {
+    id: number
+    vendor: string
+    vendor_no: string
+    address: string
+    mail_id: string
+    Company_no: string
+    Mines_name: {
+      id: number
+      Mines_name: string
+      address: string
+      phone: { number: string }[]
+      mail_id: string
+    }
+  }
   stoneType: string
   date: string
-  mines: { name: string }
+  mines: {
+    id: number
+    Mines_name: string
+    address: string
+    phone: { number: string }[]
+    mail_id: string
+  }
   addmeasures: Measure[]
-  total_quantity: number
-  issued_quantity: number
-  left_quantity: number
+  total_quantity: number | null
+  issued_quantity: number | null
+  left_quantity: number | null
   final_total: number
   partyRemainingPayment: number
-  partyAdvancePayment: number
-  transportType: string
-  createdBy: { name: string }
+  partyAdvancePayment: number | null
+  transportType: string | null
+  createdBy: { name: string } | null
+  createdAt: string
+  updatedAt: string
 }
 
 export default function StoneList() {
   const [stones, setStones] = useState<Stone[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [editData, setEditData] = useState({ stoneType: '', date: '' })
+  const [editData, setEditData] = useState<{ stoneType: string; date: string }>({ 
+    stoneType: '', 
+    date: '' 
+  })
 
   useEffect(() => {
     fetchAllData()
@@ -34,14 +59,15 @@ export default function StoneList() {
 
   const fetchAllData = async () => {
     try {
-      const res = await axios.get('/api/stone')
+      const res = await axios.get<{ docs: Stone[] }>('/api/stone')
+      console.log('Fetched stones:', res.data.docs)
       setStones(res.data.docs || [])
     } catch (err) {
       console.error('Error fetching data:', err)
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string | number) => {
     if (!confirm('Are you sure you want to delete this stone?')) return
     try {
       await axios.delete(`/api/stone/${id}`)
@@ -53,11 +79,11 @@ export default function StoneList() {
   }
 
   const handleEdit = (stone: Stone) => {
-    setEditingId(stone.id)
+    setEditingId(stone.id?.toString())
     setEditData({ stoneType: stone.stoneType, date: stone.date })
   }
 
-  const handleUpdate = async (id: string) => {
+  const handleUpdate = async (id: string | number) => {
     try {
       await axios.put(`/api/stone/${id}`, editData)
       setEditingId(null)
@@ -88,17 +114,28 @@ export default function StoneList() {
           <thead className="bg-gray-50 text-gray-700 uppercase tracking-wider">
             <tr>
               <th className="px-6 py-4">Vendor</th>
+              <th className="px-6 py-4">Mine</th>
               <th className="px-6 py-4">Stone Type</th>
               <th className="px-6 py-4">Date</th>
+              <th className="px-6 py-4">Total Qty</th>
+              <th className="px-6 py-4">Issued Qty</th>
+              <th className="px-6 py-4">Left Qty</th>
               <th className="px-6 py-4">Final Total</th>
+              <th className="px-6 py-4">Advance</th>
+              <th className="px-6 py-4">Remaining</th>
               <th className="px-6 py-4">Actions</th>
             </tr>
           </thead>
           <tbody className="text-gray-700">
             {stones.map((stone) => (
               <tr key={stone.id} className="border-t hover:bg-gray-50">
-                <td className="px-6 py-4">{stone.vender_id?.name || '-'}</td>
-
+                <td className="px-6 py-4">
+                  {stone.vender_id?.vendor || '-'}
+                  {stone.vender_id?.vendor_no && ` (${stone.vender_id.vendor_no})`}
+                </td>
+                <td className="px-6 py-4">
+                  {stone.mines?.Mines_name || '-'}
+                </td>
                 <td className="px-6 py-4">
                   {editingId === stone.id ? (
                     <input
@@ -129,7 +166,12 @@ export default function StoneList() {
                   )}
                 </td>
 
-                <td className="px-6 py-4">{stone.final_total}</td>
+                <td className="px-6 py-4">{stone.total_quantity || '0'}</td>
+                <td className="px-6 py-4">{stone.issued_quantity || '0'}</td>
+                <td className="px-6 py-4">{stone.left_quantity || '0'}</td>
+                <td className="px-6 py-4">₹{stone.final_total.toLocaleString('en-IN') || '0'}</td>
+                <td className="px-6 py-4">₹{stone.partyAdvancePayment?.toLocaleString('en-IN') || '0'}</td>
+                <td className="px-6 py-4">₹{stone.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
 
                 <td className="px-6 py-4 flex gap-2">
                   {editingId === stone.id ? (
