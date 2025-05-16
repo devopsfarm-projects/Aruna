@@ -77,74 +77,106 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100  text-gray-900 p-8">
-      <h1 className="text-3xl font-semibold text-center mb-6">Vendor Directory</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 pt-24 py-12">
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+          <span className="text-indigo-600 dark:text-indigo-400">Vendor</span> Directory
+        </h1>
 
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <button className="border border-gray-400 px-4 py-2 rounded-md hover:bg-gray-200 transition">Show Entries</button>
-        <button className="border border-gray-400 px-4 py-2 rounded-md hover:bg-gray-200 transition">Search</button>
-        <Link href="/vendor/addvendor">
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
-            Add New Vendor
-          </button>
-        </Link>
-      </div>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            <button className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+              <span className="text-sm">Show Entries</span>
+            </button>
+            <button className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+              <span className="text-sm">Search</span>
+            </button>
+          </div>
+          <Link href="/vendor/addvendor">
+            <button className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition">
+              <span className="text-sm font-medium">Add New Vendor</span>
+            </button>
+          </Link>
+        </div>
 
-      <div className="overflow-x-auto shadow-lg rounded-lg bg-white">
-        <table className="w-full table-auto text-sm">
-          <thead className="bg-gray-800 text-white">
-            <tr>
-              <th className="p-3">S.No.</th>
-              <th className="p-3 text-left">Mine Name</th>
-              <th className="p-3 text-left">Address</th>
-              <th className="p-3">Mobile 1</th>
-              <th className="p-3">Mobile 2</th>
-              <th className="p-3 text-left">Email</th>
-              <th className="p-3">Edit</th>
-              <th className="p-3">Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {VendorItems.map((item, index) => (
-              <tr key={item.id || index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="p-3 text-center">{index + 1}</td>
-                <td className="p-3">{item.Mines_name?.Mines_name}</td>
-                <td className="p-3">{item.address}</td>
-                <td className="p-3 text-center">{item.phone?.[0]?.number ?? "-"}</td>
-                <td className="p-3 text-center">{item.phone?.[1]?.number ?? "-"}</td>
-                <td className="p-3">{item.mail_id}</td>
-                <td className="p-3 text-center">
-                  <button
-                    onClick={() => {
-                      setFormData({
-                        Mines_name: item.Mines_name,
-                        address: item.address,
-                        mail_id: item.mail_id,
-                        phone: item.phone?.map((p: { number: string }) => p.number) || ["", ""],
-                        vendor: item.vendor || '',
-                        vendor_no: item.vendor_no || '',
-                        Company_no: item.Company_no || '',
-                      });
-                      setEditId(item.id);
-                      setShowForm(true);
-                    }}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td className="p-3 text-center">
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Delete
-                  </button>
-                </td>
+        <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
+          <table className="min-w-full">
+            <thead className="bg-gray-800 dark:bg-gray-700 text-white">
+              <tr>
+                <th className="p-4 text-center">S.No.</th>
+                <th className="p-4">Mine Name</th>
+                <th className="p-4">Address</th>
+                <th className="p-4">Mobile 1</th>
+                <th className="p-4">Mobile 2</th>
+                <th className="p-4">Email</th>
+                <th className="p-4">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {VendorItems.map((item, index) => (
+                <tr key={item.id || index} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="p-4 text-center">{index + 1}</td>
+                  <td className="p-4">
+                    <span className="font-medium">{item.Mines_name?.Mines_name}</span>
+                  </td>
+                  <td className="p-4">{item.address}</td>
+                  <td className="p-4">
+                    <a
+                      href={`tel:${item.phone?.[0]?.number}`}
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-center"
+                    >
+                      {item.phone?.[0]?.number ?? "-"}
+                    </a>
+                  </td>
+                  <td className="p-4">
+                    <a
+                      href={`tel:${item.phone?.[1]?.number}`}
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-center"
+                    >
+                      {item.phone?.[1]?.number ?? "-"}
+                    </a>
+                  </td>
+                  <td className="p-4">
+                    <a
+                      href={`mailto:${item.mail_id}`}
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                    >
+                      {item.mail_id}
+                    </a>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex justify-center gap-4">
+                      <button
+                        onClick={() => {
+                          setFormData({
+                            Mines_name: item.Mines_name,
+                            address: item.address,
+                            mail_id: item.mail_id,
+                            phone: item.phone?.map((p: { number: string }) => p.number) || ["", ""],
+                            vendor: item.vendor || '',
+                            vendor_no: item.vendor_no || '',
+                            Company_no: item.Company_no || '',
+                          });
+                          setEditId(item.id);
+                          setShowForm(true);
+                        }}
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
+                      >
+                        <span className="text-sm">Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
+                      >
+                        <span className="text-sm">Delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

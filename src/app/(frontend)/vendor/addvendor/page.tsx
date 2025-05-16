@@ -70,92 +70,134 @@ export default function VendorForm() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-20 text-black p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Create Vendor</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-600">{success}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium">Mines Name</label>
-          <select
-            name="Mines_name"
-            value={formData.Mines_name}
-            onChange={handleChange}
-            // required
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Select Mine</option>
-            {mines.map((mine) => (
-              <option key={mine.id} value={mine.id}>
-                {mine.Mines_name}
-              </option>
-            ))}
-          </select>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+          <span className="text-indigo-600 dark:text-indigo-400">Add</span> New Vendor
+        </h1>
+
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-4 rounded-lg">
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 p-4 rounded-lg">
+                {success}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Mines Name
+              </label>
+              <select
+                name="Mines_name"
+                value={formData.Mines_name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="">Select a mine...</option>
+                {mines.map((mine) => (
+                  <option key={mine.id} value={mine.id}>
+                    {mine.Mines_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Address
+              </label>
+              <textarea
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter vendor's address..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Vendor Name
+              </label>
+              <input
+                name="vendor"
+                value={formData.vendor}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter vendor's name"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  Vendor Mobile
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500 dark:text-gray-400">+</span>
+                  </div>
+                  <input
+                    name="vendor_no"
+                    value={formData.vendor_no}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Enter vendor's mobile"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  Company Mobile
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500 dark:text-gray-400">+</span>
+                  </div>
+                  <input
+                    name="Company_no"
+                    value={formData.Company_no}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Enter company mobile"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="mail_id"
+                value={formData.mail_id}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter email address"
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="bg-indigo-600 dark:bg-indigo-500 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+              >
+                <span className="font-medium">Create Vendor</span>
+              </button>
+            </div>
+          </form>
         </div>
-
-        <div>
-          <label className="block font-medium">Address</label>
-          <textarea
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Vendor Name</label>
-          <input
-            name="vendor"
-            value={formData.vendor}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-
-   
-
-        <div>
-          <label className="block font-medium">Vendor Mobile No.</label>
-          <input
-            name="vendor_no"
-            value={formData.vendor_no}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Company Mobile No.</label>
-          <input
-            name="Company_no"
-            value={formData.Company_no}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Mail ID</label>
-          <input
-            type="email"
-            name="mail_id"
-            value={formData.mail_id}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Submit
-        </button>
-      </form>
+      </div>
     </div>
   )
 }
-
-
-

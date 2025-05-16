@@ -1,72 +1,93 @@
 'use client';
 import Link from 'next/link';
-import { GiGoldMine, GiStonePile } from 'react-icons/gi';
+import { GiStonePile } from 'react-icons/gi';
 import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md';
 import Mine from './mine/page'
-export default function DashboardPage({ data }:{data:any}) {
+interface CardProps {
+  title: string;
+  color: string;
+  icon: JSX.Element;
+  link: string;
+  description?: string;
+}
 
-  const cards = [
-    // {
-    //   title: 'Mine',
-    //   color: 'bg-yellow-400',
-    //   icon: <GiGoldMine size={24} />,
-    //   link: '/Mines',
-    // },
+interface DashboardProps {
+  data?: any;
+}
+
+export default function DashboardPage({ data }: DashboardProps) {
+  const cards: CardProps[] = [
     {
-      title: 'Vendor',
-      color: 'bg-rose-400',
-      icon: <MdOutlineSupervisorAccount size={24} />,
+      title: 'Vendors',
+      color: 'bg-rose-500 dark:bg-rose-600',
+      icon: <MdOutlineSupervisorAccount size={28} className="text-white dark:text-gray-900" />,
       link: '/vendor',
+      description: 'Manage your vendor relationships'
     },
     {
-      title: 'Account Statement',
-      color: 'bg-gray-400',
-      icon: <MdAccountBalance size={24} />,
+      title: 'Accounts',
+      color: 'bg-gray-700 dark:bg-gray-800',
+      icon: <MdAccountBalance size={28} className="text-white dark:text-gray-900" />,
       link: '/transactions',
+      description: 'View account statements'
     },
     {
-      title: 'Stone Category',
-      color: 'bg-lime-900',
-      icon: <GiStonePile size={24} />,
+      title: 'Stones',
+      color: 'bg-lime-500 dark:bg-lime-600',
+      icon: <GiStonePile size={28} className="text-white dark:text-gray-900" />,
       link: '/stone',
+      description: 'Manage stone categories'
     },
     {
-      title: 'Block Category',
-      color: 'bg-lime-500',
-      icon: <GiStonePile size={24} />,
+      title: 'Blocks',
+      color: 'bg-cyan-500 dark:bg-cyan-600',
+      icon: <GiStonePile size={28} className="text-white dark:text-gray-900" />,
       link: '/block',
-    },
-   
-   
+      description: 'Manage block categories'
+    }
   ];
 
   return (
-   
-
-
-      <main className="flex-1 mt-20 p-6">
-      <Mine/>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <main className="flex-1 mt-20 p-6">
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-4">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400">Welcome to your dashboard</p>
+        </div>
+<Mine/>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {cards.map((card, index) => (
-            <div
+            <Link 
+              href={card.link}
               key={index}
-              className={`flex items-center justify-between p-6 rounded-2xl shadow-md text-white ${card.color}`}
+              className="group"
             >
-              <Link href= {card.link}>
-              <div className="flex items-center gap-4">
-                <div className="bg-white text-black rounded-full p-3">
-                  {card.icon}
+              <div className={`
+                flex flex-col items-start p-6 rounded-2xl 
+                transition-all duration-300 
+                ${card.color} 
+                dark:text-white
+                hover:shadow-lg
+                hover:scale-[1.02]
+              `}>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-3 rounded-full bg-white/10 dark:bg-gray-800/50 group-hover:bg-white/20 dark:group-hover:bg-gray-800/70">
+                    {card.icon}
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-xl font-semibold">{card.title}</h3>
+                    <p className="text-sm text-gray-100 dark:text-gray-400">{card.description}</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-semibold">{card.title}</h2>
-                  <p className="text-2xl mt-1 font-bold">+</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-3xl font-bold">+</span>
+                  <span className="text-sm font-medium text-gray-200 dark:text-gray-500">Explore</span>
                 </div>
               </div>
-              </Link>
-            </div>
+            </Link>
           ))}
         </div>
-      </main>
-
+      </div>
+    </main>
   );
 }

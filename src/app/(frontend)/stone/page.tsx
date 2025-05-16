@@ -148,206 +148,144 @@ export default function StoneList() {
   console.log("2222222222",stones)
 
   return (
-    <div className="p-6 md:p-10 bg-gray-100 min-h-screen mt-20">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Stone Inventory</h1>
-        <Link
-          href="/stone/addstone"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          + Add New Stone
-        </Link>
-      </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            <span className="text-indigo-600 dark:text-indigo-400">Stone</span> Inventory
+          </h1>
+          <Link
+            href="/stone/addstone"
+            className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+          >
+            <span className="font-medium">Add New Stone</span>
+          </Link>
+        </div>
 
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-50 text-gray-700 uppercase tracking-wider">
-            <tr>
-              <th className="px-6 py-4">Vendor</th>
-              <th className="px-6 py-4">Mine</th>
-              <th className="px-6 py-4">Stone Type</th>
-              <th className="px-6 py-4">Date</th>
-              <th className="px-6 py-4">Total Qty</th>
-              <th className="px-6 py-4">Issued Qty</th>
-              <th className="px-6 py-4">Left Qty</th>
-              <th className="px-6 py-4">Final Total</th>
-              <th className="px-6 py-4">Advance</th>
-              <th className="px-6 py-4">Remaining</th>
-              <th className="px-6 py-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700">
-            {stones.map((stone) => (
-              <tr key={stone.id} className="border-t hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  {stone.vender_id?.vendor || '-'}
-                  {stone.vender_id?.vendor_no && ` (${stone.vender_id.vendor_no})`}
-                </td>
-                <td className="px-6 py-4">
-                  {stone.mines?.Mines_name || '-'}
-                </td>
-                <td className="px-6 py-4">
-                  {editingId === stone.id ? (
-                    <input
-                      type="text"
-                      value={editData.stoneType || ''}
-                      onChange={(e) =>
-                        setEditData({ ...editData, stoneType: e.target.value })
-                      }
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    stone.stoneType
-                  )}
-                </td>
-
-                <td className="px-6 py-4">
-                  {editingId === stone.id ? (
-                    <input
-                      type="date"
-                      value={editData.date || ''}
-                      onChange={(e) =>
-                        setEditData({ ...editData, date: e.target.value })
-                      }
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    stone.date
-                  )}
-                </td>
-
-                <td className="px-6 py-4">
-                  {editingId === stone.id ? (
-                    <input
-                      type="number"
-                      value={editData.total_quantity || ''}
-                      onChange={(e) =>
-                        setEditData({ ...editData, total_quantity: Number(e.target.value) || null })
-                      }
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    stone.total_quantity || '-'
-                  )}
-                </td>
-
-                <td className="px-6 py-4">
-                  {editingId === stone.id ? (
-                    <input
-                      type="number"
-                      value={editData.issued_quantity || ''}
-                      onChange={(e) =>
-                        setEditData({ ...editData, issued_quantity: Number(e.target.value) || null })
-                      }
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    stone.issued_quantity || '-'
-                  )}
-                </td>
-
-                <td className="px-6 py-4">
-                  {editingId === stone.id ? (
-                    <input
-                      type="number"
-                      value={editData.left_quantity || ''}
-                      onChange={(e) =>
-                        setEditData({ ...editData, left_quantity: Number(e.target.value) || null })
-                      }
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    stone.left_quantity || '-'
-                  )}
-                </td>
-
-                <td className="px-6 py-4">
-                  {editingId === stone.id ? (
-                    <input
-                      type="number"
-                      value={editData.final_total || ''}
-                      onChange={(e) =>
-                        setEditData({ ...editData, final_total: Number(e.target.value) })
-                      }
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    stone.final_total || '-'
-                  )}
-                </td>
-
-                <td className="px-6 py-4">
-                  {editingId === stone.id ? (
-                    <input
-                      type="number"
-                      value={editData.partyAdvancePayment || ''}
-                      onChange={(e) =>
-                        setEditData({ ...editData, partyAdvancePayment: Number(e.target.value) || null })
-                      }
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    stone.partyAdvancePayment || '-'
-                  )}
-                </td>
-
-                <td className="px-6 py-4">
-                  {editingId === stone.id ? (
-                    <input
-                      type="number"
-                      value={editData.partyRemainingPayment || ''}
-                      onChange={(e) =>
-                        setEditData({ ...editData, partyRemainingPayment: Number(e.target.value) })
-                      }
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    stone.partyRemainingPayment || '-'
-                  )}
-                </td>
-                <td className="px-6 py-4">₹{stone.final_total.toLocaleString('en-IN') || '0'}</td>
-                <td className="px-6 py-4">₹{stone.partyAdvancePayment?.toLocaleString('en-IN') || '0'}</td>
-                <td className="px-6 py-4">₹{stone.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
-
-                <td className="px-6 py-4 flex gap-2">
-                  {editingId === stone.id ? (
-                    <>
-                      <button
-                        onClick={() => handleUpdate(stone.id)}
-                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => handleEdit(stone)}
-                        className="text-blue-600 hover:underline"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(stone.id)}
-                        className="text-red-600 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </td>
+        <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
+          <table className="min-w-full">
+            <thead className="bg-gray-800 dark:bg-gray-700 text-white">
+              <tr>
+                <th className="p-4 text-left">Vendor</th>
+                <th className="p-4 text-left">Mine</th>
+                <th className="p-4 text-left">Stone Type</th>
+                <th className="p-4 text-left">Date</th>
+                <th className="p-4 text-left">Total Qty</th>
+                <th className="p-4 text-left">Issued Qty</th>
+                <th className="p-4 text-left">Left Qty</th>
+                <th className="p-4 text-left">Final Total</th>
+                <th className="p-4 text-left">Advance</th>
+                <th className="p-4 text-left">Remaining</th>
+                <th className="p-4 text-left">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="text-gray-900 dark:text-white">
+              {stones.map((stone) => (
+                <tr 
+                  key={stone.id} 
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{stone.vender_id?.vendor || '-'}</span>
+                      {stone.vender_id?.vendor_no && (
+                        <span className="text-gray-600 dark:text-gray-400">({stone.vender_id.vendor_no})</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <span className="font-medium">{stone.mines?.Mines_name || '-'}</span>
+                  </td>
+                  <td className="p-4">
+                    {editingId === stone.id ? (
+                      <input
+                        type="text"
+                        value={editData.stoneType || ''}
+                        onChange={(e) =>
+                          setEditData({ ...editData, stoneType: e.target.value })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    ) : (
+                      <span className="font-medium">{stone.stoneType}</span>
+                    )}
+                  </td>
+
+                  <td className="p-4">
+                    {editingId === stone.id ? (
+                      <input
+                        type="date"
+                        value={editData.date || ''}
+                        onChange={(e) =>
+                          setEditData({ ...editData, date: e.target.value })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    ) : (
+                      <span>{stone.date}</span>
+                    )}
+                  </td>
+
+                  <td className="p-4">
+                    {editingId === stone.id ? (
+                      <input
+                        type="number"
+                        value={editData.total_quantity || ''}
+                        onChange={(e) =>
+                          setEditData({ ...editData, total_quantity: Number(e.target.value) || null })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    ) : (
+                      <span>{stone.total_quantity || '-'}</span>
+                    )}
+                  </td>
+
+                  <td className="p-4">{stone.issued_quantity || '-'}</td>
+                  <td className="p-4">{stone.left_quantity || '-'}</td>
+                  <td className="p-4">₹{stone.final_total.toLocaleString('en-IN') || '0'}</td>
+                  <td className="p-4">₹{stone.partyAdvancePayment?.toLocaleString('en-IN') || '0'}</td>
+                  <td className="p-4">₹{stone.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
+
+                  <td className="p-4">
+                    {editingId === stone.id ? (
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => handleUpdate(stone.id)}
+                          className="bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-4">
+                        <button
+                          onClick={() => handleEdit(stone)}
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(stone.id)}
+                          className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      
     </div>
   )
 }
