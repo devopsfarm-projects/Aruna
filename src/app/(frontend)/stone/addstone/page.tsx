@@ -1,8 +1,64 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import axios, { AxiosResponse } from 'axios'
+import React, { useState, useEffect, ReactNode } from 'react'
+import axios from 'axios'
+const isAxiosError = (error: unknown): error is { 
+  config: { 
+    url: string; 
+    method: string; 
+    headers: Record<string, string>; 
+    data: unknown 
+  }; 
+  response: { 
+    status: number; 
+    statusText: string; 
+    headers: Record<string, string>; 
+    data: unknown 
+  }; 
+  request: unknown; 
+  message: string 
+} => {
+  return error instanceof Error &&
+    'config' in error &&
+    'response' in error &&
+    'request' in error &&
+    'message' in error;
+};
 import { useRouter } from 'next/navigation'
+
+// Error response types
+interface ValidationError {
+  message: string;
+}
+
+interface ErrorResponse {
+  errors?: ValidationError[];
+  message?: string;
+}
+
+// Type guard for error responses
+const isErrorResponse = (obj: unknown): obj is ErrorResponse => {
+  if (typeof obj !== 'object' || obj === null) return false;
+  const data = obj as ErrorResponse;
+  return 'errors' in data && Array.isArray(data.errors) || 'message' in data;
+};
+
+// Interfaces
+interface Labour {
+  id: number
+  name: string
+  rate?: number
+  createdAt: string
+  updatedAt: string
+}
+
+interface Truck {
+  id: number
+  number: string
+  capacity?: number
+  createdAt: string
+  updatedAt: string
+}
 
 // Response types
 interface ApiResponse<T> {
@@ -70,13 +126,13 @@ interface Vendor {
   updatedAt: string
 }
 
-interface StoneResponse {
+interface _StoneResponse {
   id: number
   vender_id: number
   stoneType: string
   date: string
   mines: Mines
-  addmeasures: any[]
+  addmeasures: Measure[]
   final_total: number
   issued_quantity: number | null
   left_quantity: number | null
@@ -101,10 +157,11 @@ export default function AddStonePage() {
   const router = useRouter()
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [mines, setMines] = useState<Mines[]>([])
-  const [labours, setLabours] = useState<any[]>([])
-  const [trucks, setTrucks] = useState<any[]>([])
+  const [labours, setLabours] = useState<Labour[]>([])
+  const [trucks, setTrucks] = useState<Truck[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-
+  const [, setIsLoading] = useState(true)
+  const [, setError] = useState<string | null>(null)
   const [newStone, setNewStone] = useState<Stone>({
     vender_id: '',
     stoneType: '',
@@ -121,15 +178,16 @@ export default function AddStonePage() {
     createdBy: '', // This should be set to the current user's ID
   })
 
-  // Fetch related data
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true)
+        setError(null)
         const [vendorsRes, minesRes, laboursRes, trucksRes] = await Promise.all([
           axios.get<ApiResponse<Vendor>>('/api/vendor'),
           axios.get<ApiResponse<Mines>>('/api/Mines'),
-          axios.get<ApiResponse<any>>('/api/labour'),
-          axios.get<ApiResponse<any>>('/api/truck')
+          axios.get<ApiResponse<Labour>>('/api/labour'),
+          axios.get<ApiResponse<Truck>>('/api/truck')
         ])
         
         setVendors(vendorsRes.data.docs || [])
@@ -137,7 +195,10 @@ export default function AddStonePage() {
         setLabours(laboursRes.data.docs || [])
         setTrucks(trucksRes.data.docs || [])
       } catch (error) {
+        setError('Failed to load data. Please try again later.')
         console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -209,20 +270,19 @@ export default function AddStonePage() {
         alert('Stone added successfully!')
         router.push('/stone')
       }
-    } catch (error) {
-      console.error('Detailed error:', {
-        message: error.message,
-        response: {
-          status: error.response?.status,
-          statusText: error.response?.statusText,
-          headers: error.response?.headers,
-          data: error.response?.data,
-        },
-        request: error.request,
-        config: error.config
-      })
-  
-      if (axios.isAxiosError(error)) {
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        console.error('Detailed error:', {
+          message: error.message,
+          response: {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            headers: error.response?.headers,
+            data: error.response?.data,
+          },
+          request: error.request,
+          config: error.config
+        })
         console.error('Request config:', {
           url: error.config?.url,
           method: error.config?.method,
@@ -230,13 +290,18 @@ export default function AddStonePage() {
           headers: error.config?.headers,
         })
   
-        if (error.response?.data?.errors) {
-          const errorMessages = error.response.data.errors
-            .map((err: { message: string }) => err.message)
-            .join('\n')
-          alert(`Validation errors:\n${errorMessages}`)
+        // Type guard for error responses
+        if (error.response?.data && isErrorResponse(error.response.data)) {
+          if (error.response.data.errors) {
+            const errorMessages = error.response.data.errors
+              .map((err) => err.message)
+              .join('\n');
+            alert(`Validation errors:\n${errorMessages}`);
+          } else if (error.response.data.message) {
+            alert(`Error: ${error.response.data.message}`);
+          }
         } else {
-          alert(`Error: ${error.response?.data?.message || 'Failed to add stone. Please check the console for details.'}`)
+          alert('Failed to add stone. Please check the console for details.');
         }
       } else {
         alert('An unknown error occurred. Please check the console for details.')
@@ -465,7 +530,7 @@ export default function AddStonePage() {
                     <option value="">Select Hydra</option>
                     {trucks.map((truck) => (
                       <option key={truck.id} value={truck.id}>
-                        {truck.name}
+                        {truck.number}
                       </option>
                     ))}
                   </select>

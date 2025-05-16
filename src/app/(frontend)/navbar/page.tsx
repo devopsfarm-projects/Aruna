@@ -9,10 +9,7 @@ const Nav = async () => {
 
   const collectionNames = Object.keys(payload.collections || {})
 
-  return (
-    <Navbar collections={collectionNames} />
-  )
+  return <Navbar collections={collectionNames} />
 }
 
 export default Nav
-

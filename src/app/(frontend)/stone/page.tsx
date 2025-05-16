@@ -48,9 +48,33 @@ type Stone = {
 export default function StoneList() {
   const [stones, setStones] = useState<Stone[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [editData, setEditData] = useState<{ stoneType: string; date: string }>({ 
+  const [editData, setEditData] = useState<Partial<Stone>>({ 
     stoneType: '', 
-    date: '' 
+    date: '',
+    mines: undefined,
+    vender_id: {
+      id: 0,
+      vendor: '',
+      vendor_no: '',
+      address: '',
+      mail_id: '',
+      Company_no: '',
+      Mines_name: {
+        id: 0,
+        Mines_name: '',
+        address: '',
+        phone: [],
+        mail_id: ''
+      }
+    },
+    addmeasures: [],
+    total_quantity: undefined,
+    issued_quantity: undefined,
+    left_quantity: undefined,
+    final_total: undefined,
+    partyRemainingPayment: undefined,
+    partyAdvancePayment: undefined,
+    transportType: undefined
   })
 
   useEffect(() => {
@@ -80,12 +104,38 @@ export default function StoneList() {
 
   const handleEdit = (stone: Stone) => {
     setEditingId(stone.id?.toString())
-    setEditData({ stoneType: stone.stoneType, date: stone.date })
+    setEditData({
+      stoneType: stone.stoneType,
+      date: stone.date,
+      mines: stone.mines, 
+      vender_id: stone.vender_id,
+      addmeasures: stone.addmeasures,
+      total_quantity: stone.total_quantity,
+      issued_quantity: stone.issued_quantity,
+      left_quantity: stone.left_quantity,
+      final_total: stone.final_total,
+      partyRemainingPayment: stone.partyRemainingPayment,
+      partyAdvancePayment: stone.partyAdvancePayment,
+      transportType: stone.transportType
+    })
   }
 
   const handleUpdate = async (id: string | number) => {
     try {
-      await axios.put(`/api/stone/${id}`, editData)
+      await axios.put(`/api/stone/${id}`, {
+        stoneType: editData.stoneType,
+        date: editData.date,
+        mines: editData.mines,
+        vender_id: editData.vender_id,
+        addmeasures: editData.addmeasures,
+        total_quantity: editData.total_quantity,
+        issued_quantity: editData.issued_quantity,
+        left_quantity: editData.left_quantity,
+        final_total: editData.final_total,
+        partyRemainingPayment: editData.partyRemainingPayment,
+        partyAdvancePayment: editData.partyAdvancePayment,
+        transportType: editData.transportType
+      })
       setEditingId(null)
       fetchAllData()
     } catch (err) {
@@ -140,7 +190,7 @@ export default function StoneList() {
                   {editingId === stone.id ? (
                     <input
                       type="text"
-                      value={editData.stoneType}
+                      value={editData.stoneType || ''}
                       onChange={(e) =>
                         setEditData({ ...editData, stoneType: e.target.value })
                       }
@@ -155,7 +205,7 @@ export default function StoneList() {
                   {editingId === stone.id ? (
                     <input
                       type="date"
-                      value={editData.date}
+                      value={editData.date || ''}
                       onChange={(e) =>
                         setEditData({ ...editData, date: e.target.value })
                       }
@@ -166,9 +216,95 @@ export default function StoneList() {
                   )}
                 </td>
 
-                <td className="px-6 py-4">{stone.total_quantity || '0'}</td>
-                <td className="px-6 py-4">{stone.issued_quantity || '0'}</td>
-                <td className="px-6 py-4">{stone.left_quantity || '0'}</td>
+                <td className="px-6 py-4">
+                  {editingId === stone.id ? (
+                    <input
+                      type="number"
+                      value={editData.total_quantity || ''}
+                      onChange={(e) =>
+                        setEditData({ ...editData, total_quantity: Number(e.target.value) || null })
+                      }
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  ) : (
+                    stone.total_quantity || '-'
+                  )}
+                </td>
+
+                <td className="px-6 py-4">
+                  {editingId === stone.id ? (
+                    <input
+                      type="number"
+                      value={editData.issued_quantity || ''}
+                      onChange={(e) =>
+                        setEditData({ ...editData, issued_quantity: Number(e.target.value) || null })
+                      }
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  ) : (
+                    stone.issued_quantity || '-'
+                  )}
+                </td>
+
+                <td className="px-6 py-4">
+                  {editingId === stone.id ? (
+                    <input
+                      type="number"
+                      value={editData.left_quantity || ''}
+                      onChange={(e) =>
+                        setEditData({ ...editData, left_quantity: Number(e.target.value) || null })
+                      }
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  ) : (
+                    stone.left_quantity || '-'
+                  )}
+                </td>
+
+                <td className="px-6 py-4">
+                  {editingId === stone.id ? (
+                    <input
+                      type="number"
+                      value={editData.final_total || ''}
+                      onChange={(e) =>
+                        setEditData({ ...editData, final_total: Number(e.target.value) })
+                      }
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  ) : (
+                    stone.final_total || '-'
+                  )}
+                </td>
+
+                <td className="px-6 py-4">
+                  {editingId === stone.id ? (
+                    <input
+                      type="number"
+                      value={editData.partyAdvancePayment || ''}
+                      onChange={(e) =>
+                        setEditData({ ...editData, partyAdvancePayment: Number(e.target.value) || null })
+                      }
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  ) : (
+                    stone.partyAdvancePayment || '-'
+                  )}
+                </td>
+
+                <td className="px-6 py-4">
+                  {editingId === stone.id ? (
+                    <input
+                      type="number"
+                      value={editData.partyRemainingPayment || ''}
+                      onChange={(e) =>
+                        setEditData({ ...editData, partyRemainingPayment: Number(e.target.value) })
+                      }
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  ) : (
+                    stone.partyRemainingPayment || '-'
+                  )}
+                </td>
                 <td className="px-6 py-4">₹{stone.final_total.toLocaleString('en-IN') || '0'}</td>
                 <td className="px-6 py-4">₹{stone.partyAdvancePayment?.toLocaleString('en-IN') || '0'}</td>
                 <td className="px-6 py-4">₹{stone.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
