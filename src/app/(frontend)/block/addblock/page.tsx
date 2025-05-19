@@ -52,7 +52,7 @@ const isErrorResponse = (obj: unknown): obj is ErrorResponse => {
 interface Labour {
   id: number
   name: string
-  rate?: number
+  // rate?: number
   createdAt: string
   updatedAt: string
 }
@@ -80,7 +80,7 @@ type Measure = {
   l: number
   b: number
   h: number
-  rate: number
+  // rate: number
 }
 
 type Block = {
@@ -188,7 +188,7 @@ export default function AddBlockPage() {
             l: 0,
             b: 0,
             h: 0,
-            rate: 0,
+            // rate: 0,
           }
         ]
       }
@@ -214,7 +214,7 @@ export default function AddBlockPage() {
           l: 0,
           b: 0,
           h: 0,
-          rate: 0,
+          // rate: 0,
         }]
       }]
     }))
@@ -266,7 +266,7 @@ export default function AddBlockPage() {
 
       const finalTotal = newBlock.todi?.reduce((sum, todi) => {
         return sum + todi.addmeasures.reduce((tSum, measure) => {
-          return tSum + ((measure.qty || 0) * (measure.rate || 0))
+          return tSum + ((measure.qty || 0) * (measure.l || 0) * (measure.b || 0) * (measure.h || 0))
         }, 0) + (todi.todicost || 0)
       }, 0) || 0
 
@@ -288,7 +288,7 @@ export default function AddBlockPage() {
             l: Number(measure.l),
             b: Number(measure.b),
             h: Number(measure.h),
-            rate: Number(measure.rate)
+            // rate: Number(measure.rate)
           })) || []
         })) || [],
         // Format numeric fields
@@ -363,10 +363,10 @@ export default function AddBlockPage() {
         const l = m.l || 0
         const b = m.b || 0
         const h = m.h || 0
-        const rate = m.rate || 0
+        // const rate = m.rate || 0
         const todicost = todi.todicost || 0
         const qty = newBlock.qty || 0
-        return tSum + (l * b * h * qty * rate * todicost)
+        return tSum + (l * b * h * qty  * todicost)
       }, 0)
     }, 0)
 
@@ -393,7 +393,7 @@ export default function AddBlockPage() {
         const l = measure.l || 0
         const b = measure.b || 0
         const h = measure.h || 0
-        finalTotal += l * b * h * newBlock.qty * rate * todicost
+        finalTotal += l * b * h * newBlock.qty  * todicost
       }
     }
 
@@ -415,10 +415,10 @@ export default function AddBlockPage() {
         const l = m.l || 0
         const b = m.b || 0
         const h = m.h || 0
-        const rate = m.rate || 0
+        // const rate = m.rate || 0
         const todicost = todi.todicost || 0
         const qty = newBlock.qty || 0
-        return tSum + (l * b * h * qty * rate * todicost)
+        return tSum + (l * b * h * qty * todicost)
       }, 0)
     }, 0)
 
