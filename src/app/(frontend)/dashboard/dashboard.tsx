@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { GiStonePile } from 'react-icons/gi';
 import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md';
 import Mine from './mine/page'
+import { JSX } from 'react';
 interface CardProps {
   title: string;
   color: string;

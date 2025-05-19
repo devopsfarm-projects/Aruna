@@ -4,7 +4,15 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 
-type Measure = { qty: number; l: number; b: number; h: number; rate: number; labour?: string; hydra?: string }
+type Measure = {
+  qty: number
+  l: number
+  b: number
+  h: number
+  rate: number
+  labour?: string
+  hydra?: string
+}
 
 type Stone = {
   id: number | string
@@ -48,8 +56,8 @@ type Stone = {
 export default function StoneList() {
   const [stones, setStones] = useState<Stone[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [editData, setEditData] = useState<Partial<Stone>>({ 
-    stoneType: '', 
+  const [editData, setEditData] = useState<Partial<Stone>>({
+    stoneType: '',
     date: '',
     mines: undefined,
     vender_id: {
@@ -64,8 +72,8 @@ export default function StoneList() {
         Mines_name: '',
         address: '',
         phone: [],
-        mail_id: ''
-      }
+        mail_id: '',
+      },
     },
     addmeasures: [],
     total_quantity: undefined,
@@ -74,8 +82,10 @@ export default function StoneList() {
     final_total: undefined,
     partyRemainingPayment: undefined,
     partyAdvancePayment: undefined,
-    transportType: undefined
+    transportType: undefined,
   })
+  const [selectedStones, setSelectedStones] = useState<Set<string>>(new Set())
+  const [isSelectAll, setIsSelectAll] = useState(false)
 
   useEffect(() => {
     fetchAllData()
@@ -86,8 +96,46 @@ export default function StoneList() {
       const res = await axios.get<{ docs: Stone[] }>('/api/stone')
       console.log('Fetched stones:', res.data.docs)
       setStones(res.data.docs || [])
+      setSelectedStones(new Set())
+      setIsSelectAll(false)
     } catch (err) {
       console.error('Error fetching data:', err)
+    }
+  }
+
+  const handleSelectAll = () => {
+    if (isSelectAll) {
+      setSelectedStones(new Set())
+    } else {
+      const newSelection = new Set(stones.map((stone) => stone.id.toString()))
+      setSelectedStones(newSelection)
+    }
+    setIsSelectAll(!isSelectAll)
+  }
+
+  const handleSelectStone = (id: string) => {
+    const newSelection = new Set(selectedStones)
+    if (newSelection.has(id)) {
+      newSelection.delete(id)
+    } else {
+      newSelection.add(id)
+    }
+    setSelectedStones(newSelection)
+    setIsSelectAll(newSelection.size === stones.length)
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedStones.size === 0) return
+
+    if (!confirm(`Are you sure you want to delete ${selectedStones.size} stone(s)?`)) return
+
+    try {
+      const ids = Array.from(selectedStones)
+      await Promise.all(ids.map((id) => axios.delete(`/api/stone/${id}`)))
+      fetchAllData()
+    } catch (err) {
+      console.error(err)
+      alert('Error deleting stones')
     }
   }
 
@@ -107,7 +155,7 @@ export default function StoneList() {
     setEditData({
       stoneType: stone.stoneType,
       date: stone.date,
-      mines: stone.mines, 
+      mines: stone.mines,
       vender_id: stone.vender_id,
       addmeasures: stone.addmeasures,
       total_quantity: stone.total_quantity,
@@ -116,7 +164,7 @@ export default function StoneList() {
       final_total: stone.final_total,
       partyRemainingPayment: stone.partyRemainingPayment,
       partyAdvancePayment: stone.partyAdvancePayment,
-      transportType: stone.transportType
+      transportType: stone.transportType,
     })
   }
 
@@ -134,7 +182,7 @@ export default function StoneList() {
         final_total: editData.final_total,
         partyRemainingPayment: editData.partyRemainingPayment,
         partyAdvancePayment: editData.partyAdvancePayment,
-        transportType: editData.transportType
+        transportType: editData.transportType,
       })
       setEditingId(null)
       fetchAllData()
@@ -144,16 +192,25 @@ export default function StoneList() {
     }
   }
 
-
-  console.log("2222222222",stones)
+  console.log('2222222222', stones)
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-            <span className="text-indigo-600 dark:text-indigo-400">Stone</span> Inventory
-          </h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+              <span className="text-indigo-600 dark:text-indigo-400">Stone</span> Inventory
+            </h1>
+            {selectedStones.size > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+              >
+                Delete {selectedStones.size} Selected
+              </button>
+            )}
+          </div>
           <Link
             href="/stone/addstone"
             className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
@@ -166,6 +223,14 @@ export default function StoneList() {
           <table className="min-w-full">
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
               <tr>
+                <th className="p-4">
+                  <input
+                    type="checkbox"
+                    checked={isSelectAll}
+                    onChange={handleSelectAll}
+                    className="rounded cursor-pointer"
+                  />
+                </th>
                 <th className="p-4 text-left">Vendor</th>
                 <th className="p-4 text-left">Mine</th>
                 <th className="p-4 text-left">Stone Type</th>
@@ -181,15 +246,25 @@ export default function StoneList() {
             </thead>
             <tbody className="text-gray-900 dark:text-white">
               {stones.map((stone) => (
-                <tr 
-                  key={stone.id} 
+                <tr
+                  key={stone.id}
                   className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 >
+                  <td className="p-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedStones.has(stone.id.toString())}
+                      onChange={() => handleSelectStone(stone.id.toString())}
+                      className="rounded cursor-pointer"
+                    />
+                  </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{stone.vender_id?.vendor || '-'}</span>
                       {stone.vender_id?.vendor_no && (
-                        <span className="text-gray-600 dark:text-gray-400">({stone.vender_id.vendor_no})</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          ({stone.vender_id.vendor_no})
+                        </span>
                       )}
                     </div>
                   </td>
@@ -201,9 +276,7 @@ export default function StoneList() {
                       <input
                         type="text"
                         value={editData.stoneType || ''}
-                        onChange={(e) =>
-                          setEditData({ ...editData, stoneType: e.target.value })
-                        }
+                        onChange={(e) => setEditData({ ...editData, stoneType: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     ) : (
@@ -216,9 +289,7 @@ export default function StoneList() {
                       <input
                         type="date"
                         value={editData.date || ''}
-                        onChange={(e) =>
-                          setEditData({ ...editData, date: e.target.value })
-                        }
+                        onChange={(e) => setEditData({ ...editData, date: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     ) : (
@@ -232,7 +303,10 @@ export default function StoneList() {
                         type="number"
                         value={editData.total_quantity || ''}
                         onChange={(e) =>
-                          setEditData({ ...editData, total_quantity: Number(e.target.value) || null })
+                          setEditData({
+                            ...editData,
+                            total_quantity: Number(e.target.value) || null,
+                          })
                         }
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
@@ -244,8 +318,12 @@ export default function StoneList() {
                   <td className="p-4">{stone.issued_quantity || '-'}</td>
                   <td className="p-4">{stone.left_quantity || '-'}</td>
                   <td className="p-4">₹{stone.final_total.toLocaleString('en-IN') || '0'}</td>
-                  <td className="p-4">₹{stone.partyAdvancePayment?.toLocaleString('en-IN') || '0'}</td>
-                  <td className="p-4">₹{stone.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
+                  <td className="p-4">
+                    ₹{stone.partyAdvancePayment?.toLocaleString('en-IN') || '0'}
+                  </td>
+                  <td className="p-4">
+                    ₹{stone.partyRemainingPayment?.toLocaleString('en-IN') || '0'}
+                  </td>
 
                   <td className="p-4">
                     {editingId === stone.id ? (

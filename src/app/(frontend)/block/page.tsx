@@ -38,6 +38,9 @@ export default function BlockList() {
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
           <span className="text-indigo-600 dark:text-indigo-400">Block</span> Records
         </h1>
+      <Link href="/block/addblock" className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 flex items-center gap-2">
+        Add Block
+      </Link>
 
         <div className="space-y-6">
           {blocks.map((block) => (
