@@ -26,7 +26,7 @@ export default function LoginForm() {
       if (res.ok && data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        router.push('/dashboard');
+        window.open('/dashboard', '_blank');
       } else {
         setError(data.message || 'Login failed.');
       }

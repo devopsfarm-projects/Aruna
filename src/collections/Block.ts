@@ -32,7 +32,7 @@ export const Block: CollectionConfig = {
     },
 
     { name: 'date', label: 'Date', type: 'date' },
-    { name: 'vender_id', label: 'Vendor Id', type: 'relationship', relationTo: 'accounts' },
+    { name: 'vender_id', label: 'Vendor Id', type: 'relationship', relationTo: 'vendor' },
     { name: 'mines', label: 'Mines', type: 'relationship', relationTo: 'Mines' },
     { name: 'qty', label: 'Quantity', type: 'number' },
 

@@ -78,7 +78,7 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 pt-24 py-12">
+      <div className="max-w-7xl mx-auto px-4 pt-28 py-12">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
           <span className="text-indigo-600 dark:text-indigo-400">Vendor</span> Directory
         </h1>

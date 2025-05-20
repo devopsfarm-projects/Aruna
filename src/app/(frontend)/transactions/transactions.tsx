@@ -38,7 +38,7 @@ export default function transactions({ transactionsItems }: { transactionsItems:
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl pt-28 mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center">
           <span className="text-indigo-600 dark:text-indigo-400">Transactions</span> Directory
         </h1>

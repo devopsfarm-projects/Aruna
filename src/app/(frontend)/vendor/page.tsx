@@ -11,7 +11,7 @@ const VenderServer = async () => {
   const payload = await getPayload({ config });
 
   const { docs } = await payload.find({ collection: "vendor" });
-  console.log(docs)
+  // console.log(docs)
   return <Vendor VendorItems={docs} />;
 };
 

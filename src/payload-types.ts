@@ -236,7 +236,7 @@ export interface Block {
   id: number;
   BlockType: 'Brown' | 'White';
   date?: string | null;
-  vender_id?: (number | null) | Account;
+  vender_id?: (number | null) | Vendor;
   mines?: (number | null) | Mine;
   qty?: number | null;
   todi?:
@@ -266,19 +266,6 @@ export interface Block {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "truck".
- */
-export interface Truck {
-  id: number;
-  driver_name: string;
-  phone?: string | null;
-  truck_no?: string | null;
-  truck_cost?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "vendor".
  */
 export interface Vendor {
@@ -289,6 +276,19 @@ export interface Vendor {
   vendor_no?: string | null;
   Company_no?: string | null;
   mail_id?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "truck".
+ */
+export interface Truck {
+  id: number;
+  driver_name: string;
+  phone?: string | null;
+  truck_no?: string | null;
+  truck_cost?: string | null;
   updatedAt: string;
   createdAt: string;
 }

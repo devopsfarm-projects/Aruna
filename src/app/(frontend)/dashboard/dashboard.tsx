@@ -49,7 +49,7 @@ export default function DashboardPage({ data }: DashboardProps) {
   ];
 
   return (
-    <main className="flex-1 mt-20 p-6">
+    <main className="flex-1 mt-24 max-w-7xl mx-auto p-6">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-4">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h1>

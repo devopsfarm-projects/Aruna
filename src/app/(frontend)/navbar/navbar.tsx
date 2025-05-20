@@ -82,32 +82,29 @@ export default function Navbar({ collections }: { collections: string[] }) {
   }, [isDarkMode])
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50">
-      <header className="bg-white dark:bg-gray-800 shadow-md">
-        <nav className="container mx-auto px-4">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4">
+    <div className="fixed top-0 left-0 right-0  z-50">
+      <header className=" bg-white dark:bg-gray-800 shadow-md">
+        <nav className="container max-w-7xl mx-auto  px-4 py-6">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center">
               <Link href="/dashboard" className="text-xl font-bold text-gray-900 dark:text-white">
                 <Image
                   src="/image.png"
                   alt="The Jodhpur Mine Logo"
-                  width={205}
-                  height={205}
-                  className="h-8 w-auto object-contain"
+                  width={405}
+                  height={405}
+                  className="h-16 w-auto object-contain"
                 />
-                <span className="text-xl font-semibold tracking-wide text-green-600 dark:text-green-400">
-                  The Jodhpur Mine
-                </span>
               </Link>
-
-           
-
+            </div>
+            
+            <div className="hidden lg:flex items-center justify-center flex-grow">
               {/* Desktop menu */}
               <motion.ul 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="hidden lg:flex gap-4"
+                className="flex gap-4"
               >
                 <motion.li 
                   initial={{ opacity: 0, y: -20 }}
