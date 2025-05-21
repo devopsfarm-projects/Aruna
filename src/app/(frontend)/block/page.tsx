@@ -8,7 +8,7 @@ export default function BlockList() {
   const [blocks, setBlocks] = useState<Block[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  console.log(blocks)
   type BlockResponse = {
     docs: Block[]
     totalDocs: number
@@ -27,6 +27,7 @@ export default function BlockList() {
       setLoading(true)
       setError(null)
       const res = await payload.get<BlockResponse>('/Block')
+      
       setBlocks(res.data.docs)
     } catch (err) {
       setError('Failed to fetch blocks')
@@ -45,6 +46,7 @@ export default function BlockList() {
     await payload.delete(`/Block/${id}`)
     setBlocks((prev: Block[]) => prev.filter((b) => b.id?.toString() !== id.toString()))
   }
+
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 dark:bg-gray-900">

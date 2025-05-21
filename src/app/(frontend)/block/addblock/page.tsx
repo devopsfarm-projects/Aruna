@@ -96,8 +96,9 @@ export default function AddBlockPage() {
               l: 0,
               b: 0,
               h: 0,
-            },
-          ],
+              rate: 0
+            }
+          ]
         },
       ],
     }))
@@ -123,13 +124,27 @@ export default function AddBlockPage() {
   const updateTodiMeasure = (
     todiIndex: number,
     measureIndex: number,
-    field: keyof Measure,
+    field: keyof Measure | 'add' | 'remove',
     value: string | number,
   ) => {
     const newTodi = [...newBlock.todi]
-    const newMeasures = [...newTodi[todiIndex].addmeasures]
-    newMeasures[measureIndex] = { ...newMeasures[measureIndex], [field]: Number(value) }
-    newTodi[todiIndex].addmeasures = newMeasures
+    
+    if (field === 'add') {
+      newTodi[todiIndex].addmeasures = [...(newTodi[todiIndex].addmeasures || []), {
+        l: 0,
+        b: 0,
+        h: 0,
+        qty: 0,
+      }]
+    } else if (field === 'remove') {
+      // Remove measure
+      newTodi[todiIndex].addmeasures = newTodi[todiIndex].addmeasures.filter((_, i) => i !== measureIndex)
+    } else {
+      // Update existing measure
+      const newMeasures = [...newTodi[todiIndex].addmeasures]
+      newMeasures[measureIndex] = { ...newMeasures[measureIndex], [field]: Number(value) }
+      newTodi[todiIndex].addmeasures = newMeasures
+    }
 
     // Calculate final total
     const finalTotal = newTodi.reduce((sum, todi) => {
@@ -287,14 +302,15 @@ export default function AddBlockPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormSection block={newBlock} onChange={updateBlock} vendors={vendors} mines={mines} />
-          <TodiSection
-            todi={newBlock.todi}
-            updateTodiMeasure={updateTodiMeasure}
-            updateTodiCost={updateTodiCost}
-            addNewTodi={addNewTodi}
-            removeTodi={removeTodi}
-          />
+       
         </div>
+        <TodiSection
+            todis={newBlock.todi}
+            onRemove={removeTodi}
+            onMeasureChange={updateTodiMeasure}
+            onCostChange={updateTodiCost}
+            onAddNewTodi={addNewTodi}
+          />
         <Summary block={newBlock} />
         <div className="flex justify-end space-x-4">
           <button
