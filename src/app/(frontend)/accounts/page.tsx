@@ -25,8 +25,8 @@ export default function AccountsPage() {
         if (!res.ok) throw new Error('Failed to fetch accounts');
         const data = await res.json();
         setAccounts(data.docs || []);
-      } catch (err) {
-        setError('Failed to load accounts.');
+      } catch (err: unknown) {
+        setError(`Failed to load accounts: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
       } finally {
         setLoading(false);
       }

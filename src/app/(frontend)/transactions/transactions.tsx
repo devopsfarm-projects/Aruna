@@ -2,19 +2,39 @@
 import Link from 'next/link'
 import React, { useState } from 'react'
 
-export default function transactions({ transactionsItems }: { transactionsItems: any[] }) {
-  const [showForm, setShowForm] = useState(false)
-  const [editId, setEditId] = useState<string | null>(null)
+interface Transaction {
+  id: string;
+  account: {
+    name?: string;
+    id?: string;
+  } | string;
+  type: string;
+  amount: string;
+  mode: string;
+  description: string;
+  txn_date: string;
+  document: string;
+  entered_by: {
+    email?: string;
+    id?: string;
+  } | string;
+  name?: string;
+}
 
-  const [formData, setFormData] = useState({
+export default function Transactions({ transactionsItems }: { transactionsItems: Transaction[] }) {
+  const [, setShowForm] = useState(false)
+  const [, setEditId] = useState<string | null>(null)
+
+  const [, setFormData] = useState<Transaction>({
+    id: '',
     account: '',
     type: '', 
     amount: '', 
-    mode: '', 
-    description: '', 
-    txn_date: '', 
-    document: '', 
-    entered_by: '', 
+    mode: '',
+    description: '',
+    txn_date: '',
+    document: '',
+    entered_by: ''
   })
 
   const handleDelete = async (id: string) => {
@@ -78,7 +98,7 @@ export default function transactions({ transactionsItems }: { transactionsItems:
                 <tr key={item.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="p-4 text-center">{index + 1}</td>
                   <td className="p-4">
-                    <span className="font-medium">{item.account?.name || item.account || '-'}</span>
+                    <span className="font-medium">{typeof item.account === 'object' ? item.account?.name || '-' : item.account || '-'}</span>
                   </td>
                   <td className="p-4">
                     <span
@@ -111,7 +131,7 @@ export default function transactions({ transactionsItems }: { transactionsItems:
                     <span className="text-sm">{new Date(item.txn_date).toLocaleDateString()}</span>
                   </td>
                   <td className="p-4">
-                    <span className="text-sm">{item.entered_by?.email || item.entered_by || '-'}</span>
+                    <span className="text-sm">{typeof item.entered_by === 'object' ? item.entered_by?.email || '-' : item.entered_by || '-'}</span>
                   </td>
                   <td className="p-4">
                     <div className="flex justify-center gap-4">

@@ -31,8 +31,8 @@ export default function UsersPage() {
         if (!res.ok) throw new Error("Failed to fetch users");
         const data = await res.json();
         setUsers(data.docs || []);
-      } catch (err) {
-        setError("Error fetching users");
+      } catch (err: unknown) {
+        setError(`Error fetching users: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
       } finally {
         setLoading(false);
       }
@@ -50,8 +50,8 @@ export default function UsersPage() {
       });
       if (!res.ok) throw new Error("Failed to delete user");
       setUsers((prev) => prev.filter((u) => u.id !== id));
-    } catch (err) {
-      alert("Failed to delete user");
+    } catch (err: unknown) {
+      alert(`Failed to delete user: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
     }
   };
 
@@ -71,8 +71,8 @@ export default function UsersPage() {
         prev.map((u) => (u.id === editingUser.id ? editingUser : u))
       );
       setEditingUser(null);
-    } catch (err) {
-      alert("Failed to update user");
+    } catch (err: unknown) {
+      alert(`Failed to update user: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
     }
   };
 
@@ -89,8 +89,8 @@ export default function UsersPage() {
 
       setUsers((prev) => [...prev, createdUser]);
       setNewUser({ name: "", email: "", phone: "", role: "owner", password:'' });
-    } catch (err) {
-      alert("Failed to add user");
+    } catch (err: unknown) {
+      alert(`Failed to add user: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
     }
   };
 

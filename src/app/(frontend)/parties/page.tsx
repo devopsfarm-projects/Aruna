@@ -25,6 +25,7 @@ export default function PartiesPage() {
         const data = await res.json();
         setParties(data.docs || []);
       } catch (err) {
+        console.error('Error fetching parties:', err);
         setError('Failed to load parties');
       } finally {
         setLoading(false);

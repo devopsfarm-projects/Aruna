@@ -23,8 +23,8 @@ export default function RemindersPage() {
         const res = await fetch('/api/reminders'); // Ensure this API route works
         const data = await res.json();
         setReminders(data.docs || []);
-      } catch (err) {
-        setError('Failed to load reminders');
+      } catch (err: unknown) {
+        setError(`Failed to load reminders: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
       } finally {
         setLoading(false);
       }

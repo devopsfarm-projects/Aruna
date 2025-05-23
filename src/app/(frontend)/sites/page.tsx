@@ -23,8 +23,8 @@ export default function SitesPage() {
         if (!res.ok) throw new Error('Failed to fetch sites');
         const data = await res.json();
         setSites(data.docs || []);
-      } catch (err) {
-        setError('Unable to load site data.');
+      } catch (err: unknown) {
+        setError(`Unable to load site data: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
       } finally {
         setLoading(false);
       }

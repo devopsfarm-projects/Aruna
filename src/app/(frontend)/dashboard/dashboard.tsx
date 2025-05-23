@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import { GiStonePile } from 'react-icons/gi';
 import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md';
-import Mine from './mine/page'
 import { JSX } from 'react';
 interface CardProps {
   title: string;
@@ -18,6 +17,13 @@ interface DashboardProps {
 
 export default function DashboardPage({ data }: DashboardProps) {
   const cards: CardProps[] = [
+    {
+      title: 'Mines',
+      color: 'bg-rose-500 dark:bg-blue-600',
+      icon: <MdOutlineSupervisorAccount size={28} className="text-white dark:text-gray-900" />,
+      link: '/Mines',
+      description: 'Manage your mines'
+    },
     {
       title: 'Vendors',
       color: 'bg-rose-500 dark:bg-rose-600',
@@ -55,7 +61,6 @@ export default function DashboardPage({ data }: DashboardProps) {
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-400">Welcome to your dashboard</p>
         </div>
-<Mine/>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {cards.map((card, index) => (
             <Link 

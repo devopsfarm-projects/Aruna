@@ -15,7 +15,7 @@ const payloadConfig = buildConfig({
   secret: process.env.PAYLOAD_SECRET || 'your-secret-key-here',
 })
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(_request: Request, _context: { params: { id: string } }) {
   try {
     // Initialize Payload CMS
     const payload = await payloadConfig
