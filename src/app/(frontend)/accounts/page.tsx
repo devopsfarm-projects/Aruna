@@ -36,7 +36,7 @@ export default function AccountsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+    <div className="min-h-screen pt-36 bg-gray-50 dark:bg-gray-900 p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white text-center">
           <span className="text-indigo-600 dark:text-indigo-400">Accounts</span> List

@@ -70,7 +70,10 @@ export default function AddBlockPage() {
     BlockType: '',
     date: '',
     mines: '',
+    labour_name: '',
     qty: 0,
+    vehicle_number: '',
+    vehicle_cost: 0,
     todi: [],
     total_quantity: 0,
     issued_quantity: 0,
@@ -160,6 +163,37 @@ export default function AddBlockPage() {
         }, 0)
       )
     }, 0)
+
+    // Calculate remaining payment
+    const remainingPayment = finalTotal - (Number(newBlock.partyAdvancePayment) || 0)
+
+    setNewBlock((prev) => ({
+      ...prev,
+      todi: newTodi,
+      final_total: finalTotal,
+      partyRemainingPayment: remainingPayment,
+    }))
+  }
+
+  // Remove a measure from a todi
+  const removeMeasure = (todiIndex: number, measureIndex: number) => {
+    const newTodi = [...newBlock.todi]
+    newTodi[todiIndex].addmeasures = [
+      ...newTodi[todiIndex].addmeasures.slice(0, measureIndex),
+      ...newTodi[todiIndex].addmeasures.slice(measureIndex + 1)
+    ]
+
+    // Calculate final total
+    let finalTotal = 0
+    for (const todi of newTodi) {
+      const todicost = todi.todicost || 0
+      for (const measure of todi.addmeasures) {
+        const l = measure.l || 0
+        const b = measure.b || 0
+        const h = measure.h || 0
+        finalTotal += l * b * h * newBlock.qty * todicost
+      }
+    }
 
     // Calculate remaining payment
     const remainingPayment = finalTotal - (Number(newBlock.partyAdvancePayment) || 0)
@@ -300,7 +334,7 @@ export default function AddBlockPage() {
     <div className="container max-w-7xl pt-28 mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6">Add New Block</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid  gap-6">
           <FormSection block={newBlock} onChange={updateBlock} vendors={vendors} mines={mines} />
        
         </div>
@@ -310,6 +344,7 @@ export default function AddBlockPage() {
             onMeasureChange={updateTodiMeasure}
             onCostChange={updateTodiCost}
             onAddNewTodi={addNewTodi}
+            onMeasureRemove={removeMeasure}
           />
         <Summary block={newBlock} />
         <div className="flex justify-end space-x-4">

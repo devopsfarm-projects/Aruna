@@ -9,7 +9,7 @@ interface TodiSectionProps {
     measureIndex: number,
     field: keyof Measure | 'add',
     value: string | number,
-  ) => void;
+  ) => void
   onMeasureRemove: (todiIndex: number, measureIndex: number) => void
   onCostChange: (todiIndex: number, value: string | number) => void
   onAddNewTodi: () => void
@@ -110,7 +110,8 @@ export default function TodiSection({
                       required
                     />
                   </div>
-
+  
+ 
                   <div className="flex items-end justify-end">
                     <button
                       type="button"

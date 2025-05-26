@@ -22,18 +22,18 @@ export default function Summary({ block }: SummaryProps) {
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
           <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-            Final Total
+          Issued Quantity
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            ₹{block.final_total.toFixed(2)}
+            {block.issued_quantity.toFixed(2)}
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
           <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-            Remaining Payment
+          Left Quantity
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            ₹{block.partyRemainingPayment.toFixed(2)}
+            {block.left_quantity.toFixed(2)}
           </div>
         </div>
       </div>

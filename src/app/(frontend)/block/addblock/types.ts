@@ -10,7 +10,10 @@ export type Block = {
   BlockType: string
   date: string
   mines: string
+  labour_name: string
   qty: number
+  vehicle_number: string
+  vehicle_cost: number
   todi: {
     todicost: number
     addmeasures: Measure[]
