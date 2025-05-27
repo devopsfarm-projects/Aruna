@@ -1,126 +1,284 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react'
+import axios from 'axios'
+import Link from 'next/link'
+import payload from './lib/payload'
+import type { Block } from '../../../payload-types'
+type Measure = {
+  qty: number
+  l: number
+  b: number
+  h: number
+  rate: number
+  labour?: string
+  hydra?: string
+}
 
-type Account = {
-  id: string;
-  name: string;
-  type: string;
-  opening_balance?: number;
-  current_balance?: number;
-  is_locked?: boolean;
-  site?: { id: string; name: string };
-  party?: { id: string; name: string };
-};
+type Stone = {
+  id: number | string
+  vender_id: {
+    id: number
+    vendor: string
+    vendor_no: string
+    address: string
+    mail_id: string
+    Company_no: string
+    Mines_name: {
+      id: number
+      Mines_name: string
+      address: string
+      phone: { number: string }[]
+      mail_id: string
+    }
+  }
+  stoneType: string
+  date: string
+  mines: {
+    id: number
+    Mines_name: string
+    address: string
+    phone: { number: string }[]
+    mail_id: string
+  }
+  addmeasures: Measure[]
+  total_quantity: number | null
+  issued_quantity: number | null
+  left_quantity: number | null
+  final_total: number
+  partyRemainingPayment: number
+  partyAdvancePayment: number | null
+  transportType: string | null
+  createdBy: { name: string } | null
+  createdAt: string
+  updatedAt: string
+}
 
-export default function AccountsPage() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+export default function StoneList() {
+  const [stones, setStones] = useState<Stone[]>([])
+  const [editingId] = useState<string | null>(null)
+  const [blocks, setBlocks] = useState<Block[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  console.log(blocks)
+  type BlockResponse = {
+    docs: Block[]
+    totalDocs: number
+    limit: number
+    totalPages: number
+    page: number
+    pagingCounter: number
+    hasPrevPage: boolean
+    hasNextPage: boolean
+    prevPage: number | null
+    nextPage: number | null
+  }
+  const fetchBlocks = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const res = await payload.get<BlockResponse>('/Block')
+
+      setBlocks(res.data.docs)
+    } catch (err) {
+      setError('Failed to fetch blocks')
+      console.error('Error fetching blocks:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+  useEffect(() => {
+    fetchBlocks()
+  }, [fetchBlocks])
+
+  const [editData, setEditData] = useState<Partial<Stone>>({
+    stoneType: '',
+    date: '',
+    mines: undefined,
+    vender_id: {
+      id: 0,
+      vendor: '',
+      vendor_no: '',
+      address: '',
+      mail_id: '',
+      Company_no: '',
+      Mines_name: {
+        id: 0,
+        Mines_name: '',
+        address: '',
+        phone: [],
+        mail_id: '',
+      },
+    },
+    addmeasures: [],
+    total_quantity: undefined,
+    issued_quantity: undefined,
+    left_quantity: undefined,
+    final_total: undefined,
+    partyRemainingPayment: undefined,
+    partyAdvancePayment: undefined,
+    transportType: undefined,
+  })
+  const [selectedStones, setSelectedStones] = useState<Set<string>>(new Set())
+  const [isSelectAll, setIsSelectAll] = useState(false)
 
   useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const res = await fetch('/api/accounts'); 
-        if (!res.ok) throw new Error('Failed to fetch accounts');
-        const data = await res.json();
-        setAccounts(data.docs || []);
-      } catch (err: unknown) {
-        setError(`Failed to load accounts: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchAllData()
+  }, [])
 
-    fetchAccounts();
-  }, []);
+  const fetchAllData = async () => {
+    try {
+      const res = await axios.get<{ docs: Stone[] }>('/api/stone')
+      console.log('Fetched stones:', res.data.docs)
+      setStones(res.data.docs || [])
+      setSelectedStones(new Set())
+      setIsSelectAll(false)
+    } catch (err) {
+      console.error('Error fetching data:', err)
+    }
+  }
+
+  const handleSelectAll = () => {
+    if (isSelectAll) {
+      setSelectedStones(new Set())
+    } else {
+      const newSelection = new Set(stones.map((stone) => stone.id.toString()))
+      setSelectedStones(newSelection)
+    }
+    setIsSelectAll(!isSelectAll)
+  }
+
+  const handleSelectStone = (id: string) => {
+    const newSelection = new Set(selectedStones)
+    if (newSelection.has(id)) {
+      newSelection.delete(id)
+    } else {
+      newSelection.add(id)
+    }
+    setSelectedStones(newSelection)
+    setIsSelectAll(newSelection.size === stones.length)
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedStones.size === 0) return
+
+    if (!confirm(`Are you sure you want to delete ${selectedStones.size} stone(s)?`)) return
+
+    try {
+      const ids = Array.from(selectedStones)
+      await Promise.all(ids.map((id) => axios.delete(`/api/stone/${id}`)))
+      fetchAllData()
+    } catch (err) {
+      console.error(err)
+      alert('Error deleting stones')
+    }
+  }
 
   return (
-    <div className="min-h-screen pt-36 bg-gray-50 dark:bg-gray-900 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white text-center">
-          <span className="text-indigo-600 dark:text-indigo-400">Accounts</span> List
-        </h1>
+    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+              <span className="text-indigo-600 dark:text-indigo-400">Accounts</span> Statement
+            </h1>
+            {selectedStones.size > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+              >
+                Delete {selectedStones.size} Selected
+              </button>
+            )}
+          </div>
+     
+        </div>
 
-        {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 dark:border-indigo-400 mx-auto"></div>
-          </div>
-        ) : error ? (
-          <div className="text-center text-red-600 dark:text-red-400 py-8">
-            {error}
-          </div>
-        ) : (
-          <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
-            <table className="min-w-full">
-              <thead className="bg-indigo-600 dark:bg-indigo-500 text-white">
-                <tr>
-                  <th className="text-left p-4">Name</th>
-                  <th className="text-left p-4">Type</th>
-                  <th className="text-left p-4">Site</th>
-                  <th className="text-left p-4">Party</th>
-                  <th className="text-left p-4">Opening Balance</th>
-                  <th className="text-left p-4">Current Balance</th>
-                  <th className="text-center p-4">Status</th>
+        <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
+          <table className="min-w-full">
+            <thead className="bg-gray-800 dark:bg-gray-700 text-white">
+              <tr>
+                <th className="p-4">
+                  <input
+                    type="checkbox"
+                    checked={isSelectAll}
+                    onChange={handleSelectAll}
+                    className="rounded cursor-pointer"
+                  />
+                </th>
+                <th className="p-4 text-left">Date</th>
+                <th className="p-4 text-left">Mine Name</th>
+                <th className="p-4 text-left">Vendor Name</th>
+                <th className="p-4 text-left">Type</th>
+                <th className="p-4 text-left">Total Amount</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-900 dark:text-white">
+              {stones.map((stone) => (
+                <tr
+                  key={stone.id}
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <td className="p-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedStones.has(stone.id.toString())}
+                      onChange={() => handleSelectStone(stone.id.toString())}
+                      className="rounded cursor-pointer"
+                    />
+                  </td>
+                  <td className="p-4">
+                      <span>{stone.date}</span>
+                  </td>
+                  <td className="p-4">
+                    <span className="font-medium">{stone.mines?.Mines_name || '-'}</span>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{stone.vender_id?.vendor || '-'}</span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                      <span className="font-medium">{stone.stoneType}</span>
+                  </td>
+                  <td className="p-4">₹{stone.final_total.toLocaleString('en-IN') || '0'}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {accounts.map((acc) => (
-                  <tr
-                    key={acc.id}
-                    className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <td className="p-4 text-gray-900 dark:text-white">{acc.name}</td>
-                    <td className="p-4 text-gray-900 dark:text-white capitalize">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          acc.type === 'bank'
-                            ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300'
-                            : acc.type === 'cash'
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
-                            : 'bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-300'
-                        }`}
-                      >
-                        {acc.type}
-                      </span>
-                    </td>
-                    <td className="p-4 text-gray-900 dark:text-white">
-                      {acc.site?.name || '-'}
-                    </td>
-                    <td className="p-4 text-gray-900 dark:text-white">
-                      {acc.party?.name || '-'}
-                    </td>
-                    <td className="p-4 text-gray-900 dark:text-white">
-                      <span className="font-medium">
-                        {acc.opening_balance?.toLocaleString() ?? '0'}
-                      </span>
-                    </td>
-                    <td className="p-4 text-gray-900 dark:text-white">
-                      <span className="font-medium">
-                        {acc.current_balance?.toLocaleString() ?? '0'}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <div className="flex items-center">
-                          <span
-                            className={`w-3 h-3 rounded-full ${
-                              acc.is_locked ? 'bg-red-500 dark:bg-red-400' : 'bg-green-500 dark:bg-green-400'
-                            }`}
-                          ></span>
-                          <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {acc.is_locked ? 'Locked' : 'Active'}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              ))}
+                {blocks.map((block) => (
+                <tr
+                  key={block.id}
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <td className="p-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedStones.has(block.id.toString())}
+                      onChange={() => handleSelectStone(block.id.toString())}
+                      className="rounded cursor-pointer"
+                    />
+                  </td>
+                  <td className="p-4">
+                      <span>{block.date}</span>
+                  </td>
+                  <td className="p-4">
+                    <span className="font-medium">{block.mines?.Mines_name || '-'}</span>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{block.vender_id?.vendor || '-'}</span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                      <span className="font-medium">{block.BlockType}</span>
+                  </td>
+                  <td className="p-4">₹{block.total_amount || '0'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+
     </div>
-  );
+  )
 }

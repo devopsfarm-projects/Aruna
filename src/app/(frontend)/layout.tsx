@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" className="dark">
       <body className="bg-white dark:bg-gray-900 dark:text-white">
         <div className="min-h-screen flex">
-          {user && <Navbar user={user} />}
+          {user && <Navbar />}
           <main className="flex-1">{children}</main>
         </div>
       </body>

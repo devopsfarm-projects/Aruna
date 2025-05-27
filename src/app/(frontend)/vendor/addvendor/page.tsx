@@ -24,7 +24,7 @@ export default function VendorForm() {
   // Fetch Mines for dropdown
   useEffect(() => {
     const fetchMines = async () => {
-      const res = await fetch('/api/mines')
+      const res = await fetch('/api/Mines')
       const data = await res.json()
       setMines(data?.docs || [])
     }

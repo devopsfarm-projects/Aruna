@@ -32,10 +32,10 @@ export default function DashboardPage({ data }: DashboardProps) {
       description: 'Manage your vendor relationships'
     },
     {
-      title: 'Accounts',
+      title: 'Accounts Statement',
       color: 'bg-gray-700 dark:bg-gray-800',
       icon: <MdAccountBalance size={28} className="text-white dark:text-gray-900" />,
-      link: '/transactions',
+      link: '/accounts',
       description: 'View account statements'
     },
     {

@@ -55,8 +55,11 @@ type Stone = {
 
 export default function StoneList() {
   const [stones, setStones] = useState<Stone[]>([])
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editData, setEditData] = useState<Partial<Stone>>({
+  const [filteredStones, setFilteredStones] = useState<Stone[]>([])
+  const [searchVendor, setSearchVendor] = useState('')
+  const [searchMine, setSearchMine] = useState('')
+  const [, setEditingId] = useState<string | null>(null)
+  const [, setEditData] = useState<Partial<Stone>>({
     stoneType: '',
     date: '',
     mines: undefined,
@@ -90,6 +93,20 @@ export default function StoneList() {
   useEffect(() => {
     fetchAllData()
   }, [])
+
+  useEffect(() => {
+    const filtered = stones.filter(stone => {
+      const matchesVendor = !searchVendor || 
+        stone.vender_id?.vendor?.toLowerCase().includes(searchVendor.toLowerCase()) ||
+        stone.vender_id?.Company_no?.toLowerCase().includes(searchVendor.toLowerCase())
+      
+      const matchesMine = !searchMine || 
+        stone.mines?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase())
+      
+      return matchesVendor && matchesMine
+    })
+    setFilteredStones(filtered)
+  }, [stones, searchVendor, searchMine])
 
   const fetchAllData = async () => {
     try {
@@ -168,37 +185,14 @@ export default function StoneList() {
     })
   }
 
-  const handleUpdate = async (id: string | number) => {
-    try {
-      await axios.put(`/api/stone/${id}`, {
-        stoneType: editData.stoneType,
-        date: editData.date,
-        mines: editData.mines,
-        vender_id: editData.vender_id,
-        addmeasures: editData.addmeasures,
-        total_quantity: editData.total_quantity,
-        issued_quantity: editData.issued_quantity,
-        left_quantity: editData.left_quantity,
-        final_total: editData.final_total,
-        partyRemainingPayment: editData.partyRemainingPayment,
-        partyAdvancePayment: editData.partyAdvancePayment,
-        transportType: editData.transportType,
-      })
-      setEditingId(null)
-      fetchAllData()
-    } catch (err) {
-      console.error(err)
-      alert('Error updating stone')
-    }
-  }
 
-  console.log('2222222222', stones)
+
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-6 mb-8">
+          <div className="flex items-center justify-between">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               <span className="text-indigo-600 dark:text-indigo-400">Stone</span> Inventory
             </h1>
@@ -210,6 +204,32 @@ export default function StoneList() {
                 Delete {selectedStones.size} Selected
               </button>
             )}
+          </div>
+          <div className="flex gap-6">
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Search Vendor
+              </label>
+              <input
+                type="text"
+                value={searchVendor}
+                onChange={(e) => setSearchVendor(e.target.value)}
+                placeholder="Search by vendor name or company number..."
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Search Mine
+              </label>
+              <input
+                type="text"
+                value={searchMine}
+                onChange={(e) => setSearchMine(e.target.value)}
+                placeholder="Search by mine name..."
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
           </div>
           <Link
             href="/stone/addstone"
@@ -237,15 +257,12 @@ export default function StoneList() {
                 <th className="p-4 text-left">Date</th>
                 <th className="p-4 text-left">Total Qty</th>
                 <th className="p-4 text-left">Issued Qty</th>
-                <th className="p-4 text-left">Left Qty</th>
-                <th className="p-4 text-left">Final Total</th>
-                <th className="p-4 text-left">Advance</th>
-                <th className="p-4 text-left">Remaining</th>
+                <th className="p-4 text-left">Total Amount</th>
                 <th className="p-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody className="text-gray-900 dark:text-white">
-              {stones.map((stone) => (
+              {filteredStones.map((stone) => (
                 <tr
                   key={stone.id}
                   className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
@@ -272,76 +289,28 @@ export default function StoneList() {
                     <span className="font-medium">{stone.mines?.Mines_name || '-'}</span>
                   </td>
                   <td className="p-4">
-                    {editingId === stone.id ? (
-                      <input
-                        type="text"
-                        value={editData.stoneType || ''}
-                        onChange={(e) => setEditData({ ...editData, stoneType: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    ) : (
+                 
                       <span className="font-medium">{stone.stoneType}</span>
-                    )}
+                  
                   </td>
 
                   <td className="p-4">
-                    {editingId === stone.id ? (
-                      <input
-                        type="date"
-                        value={editData.date || ''}
-                        onChange={(e) => setEditData({ ...editData, date: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    ) : (
+                 
                       <span>{stone.date}</span>
-                    )}
+                 
                   </td>
 
                   <td className="p-4">
-                    {editingId === stone.id ? (
-                      <input
-                        type="number"
-                        value={editData.total_quantity || ''}
-                        onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            total_quantity: Number(e.target.value) || null,
-                          })
-                        }
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    ) : (
+        
                       <span>{stone.total_quantity || '-'}</span>
-                    )}
+                   
                   </td>
 
                   <td className="p-4">{stone.issued_quantity || '-'}</td>
-                  <td className="p-4">{stone.left_quantity || '-'}</td>
-                  <td className="p-4">₹{stone.final_total.toLocaleString('en-IN') || '0'}</td>
+                  <td className="p-4">{stone.total_amount || '-'}</td>
+                 
                   <td className="p-4">
-                    ₹{stone.partyAdvancePayment?.toLocaleString('en-IN') || '0'}
-                  </td>
-                  <td className="p-4">
-                    ₹{stone.partyRemainingPayment?.toLocaleString('en-IN') || '0'}
-                  </td>
-
-                  <td className="p-4">
-                    {editingId === stone.id ? (
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => handleUpdate(stone.id)}
-                          className="bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingId(null)}
-                          className="bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
+                    
                       <div className="flex gap-4">
                         <button
                           onClick={() => handleEdit(stone)}
@@ -356,7 +325,6 @@ export default function StoneList() {
                           Delete
                         </button>
                       </div>
-                    )}
                   </td>
                 </tr>
               ))}

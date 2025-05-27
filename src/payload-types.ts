@@ -305,23 +305,22 @@ export interface Stone {
   mines?: (number | null) | Mine;
   addmeasures?:
     | {
-        qty?: number | null;
         l?: number | null;
         b?: number | null;
         h?: number | null;
-        rate?: number | null;
-        labour?: (number | null) | Labour;
-        hydra?: (number | null) | Truck;
         id?: string | null;
       }[]
     | null;
+  rate?: number | null;
   total_quantity?: number | null;
   issued_quantity?: number | null;
   left_quantity?: number | null;
-  final_total?: number | null;
-  partyRemainingPayment?: number | null;
-  partyAdvancePayment?: number | null;
+  block_amount?: number | null;
+  labour_name?: string | null;
   transportType?: ('Hydra' | 'Truck') | null;
+  vehicle_number?: string | null;
+  vehicle_cost?: number | null;
+  total_amount?: number | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -581,22 +580,21 @@ export interface StoneSelect<T extends boolean = true> {
   addmeasures?:
     | T
     | {
-        qty?: T;
         l?: T;
         b?: T;
         h?: T;
-        rate?: T;
-        labour?: T;
-        hydra?: T;
         id?: T;
       };
+  rate?: T;
   total_quantity?: T;
   issued_quantity?: T;
   left_quantity?: T;
-  final_total?: T;
-  partyRemainingPayment?: T;
-  partyAdvancePayment?: T;
+  block_amount?: T;
+  labour_name?: T;
   transportType?: T;
+  vehicle_number?: T;
+  vehicle_cost?: T;
+  total_amount?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;

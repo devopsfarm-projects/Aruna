@@ -331,39 +331,84 @@ export default function AddBlockPage() {
   }
 
   return (
-    <div className="container max-w-7xl pt-28 mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">Add New Block</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid  gap-6">
-          <FormSection block={newBlock} onChange={updateBlock} vendors={vendors} mines={mines} />
-       
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden sm:rounded-lg">
+          <div className="px-4 py-5 sm:px-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Block</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Enter block details and measurements
+            </p>
+          </div>
+          <form onSubmit={handleSubmit} className="divide-y divide-gray-200 dark:divide-gray-700">
+            {/* Basic Block Information */}
+            <div className="px-4 py-5 sm:p-6">
+              <div className="grid  gap-6 ">
+                <div className="col-span-2">
+                  <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                    Block Information
+                  </h2>
+                  <FormSection block={newBlock} onChange={updateBlock} vendors={vendors} mines={mines} />
+             
+                </div>
+              
+              </div>
+            </div>
+
+            {/* Todi Section */}
+            <div className="px-4 py-5 sm:p-6">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Todi Measurements
+              </h2>
+              <TodiSection
+                todis={newBlock.todi}
+                onRemove={removeTodi}
+                onMeasureChange={updateTodiMeasure}
+                onCostChange={updateTodiCost}
+                onAddNewTodi={addNewTodi}
+                onMeasureRemove={removeMeasure}
+              />
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                    Summary
+                  </h3>
+                  <Summary block={newBlock} />
+                </div>
+
+            {/* Action Buttons */}
+            <div className="px-4 py-3 sm:px-6 bg-gray-50 dark:bg-gray-700">
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => router.push('/block')}
+                  className="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Submitting...
+                    </>
+                  ) : (
+                    'Submit'
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-        <TodiSection
-            todis={newBlock.todi}
-            onRemove={removeTodi}
-            onMeasureChange={updateTodiMeasure}
-            onCostChange={updateTodiCost}
-            onAddNewTodi={addNewTodi}
-            onMeasureRemove={removeMeasure}
-          />
-        <Summary block={newBlock} />
-        <div className="flex justify-end space-x-4">
-          <button
-            type="button"
-            onClick={() => router.push('/Block')}
-            className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   )
 }
