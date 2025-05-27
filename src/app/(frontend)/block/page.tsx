@@ -6,6 +6,11 @@ import type { Block } from '../../../payload-types'
 
 export default function BlockList() {
   const [blocks, setBlocks] = useState<Block[]>([])
+  const [filteredBlocks, setFilteredBlocks] = useState<Block[]>([])
+  const [searchVendor, setSearchVendor] = useState('')
+  const [searchMine, setSearchMine] = useState('')
+  const [selectedBlocks, setSelectedBlocks] = useState<Set<string>>(new Set())
+  const [isSelectAll, setIsSelectAll] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   console.log(blocks)
@@ -29,6 +34,7 @@ export default function BlockList() {
       const res = await payload.get<BlockResponse>('/Block')
       
       setBlocks(res.data.docs)
+      setFilteredBlocks(res.data.docs) // Also set filteredBlocks
     } catch (err) {
       setError('Failed to fetch blocks')
       console.error('Error fetching blocks:', err)
@@ -41,130 +47,203 @@ export default function BlockList() {
     fetchBlocks()
   }, [fetchBlocks])
 
+  useEffect(() => {
+    const filtered = blocks.filter((block) => {
+      const vendorMatch = !searchVendor || 
+        (block.vender_id?.vendor?.toLowerCase().includes(searchVendor.toLowerCase()) ||
+         block.vender_id?.vendor_no?.toString().includes(searchVendor))
+      const mineMatch = !searchMine || 
+        block.mines?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase())
+      return vendorMatch && mineMatch
+    })
+    setFilteredBlocks(filtered)
+  }, [blocks, searchVendor, searchMine])
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked
+    setIsSelectAll(checked)
+    if (checked) {
+      const allIds = new Set(filteredBlocks.map(block => block.id?.toString()))
+      setSelectedBlocks(allIds)
+    } else {
+      setSelectedBlocks(new Set())
+    }
+  }
+
   const deleteBlock = async (id: string | number) => {
     if (id === null || id === undefined) return
     await payload.delete(`/Block/${id}`)
     setBlocks((prev: Block[]) => prev.filter((b) => b.id?.toString() !== id.toString()))
   }
 
+  const handleSelectBlock = (id: string) => {
+    setSelectedBlocks((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(id)) {
+        newSet.delete(id)
+      } else {
+        newSet.add(id)
+      }
+      return newSet
+    })
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedBlocks.size === 0) return
+    
+    await Promise.all(
+      Array.from(selectedBlocks).map(async (id) => {
+        await deleteBlock(id)
+      })
+    )
+    setSelectedBlocks(new Set())
+  }
+
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-          <span className="text-indigo-600 dark:text-indigo-400">Block</span> Records
-        </h1>
-
-        {loading ? (
-          <div className="flex justify-center items-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
-          </div>
-        ) : error ? (
-          <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
-            <p>{error}</p>
+    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="flex flex-col gap-6 mb-8">
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            <span className="text-indigo-600 dark:text-indigo-400">Block</span> Inventory
+          </h1>
+          {selectedBlocks.size > 0 && (
             <button
-              onClick={() => {
-                setError(null)
-                setLoading(true)
-                fetchBlocks()
-              }}
-              className="mt-2 text-red-500 hover:text-red-400 dark:text-red-400 dark:hover:text-red-300"
+              onClick={handleBulkDelete}
+              className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
             >
-              Try again
+              Delete {selectedBlocks.size} Selected
             </button>
+          )}
+        </div>
+        <div className="flex gap-6">
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Search Vendor
+            </label>
+            <input
+              type="text"
+              value={searchVendor}
+              onChange={(e) => setSearchVendor(e.target.value)}
+              placeholder="Search by vendor name or company number..."
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
           </div>
-        ) : (
-          <>
-            <Link href="/block/addblock" className="bg-indigo-600 w-40 mb-4 dark:bg-indigo-500 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 flex items-center gap-2">
-              <span className="font-medium">Add Block</span>
-            </Link>
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Search Mine
+            </label>
+            <input
+              type="text"
+              value={searchMine}
+              onChange={(e) => setSearchMine(e.target.value)}
+              placeholder="Search by mine name..."
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+        </div>
+        <Link
+          href="/block/addblock"
+          className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+        >
+          <span className="font-medium">Add New Block</span>
+        </Link>
+      </div>
 
-            <div className="space-y-6">
-              {blocks.map((block) => (
-                <div
-                  key={block.id}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-4">
-                        <div className="rounded-full w-12 h-12 flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/20">
-                          <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                            {block.BlockType.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
-                            {block.BlockType}
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-400">Quantity: {block.qty}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      {block.id && (
-                        <>
-                          <Link
-                            href={`/block/editblock/${block.id}`}
-                            className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-200 flex items-center gap-2"
-                          >
-                            <span className="font-medium">Edit</span>
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                              />
-                            </svg>
-                          </Link>
-                          <button
-                            onClick={async () => {
-                              if (!block.id) return
-                              if (window.confirm('Are you sure you want to delete this block?')) {
-                                try {
-                                  setLoading(true)
-                                  await deleteBlock(block.id)
-                                } catch (err) {
-                                  setError('Failed to delete block')
-                                  console.error('Error deleting block:', err)
-                                } finally {
-                                  setLoading(false)
-                                }
-                              }
-                            }}
-                            className="bg-red-600 dark:bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200 flex items-center gap-2"
-                          >
-                            <span className="font-medium">Delete</span>
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                              />
-                            </svg>
-                          </button>
-                        </>
-                      )}
-                    </div>
+      <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
+        <table className="min-w-full">
+          <thead className="bg-gray-800 dark:bg-gray-700 text-white">
+            <tr>
+              <th className="p-4">
+                <input
+                  type="checkbox"
+                  checked={isSelectAll}
+                  onChange={handleSelectAll}
+                  className="rounded cursor-pointer"
+                />
+              </th>
+              <th className="p-4 text-left">Vendor</th>
+              <th className="p-4 text-left">Mine</th>
+              <th className="p-4 text-left">Block Type</th>
+              <th className="p-4 text-left">Date</th>
+              <th className="p-4 text-left">Total Qty</th>
+              <th className="p-4 text-left">Issued Qty</th>
+              <th className="p-4 text-left">Total Amount</th>
+              <th className="p-4 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="text-gray-900 dark:text-white">
+            {filteredBlocks.map((Block) => (
+              <tr
+                key={Block.id}
+                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              >
+                <td className="p-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedBlocks.has(Block.id.toString())}
+                    onChange={() => handleSelectBlock(Block.id.toString())}
+                    className="rounded cursor-pointer"
+                  />
+                </td>
+                <td className="p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{Block.vender_id?.vendor || '-'}</span>
+                    {Block.vender_id?.vendor_no && (
+                      <span className="text-gray-600 dark:text-gray-400">
+                        ({Block.vender_id.vendor_no})
+                      </span>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+                </td>
+                <td className="p-4">
+                  <span className="font-medium">{Block.mines?.Mines_name || '-'}</span>
+                </td>
+                <td className="p-4">
+               
+                    <span className="font-medium">{Block.BlockType}</span>
+                
+                </td>
+
+                <td className="p-4">
+               
+                    <span>{Block.date}</span>
+               
+                </td>
+
+                <td className="p-4">
+      
+                    <span>{Block.total_quantity || '-'}</span>
+                 
+                </td>
+
+                <td className="p-4">{Block.issued_quantity || '-'}</td>
+                <td className="p-4">{Block.total_amount || '-'}</td>
+               
+                <td className="p-4">
+                  
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => handleEdit(Block)}
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(Block.id)}
+                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
+  </div>
   )
 }

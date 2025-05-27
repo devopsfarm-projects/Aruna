@@ -56,10 +56,9 @@ type Stone = {
 
 export default function StoneList() {
   const [stones, setStones] = useState<Stone[]>([])
-  const [editingId] = useState<string | null>(null)
   const [blocks, setBlocks] = useState<Block[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [, setLoading] = useState(true)
+  const [, setError] = useState<string | null>(null)
   console.log(blocks)
   type BlockResponse = {
     docs: Block[]
@@ -148,6 +147,31 @@ export default function StoneList() {
     setIsSelectAll(!isSelectAll)
   }
 
+  const handleEdit = (stone: Stone) => {
+    setEditData(stone)
+    // You'll need to implement the navigation to edit page
+    // For example:
+    // router.push(`/accounts/edit/${stone.id}`)
+  }
+
+  const handleDelete = async (id: string | number) => {
+    if (!confirm('Are you sure you want to delete this stone?')) return
+
+    try {
+      await axios.delete(`/api/stone/${id}`)
+      setStones(stones.filter((s) => s.id !== id))
+      if (selectedStones.has(id.toString())) {
+        const newSelection = new Set(selectedStones)
+        newSelection.delete(id.toString())
+        setSelectedStones(newSelection)
+        setIsSelectAll(false)
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Error deleting stone')
+    }
+  }
+
   const handleSelectStone = (id: string) => {
     const newSelection = new Set(selectedStones)
     if (newSelection.has(id)) {
@@ -191,7 +215,6 @@ export default function StoneList() {
               </button>
             )}
           </div>
-     
         </div>
 
         <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
@@ -228,7 +251,7 @@ export default function StoneList() {
                     />
                   </td>
                   <td className="p-4">
-                      <span>{stone.date}</span>
+                    <span>{stone.date}</span>
                   </td>
                   <td className="p-4">
                     <span className="font-medium">{stone.mines?.Mines_name || '-'}</span>
@@ -239,12 +262,14 @@ export default function StoneList() {
                     </div>
                   </td>
                   <td className="p-4">
-                      <span className="font-medium">{stone.stoneType}</span>
+                    <span className="font-medium">{stone.stoneType}</span>
                   </td>
-                  <td className="p-4">₹{stone.final_total.toLocaleString('en-IN') || '0'}</td>
+                  <td className="p-4">
+                    ₹{stone.final_total ? stone.final_total.toLocaleString('en-IN') : '0'}
+                  </td>
                 </tr>
               ))}
-                {blocks.map((block) => (
+              {blocks.map((block) => (
                 <tr
                   key={block.id}
                   className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
@@ -258,7 +283,7 @@ export default function StoneList() {
                     />
                   </td>
                   <td className="p-4">
-                      <span>{block.date}</span>
+                    <span>{block.date}</span>
                   </td>
                   <td className="p-4">
                     <span className="font-medium">{block.mines?.Mines_name || '-'}</span>
@@ -269,16 +294,17 @@ export default function StoneList() {
                     </div>
                   </td>
                   <td className="p-4">
-                      <span className="font-medium">{block.BlockType}</span>
+                    <span className="font-medium">{block.BlockType}</span>
                   </td>
-                  <td className="p-4">₹{block.total_amount || '0'}</td>
+                  <td className="p-4">
+                    ₹{block.total_amount ? block.total_amount.toLocaleString('en-IN') : '0'}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-
     </div>
   )
 }
