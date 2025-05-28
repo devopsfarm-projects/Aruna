@@ -117,38 +117,42 @@ export default function BlockList() {
             </button>
           )}
         </div>
-        <div className="flex gap-6">
+
+   <div className="flex flex-col md:flex-row justify-between items-center  gap-4">
+          <div >
+          <div className="flex gap-6">
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Search Vendor
-            </label>
-            <input
-              type="text"
-              value={searchVendor}
-              onChange={(e) => setSearchVendor(e.target.value)}
-              placeholder="Search by vendor name or company number..."
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Search Vendor
+              </label>
+              <input
+                type="text"
+                value={searchVendor}
+                onChange={(e) => setSearchVendor(e.target.value)}
+                placeholder="Search by vendor name or company number..."
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Search Mine
+              </label>
+              <input
+                type="text"
+                value={searchMine}
+                onChange={(e) => setSearchMine(e.target.value)}
+                placeholder="Search by mine name..."
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
           </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Search Mine
-            </label>
-            <input
-              type="text"
-              value={searchMine}
-              onChange={(e) => setSearchMine(e.target.value)}
-              placeholder="Search by mine name..."
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
           </div>
+          <Link   href="/block/addblock">
+            <button className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition">
+              <span className="text-sm font-medium">Add New Block</span>
+            </button>
+          </Link>
         </div>
-        <Link
-          href="/block/addblock"
-          className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
-        >
-          <span className="font-medium">Add New Block</span>
-        </Link>
       </div>
 
       <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
@@ -163,6 +167,7 @@ export default function BlockList() {
                   className="rounded cursor-pointer"
                 />
               </th>
+              <th className="p-4 text-center">S.No.</th>
               <th className="p-4 text-left">Vendor</th>
               <th className="p-4 text-left">Mine</th>
               <th className="p-4 text-left">Block Type</th>
@@ -174,11 +179,12 @@ export default function BlockList() {
             </tr>
           </thead>
           <tbody className="text-gray-900 dark:text-white">
-            {filteredBlocks.map((Block) => (
+            {filteredBlocks.map((Block,index) => (
               <tr
                 key={Block.id}
                 className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
+                
                 <td className="p-4">
                   <input
                     type="checkbox"
@@ -187,6 +193,7 @@ export default function BlockList() {
                     className="rounded cursor-pointer"
                   />
                 </td>
+                <td className="p-4 text-center">{index + 1}</td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{Block.vender_id?.vendor || '-'}</span>

@@ -258,22 +258,7 @@ export default function AddStonePage() {
     }))
   }
 
-  const updatePartyAdvancePayment = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const advancePayment = Number(e.target.value)
-    const finalTotal = newStone.addmeasures.reduce(
-      (sum, m) => sum + (Number(m.qty) * Number(m.rate) || 0),
-      0,
-    )
 
-    // Calculate remaining payment
-    const remainingPayment = finalTotal - advancePayment
-
-    setNewStone((prev) => ({
-      ...prev,
-      partyAdvancePayment: advancePayment,
-      partyRemainingPayment: remainingPayment,
-    }))
-  }
 
   const addNewMeasure = () => {
     setNewStone((prev) => ({

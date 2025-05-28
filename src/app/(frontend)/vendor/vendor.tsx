@@ -1,80 +1,78 @@
-"use client";
-import Link from "next/link";
-import React, { useState } from "react";
+'use client'
+import Link from 'next/link'
+import React, { useState, useEffect } from 'react'
+interface Vendor {
+  name: ReactNode
+  id: number
+  vendor: string
+  vendor_no: string
+  address: string
+  mail_id: string
+  Company_no: string
+  Mines_name: Mines
+  phone: Phone[]
+  createdAt: string
+  updatedAt: string
+}
 
 export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
-  const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-
-  const [formData, setFormData] = useState({
+  const [, setShowForm] = useState(false)
+  const [, setEditId] = useState<string | null>(null)
+  const [searchVendor, setSearchVendor] = useState('')
+  const [searchMine, setSearchMine] = useState('')
+  const [filteredVendor, setFilteredVendor] = useState<Vendor[]>([])
+  const [, setFormData] = useState({
     Mines_name: '',
     address: '',
     vendor: '',
     vendor_no: '',
     Company_no: '',
     mail_id: '',
-    phone: ["", ""]
-  });
+    phone: ['', ''],
+  })
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index?: number
-  ) => {
-    const { name, value } = e.target;
-    if (name === "phone" && typeof index === "number") {
-      const updatedPhones = [...formData.phone];
-      updatedPhones[index] = value;
-      setFormData({ ...formData, phone: updatedPhones });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
+  useEffect(() => {
+    const filtered = VendorItems.filter((vendor) => {
+      const matchesVendor =
+        !searchVendor ||
+        vendor.vendor?.toLowerCase().includes(searchVendor.toLowerCase()) ||
+        vendor.Company_no?.toLowerCase().includes(searchVendor.toLowerCase())
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+      const matchesMine =
+        !searchMine ||
+        vendor.Mines_name?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase())
 
-    const payload = {
-      Mines_name: formData.Mines_name,
-      address: formData.address,
-      mail_id: formData.mail_id,
-      phone: formData.phone.filter(num => num).map(number => ({ number })),
-    };
+      return matchesVendor && matchesMine
+    })
+    setFilteredVendor(filtered)
+  }, [VendorItems, searchVendor, searchMine])
 
-    try {
-      const res = await fetch("/api/Vendor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+  
 
-      if (res.ok) {
-        alert("Vendor added successfully!");
-      } else {
-        console.error("Failed to add Vendor");
-      }
-    } catch (error) {
-      console.error("Error adding Vendor:", error);
-    }
-  };
 
   const handleDelete = async (id: string) => {
-    const confirmDelete = confirm("Are you sure you want to delete this Vendor?");
-    if (!confirmDelete) return;
+    const confirmDelete = confirm('Are you sure you want to delete this Vendor?')
+    if (!confirmDelete) return
 
     try {
-      const res = await fetch(`/api/Vendor/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(`/api/vendor/${id}`, {
+        method: 'DELETE',
+      })
 
       if (res.ok) {
-        alert("Vendor deleted successfully!");
+        alert('Vendor deleted successfully!')
+        // Refresh the vendor list after successful deletion
+        window.location.reload()
       } else {
-        console.error("Failed to delete Vendor");
+        const errorData = await res.json()
+        console.error('Failed to delete Vendor:', errorData)
+        alert('Failed to delete vendor. Please try again.')
       }
     } catch (error) {
-      console.error("Error deleting Vendor:", error);
+      console.error('Error deleting Vendor:', error)
+      alert('An error occurred while deleting the vendor. Please try again.')
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -85,13 +83,34 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div className="flex items-center gap-4">
-            <button className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-              <span className="text-sm">Show Entries</span>
-            </button>
-            <button className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-              <span className="text-sm">Search</span>
-            </button>
+            <div className="flex gap-6">
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  Search Vendor
+                </label>
+                <input
+                  type="text"
+                  value={searchVendor}
+                  onChange={(e) => setSearchVendor(e.target.value)}
+                  placeholder="Search by vendor name or company number..."
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  Search Mine
+                </label>
+                <input
+                  type="text"
+                  value={searchMine}
+                  onChange={(e) => setSearchMine(e.target.value)}
+                  placeholder="Search by mine name..."
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
           </div>
+     
           <Link href="/vendor/addvendor">
             <button className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition">
               <span className="text-sm font-medium">Add New Vendor</span>
@@ -104,36 +123,45 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
               <tr>
                 <th className="p-4 text-center">S.No.</th>
+                <th className="p-4">Vendor</th>
                 <th className="p-4">Mine Name</th>
                 <th className="p-4">Address</th>
-                <th className="p-4">Mobile 1</th>
-                <th className="p-4">Mobile 2</th>
+                <th className="p-4">Vendor Mobile No.</th>
+                <th className="p-4">Company Mobile No.</th>
                 <th className="p-4">Email</th>
                 <th className="p-4">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {VendorItems.map((item, index) => (
-                <tr key={item.id || index} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+              {filteredVendor.map((item, index) => (
+                <tr
+                  key={item.id || index}
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                
+
                   <td className="p-4 text-center">{index + 1}</td>
+                  <td className="p-4">
+                    <span className="font-medium">{item.vendor}</span>
+                  </td>
                   <td className="p-4">
                     <span className="font-medium">{item.Mines_name?.Mines_name}</span>
                   </td>
                   <td className="p-4">{item.address}</td>
                   <td className="p-4">
                     <a
-                      href={`tel:${item.phone?.[0]?.number}`}
+                      href={`tel:${item.vendor_no}`}
                       className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-center"
                     >
-                      {item.phone?.[0]?.number ?? "-"}
+                      {item.vendor_no ?? '-'}
                     </a>
                   </td>
                   <td className="p-4">
                     <a
-                      href={`tel:${item.phone?.[1]?.number}`}
+                      href={`tel:${item.Company_no}`}
                       className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-center"
                     >
-                      {item.phone?.[1]?.number ?? "-"}
+                      {item.Company_no ?? '-'}
                     </a>
                   </td>
                   <td className="p-4">
@@ -152,13 +180,13 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
                             Mines_name: item.Mines_name,
                             address: item.address,
                             mail_id: item.mail_id,
-                            phone: item.phone?.map((p: { number: string }) => p.number) || ["", ""],
+                            phone: item.phone?.map((p: { number: string }) => p.number) || ['', ''],
                             vendor: item.vendor || '',
                             vendor_no: item.vendor_no || '',
                             Company_no: item.Company_no || '',
-                          });
-                          setEditId(item.id);
-                          setShowForm(true);
+                          })
+                          setEditId(item.id)
+                          setShowForm(true)
                         }}
                         className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
                       >
@@ -179,5 +207,5 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
