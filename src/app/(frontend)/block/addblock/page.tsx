@@ -69,12 +69,7 @@ export default function AddBlockPage() {
     vender_id: '',
     BlockType: '',
     date: '',
-    mines: {
-      Mines_name: '',
-      address: '',
-      phone: [{ number: '' }],
-      mail_id: ''
-    },
+    mines: '',
     labour_name: '',
     qty: 0,
     vehicle_number: '',
@@ -252,7 +247,7 @@ export default function AddBlockPage() {
         partyRemainingPayment: newBlock.partyRemainingPayment,
         createdBy: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).id : '',
         vender_id: newBlock.vender_id || null,
-        mines: newBlock.mines || null,
+        mines: newBlock.mines?.id || null,
         todi:
           newBlock.todi?.map((t) => ({
             todicost: Number(t.todicost),
