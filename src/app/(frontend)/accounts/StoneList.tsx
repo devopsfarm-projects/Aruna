@@ -7,8 +7,8 @@ interface StoneListProps {
 }
 
 export default function StoneList({ initialStones, initialBlocks }: StoneListProps) {
-  const [stones, setStones] = useState(initialStones)
-  const [blocks, setBlocks] = useState(initialBlocks)
+  const [stones, ] = useState(initialStones)
+  const [blocks, ] = useState(initialBlocks)
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -20,8 +20,8 @@ export default function StoneList({ initialStones, initialBlocks }: StoneListPro
             {stones.map((stone) => (
               <div key={stone.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">{stone.name}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Quantity: {stone.quantity}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{stone.stoneType}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Quantity: {stone.total_quantity}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
@@ -43,8 +43,8 @@ export default function StoneList({ initialStones, initialBlocks }: StoneListPro
             {blocks.map((block) => (
               <div key={block.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">{block.name}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Quantity: {block.quantity}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{block.BlockType}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Quantity: {block.total_quantity}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">

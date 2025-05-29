@@ -41,6 +41,7 @@ type block = {
     phone: { number: string }[]
     mail_id: string
   }
+  labour_name: string
   addmeasures: Measure[]
   total_quantity: number | null
   issued_quantity: number | null
@@ -52,6 +53,8 @@ type block = {
   createdBy: { name: string } | null
   createdAt: string
   updatedAt: string
+  vehicle_cost: number | null
+  vehicle_number: string | null
 }
 
 export default function EditBlock() {
@@ -206,8 +209,7 @@ export default function EditBlock() {
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Block Type
               </label>
-              <input
-                type="text"
+              <select
                 value={block.blockType}
                 onChange={(e) => 
                   setblock(prev => prev && {
@@ -216,7 +218,10 @@ export default function EditBlock() {
                   })
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              >
+                <option value="Brown">Brown</option>
+                <option value="White">White</option>
+              </select>
             </div>
 
             <div>
@@ -242,11 +247,11 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={block.total_quantity}
+                value={block.total_quantity || ''}
                 onChange={(e) => 
                   setblock(prev => prev && {
                     ...prev,
-                    total_quantity: parseInt(e.target.value)
+                    total_quantity: e.target.value ? parseInt(e.target.value) : null
                   })
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -259,13 +264,17 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={block.issued_quantity}
-                onChange={(e) => 
-                  setblock(prev => prev && {
-                    ...prev,
-                    issued_quantity: parseInt(e.target.value)
+                value={block.issued_quantity ?? ''}
+                onChange={(e) => {
+                  const value = e.target.value.trim();
+                  setblock(prev => {
+                    if (!prev) return null;
+                    return {
+                      ...prev,
+                      issued_quantity: value ? parseInt(value) : null
+                    };
                   })
-                }
+                }}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
@@ -276,13 +285,14 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={block.left_quantity}
-                onChange={(e) => 
+                value={block.left_quantity ?? ''}
+                onChange={(e) => {
+                  const value = e.target.value;
                   setblock(prev => prev && {
                     ...prev,
-                    left_quantity: parseInt(e.target.value)
-                  })
-                }
+                    left_quantity: value ? parseInt(value) : null
+                  });
+                }}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
@@ -291,17 +301,20 @@ export default function EditBlock() {
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Transport Type
               </label>
-              <input
-                type="text"
-                value={block.transportType}
+              <select
+                value={block.transportType || ''}
                 onChange={(e) => 
                   setblock(prev => prev && {
                     ...prev,
-                    transportType: e.target.value
+                    transportType: e.target.value || null
                   })
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              >
+                <option value="">Select transport type</option>
+                <option value="Hydra">Hydra</option>
+                <option value="Truck">Truck</option>
+              </select>
             </div>
 
             <div>
@@ -310,11 +323,14 @@ export default function EditBlock() {
               </label>
               <input
                 type="text"
-                value={block.vehicle_number}
+                value={block.vehicle_number ?? ''}
                 onChange={(e) => 
-                  setblock(prev => prev && {
-                    ...prev,
-                    vehicle_number: e.target.value
+                  setblock(prev => {
+                    if (!prev) return null;
+                    return {
+                      ...prev,
+                      vehicle_number: e.target.value || null
+                    };
                   })
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -327,11 +343,15 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={block.vehicle_cost}
+                value={block.vehicle_cost ?? ''}
                 onChange={(e) => 
-                  setblock(prev => prev && {
-                    ...prev,
-                    vehicle_cost: parseInt(e.target.value)
+                  setblock(prev => {
+                    const newCost = parseInt(e.target.value);
+                    if (!prev) return null;  // Return null instead of incomplete object
+                    return {
+                      ...prev,
+                      vehicle_cost: newCost
+                    };
                   })
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -361,7 +381,7 @@ export default function EditBlock() {
             <div className="space-y-4">
               {block.addmeasures && block.addmeasures.length > 0 ? (
                 block.addmeasures.map((measure, index) => (
-                  <div key={measure.id} className="grid grid-cols-2 gap-4">
+                  <div key={index} className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Length

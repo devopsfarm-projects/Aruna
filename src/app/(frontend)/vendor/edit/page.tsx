@@ -7,15 +7,15 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 
 interface Vendor {
-  name: ReactNode
+  name: string
   id: number
   vendor: string
   vendor_no: string
   address: string
   mail_id: string
   Company_no: string
-  Mines_name: Mines
-  phone: Phone[]
+  Mines_name: string
+  phone: string[]
   createdAt: string
   updatedAt: string
 }
@@ -174,15 +174,22 @@ export default function EditVendor() {
               </label>
               <input
                 type="text"
-                value={vendor.Mines_name.Mines_name}
+                value={vendor.Mines_name}
                 onChange={(e) => 
-                  setvendor(prev => prev && {
-                    ...prev,
-                    Mines_name: {
-                      ...prev.Mines_name,
-                      Mines_name: e.target.value
-                    }
-                  })
+                  setvendor(prev => ({
+                    ...(prev || {}),
+                    name: prev?.name || '',
+                    Mines_name: e.target.value,
+                    id: prev?.id || 0, // Ensure id is always a number
+                    vendor: prev?.vendor || '',
+                    vendor_no: prev?.vendor_no || '',
+                    address: prev?.address || '',
+                    mail_id: prev?.mail_id || '',
+                    Company_no: prev?.Company_no || '',
+                    phone: prev?.phone || [],
+                    createdAt: prev?.createdAt || '',
+                    updatedAt: prev?.updatedAt || ''
+                  }))
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />

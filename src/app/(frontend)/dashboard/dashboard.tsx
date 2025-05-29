@@ -9,13 +9,13 @@ interface CardProps {
   icon: JSX.Element;
   link: string;
   description?: string;
+  stats: string;
 }
 
-interface DashboardProps {
-  data?: any;
-}
 
-export default function DashboardPage({ data }: DashboardProps) {
+
+
+export default function DashboardPage() {
   const cards: CardProps[] = [
     {
       title: 'Mines',

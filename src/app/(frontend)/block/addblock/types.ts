@@ -9,7 +9,12 @@ export type Block = {
   vender_id: string
   BlockType: string
   date: string
-  mines: string
+  mines: {
+    Mines_name: string
+    address: string
+    phone: { number: string }[]
+    mail_id: string
+  }
   labour_name: string
   qty: number
   vehicle_number: string

@@ -1,35 +1,13 @@
 'use client'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
-interface Vendor {
-  name: ReactNode
-  id: number
-  vendor: string
-  vendor_no: string
-  address: string
-  mail_id: string
-  Company_no: string
-  Mines_name: Mines
-  phone: Phone[]
-  createdAt: string
-  updatedAt: string
-}
+import type { Vendor as PayloadVendor } from "../../../payload-types";
 
-export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
-  const [, setShowForm] = useState(false)
-  const [, setEditId] = useState<string | null>(null)
+export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }) {
+
   const [searchVendor, setSearchVendor] = useState('')
   const [searchMine, setSearchMine] = useState('')
-  const [filteredVendor, setFilteredVendor] = useState<Vendor[]>([])
-  const [, setFormData] = useState({
-    Mines_name: '',
-    address: '',
-    vendor: '',
-    vendor_no: '',
-    Company_no: '',
-    mail_id: '',
-    phone: ['', ''],
-  })
+  const [filteredVendor, setFilteredVendor] = useState<PayloadVendor[]>([])
 
   useEffect(() => {
     const filtered = VendorItems.filter((vendor) => {
@@ -40,7 +18,8 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
 
       const matchesMine =
         !searchMine ||
-        vendor.Mines_name?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase())
+        (typeof vendor.Mines_name === 'object' && vendor.Mines_name !== null && 
+         vendor.Mines_name.Mines_name?.toLowerCase().includes(searchMine.toLowerCase()))
 
       return matchesVendor && matchesMine
     })
@@ -145,7 +124,7 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
                     <span className="font-medium">{item.vendor}</span>
                   </td>
                   <td className="p-4">
-                    <span className="font-medium">{item.Mines_name?.Mines_name}</span>
+                    <span className="font-medium">{typeof item.Mines_name === 'object' && item.Mines_name ? item.Mines_name.Mines_name : '-'}</span>
                   </td>
                   <td className="p-4">{item.address}</td>
                   <td className="p-4">
@@ -178,7 +157,7 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
                           Edit
                         </Link>
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => handleDelete(String(item.id))}
                         className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
                       >
                         <span className="text-sm">Delete</span>

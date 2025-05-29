@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { useParams, useRouter } from 'next/navigation'
+import {  useRouter } from 'next/navigation'
 import { GiGoldMine } from 'react-icons/gi'
 import Link from 'next/link'
 import { FaArrowLeft, FaSave, FaTrash, FaPlus } from 'react-icons/fa'
@@ -16,7 +16,6 @@ interface Mine {
 }
 
 export default function EditMinePage() {
-  const params = useParams()
   const router = useRouter()
   const [mine, setMine] = useState<Mine | null>(null)
   const [loading, setLoading] = useState(true)
@@ -25,43 +24,58 @@ export default function EditMinePage() {
   useEffect(() => {
     const fetchMine = async () => {
       try {
-        const res = await axios.get(`/api/Mines/${params.mineId}`)
-        setMine(res.data)
+        const searchParams = new URLSearchParams(window.location.search)
+        const mineId = searchParams.get('id')
+        if (!mineId) {
+          throw new Error('No mine ID provided')
+        }
+
+        const res = await axios.get<{ data: Mine }>(`/api/Mines/${mineId}`)
+        setMine(res.data.data)
       } catch (err) {
-        setError('Failed to fetch mine data')
+        setError(err instanceof Error ? err.message : 'Failed to fetch mine data')
         console.error('Error fetching mine:', err)
       } finally {
         setLoading(false)
       }
     }
 
-    if (params.mineId) {
-      fetchMine()
-    }
-  }, [params.mineId])
+    fetchMine()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!mine) return
 
     try {
-      await axios.patch(`/api/Mines/${mine.id}`, {
+      // Format the phone numbers as a single string if needed
+      const formattedPhone = mine.phone.map(p => p.number).join(', ')
+      
+      const searchParams = new URLSearchParams(window.location.search)
+      const mineId = searchParams.get('id')
+      if (!mineId) {
+        throw new Error('No mine ID provided')
+      }
+
+      await axios.patch(`/api/Mines/${mineId}`, {
         Mines_name: mine.Mines_name,
         address: mine.address,
-        phone: mine.phone,
+        phone: formattedPhone, // Adjust this based on your API requirements
         mail_id: mine.mail_id,
       })
+      
       router.push('/Mines')
     } catch (err) {
       setError('Failed to update mine')
       console.error('Error updating mine:', err)
+      throw err // Re-throw the error for better error handling
     }
   }
 
   if (loading) return <div className="text-gray-900 dark:text-white">Loading...</div>
   if (error) return <div className="text-red-600 dark:text-red-400">Error: {error}</div>
   if (!mine) return <div className="text-gray-900 dark:text-white">Mine not found</div>
-
+console.log(mine)
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4">

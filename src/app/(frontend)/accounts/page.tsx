@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import payload from './lib/payload'
-import type { Block } from '../../../payload-types'
 type Measure = {
   qty: number
   l: number
@@ -15,6 +14,7 @@ type Measure = {
 }
 
 type Stone = {
+  type: 'stone'
   id: number | string
   vender_id: {
     id: number
@@ -53,12 +53,36 @@ type Stone = {
   updatedAt: string
 }
 
+type Block = {
+  type: 'block'
+  id: number
+  BlockType: 'Brown' | 'White'
+  date?: string
+  vender_id?: number
+  mines?: number
+  addmeasures: Measure[]
+  total_quantity: number | null
+  issued_quantity: number | null
+  left_quantity: number | null
+  total_amount: number
+  partyRemainingPayment: number
+  partyAdvancePayment: number | null
+  transportType: string | null
+  createdBy: { name: string } | null
+  createdAt: string
+  updatedAt: string
+}
+
+type StoneOrBlock = Stone | Block
+
 export default function StoneList() {
   const [stones, setStones] = useState<Stone[]>([])
   const [blocks, setBlocks] = useState<Block[]>([])
   const [, setLoading] = useState(true)
   const [, setError] = useState<string | null>(null)
-  console.log(blocks)
+const [searchVendor, setSearchVendor] = useState('')
+  const [searchMine, setSearchMine] = useState('')
+   const [filteredStones, setFilteredStones] = useState<Stone[]>([])
   type BlockResponse = {
     docs: Block[]
     totalDocs: number
@@ -89,12 +113,26 @@ export default function StoneList() {
     fetchBlocks()
   }, [fetchBlocks])
 
-  const [selectedStones, setSelectedStones] = useState<Set<string>>(new Set())
-  const [isSelectAll, setIsSelectAll] = useState(false)
+  const [, setSelectedStones] = useState<Set<string>>(new Set())
+  const [, setIsSelectAll] = useState(false)
 
   useEffect(() => {
     fetchAllData()
   }, [])
+
+    useEffect(() => {
+      const filtered = stones.filter(stone => {
+        const matchesVendor = !searchVendor || 
+          stone.vender_id?.vendor?.toLowerCase().includes(searchVendor.toLowerCase()) ||
+          stone.vender_id?.Company_no?.toLowerCase().includes(searchVendor.toLowerCase())
+        
+        const matchesMine = !searchMine || 
+          stone.mines?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase())
+        
+        return matchesVendor && matchesMine
+      })
+      setFilteredStones(filtered)
+    }, [stones, searchVendor, searchMine])
 
   const fetchAllData = async () => {
     try {
@@ -108,37 +146,62 @@ export default function StoneList() {
     }
   }
 
-  const handleBulkDelete = async () => {
-    if (selectedStones.size === 0) return
 
-    if (!confirm(`Are you sure you want to delete ${selectedStones.size} stone(s)?`)) return
-
-    try {
-      const ids = Array.from(selectedStones)
-      await Promise.all(ids.map((id) => axios.delete(`/api/stone/${id}`)))
-      fetchAllData()
-    } catch (err) {
-      console.error(err)
-      alert('Error deleting stones')
-    }
-  }
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+          <div className="flex-1">
+            <div className="flex gap-6">
+              <div className="flex-1">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-gray-500 dark:text-gray-400">Search</span> Vendor
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={searchVendor}
+                      onChange={(e) => setSearchVendor(e.target.value)}
+                      placeholder="Enter vendor name or company number"
+                      className="w-[200px] px-4 py-3 pr-10 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    {/* <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div> */}
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-gray-500 dark:text-gray-400">Search</span> Mine
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={searchMine}
+                      onChange={(e) => setSearchMine(e.target.value)}
+                      placeholder="Enter mine name"
+                      className="w-[200px] px-4 py-3 pr-10 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    {/* <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-shrink-0">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               <span className="text-indigo-600 dark:text-indigo-400">Accounts</span> Statement
             </h1>
-            {selectedStones.size > 0 && (
-              <button
-                onClick={handleBulkDelete}
-                className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
-              >
-                Delete {selectedStones.size} Selected
-              </button>
-            )}
           </div>
         </div>
 
@@ -157,11 +220,15 @@ export default function StoneList() {
             <tbody className="text-gray-900 dark:text-white">
               {/* Combine stones and blocks into a single array with type information */}
               {[
-                ...stones.map((stone) => ({ ...stone, type: 'stone' })),
-                ...blocks.map((block) => ({ ...block, type: 'block' })),
+                ...filteredStones,
+                ...blocks
               ]
-                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                .map((item, index) => (
+                .sort((a: StoneOrBlock, b: StoneOrBlock) => {
+                    const dateA = a.date || new Date().toISOString()
+                    const dateB = b.date || new Date().toISOString()
+                    return new Date(dateA).getTime() - new Date(dateB).getTime()
+                })
+                .map((item: StoneOrBlock, index) => (
                   <tr
                     key={item.id}
                     className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
@@ -172,26 +239,27 @@ export default function StoneList() {
                     </td>
                     <td className="p-4">
                       <span className="font-medium">
-                        {item.mines?.Mines_name || '-'}
-                        {item.type === 'block' ? ' (Block)' : ''}
+                        {typeof item.mines === 'object' && item.mines !== null ? item.mines.Mines_name : '-'}
                       </span>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{item.vender_id?.vendor || '-'}</span>
+                        <span className="font-medium">
+                          {typeof item.vender_id === 'object' && item.vender_id !== null ? item.vender_id.vendor : '-'}
+                        </span>
                       </div>
                     </td>
                     <td className="p-4">
                       <span className="font-medium">
-                        {item.type === 'stone' ? item.stoneType : item.BlockType}
+                        {item.type === 'stone' ? `Stone: ${item.stoneType || '-'}` : `Block: ${item.BlockType}`}
                       </span>
                     </td>
                     <td className="p-4">
                       ₹
-                      {(item.type === 'stone'
-                        ? item.final_total
-                        : item.total_amount
-                      )?.toLocaleString('en-IN') || '0'}
+                      {item.type === 'stone' ? 
+                        item.final_total?.toLocaleString('en-IN') || '0' :
+                        item.total_amount?.toLocaleString('en-IN') || '0'
+                      }
                     </td>
                   </tr>
                 ))}

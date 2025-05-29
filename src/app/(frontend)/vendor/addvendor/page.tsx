@@ -30,6 +30,15 @@ const isAxiosError = (
 }
 import { useRouter } from 'next/navigation'
 
+// API response types
+interface MinesApiResponse {
+  docs: Mines[]
+  totalDocs: number
+  limit: number
+  page: number
+  totalPages: number
+}
+
 // Error response types
 interface ValidationError {
   message: string
@@ -46,12 +55,6 @@ const isErrorResponse = (obj: unknown): obj is ErrorResponse => {
   const data = obj as ErrorResponse
   return ('errors' in data && Array.isArray(data.errors)) || 'message' in data
 }
-
-
-
-
-
-
 
 interface Phone {
   number: string
@@ -71,20 +74,17 @@ interface Mines {
 
 interface Vendor {
   name: ReactNode
-  id: number
+  id: string
   vendor: string
   vendor_no: string
   address: string
   mail_id: string
   Company_no: string
-  Mines_name: Mines
+  Mines_name: string
   phone: Phone[]
   createdAt: string
   updatedAt: string
 }
-
-
-
 
 export default function VendorForm() {
   const router = useRouter()
@@ -101,7 +101,9 @@ export default function VendorForm() {
     Company_no: '',
     Mines_name: '',
     phone: [],
-
+    createdAt: '',
+    updatedAt: '',
+    name: '',
   })
 
   useEffect(() => {
@@ -111,18 +113,22 @@ export default function VendorForm() {
         setError(null)
         // Fetch mines
         try {
-          const minesRes = await axios.get('/api/Mines')
+          const minesRes = await axios.get<MinesApiResponse>('/api/Mines')
           console.log('Mines response:', minesRes.data)
-          const Mines_name = minesRes.data.docs.map(m => ({
+          const Mines_name = minesRes.data.docs.map((m: Mines) => ({
             id: m.id,
             Mines_name: m.Mines_name,
-            name: m.Mines_name
+            name: m.Mines_name,
+            address: m.address || '',
+            phone: m.phone || [],
+            mail_id: m.mail_id || '',
+            createdAt: m.createdAt || '',
+            updatedAt: m.updatedAt || '',
           }))
           setMines(Mines_name)
         } catch (mineError) {
           console.error('Error fetching mines:', mineError)
         }
-
       } catch (error) {
         setError('Failed to load data. Please try again later.')
         console.error('Error fetching data:', error)
@@ -133,8 +139,6 @@ export default function VendorForm() {
 
     fetchData()
   }, [])
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -213,21 +217,24 @@ export default function VendorForm() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-           
-
-                 {/* Mines */}
-                 <div>
+              {/* Mines */}
+              <div>
                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                   Mine
                 </label>
                 <select
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newVendor.Mines_name}
-                  onChange={(e) => setNewVendor({ ...newVendor, Mines_name: e.target.value })}
+                  value={newVendor.Mines_name ?? ''}
+                  onChange={(e) => {
+                    const selectedMine = mines.find(m => m.id === parseInt(e.target.value));
+                    setNewVendor({ ...newVendor, Mines_name: selectedMine ? selectedMine.id.toString() : '' });
+                  }}
                   required
                   disabled={mines.length === 0}
                 >
-                  <option value="">{mines.length === 0 ? 'Loading mines...' : 'Select Mine'}</option>
+                  <option value="">
+                    {mines.length === 0 ? 'Loading mines...' : 'Select Mine'}
+                  </option>
                   {mines.map((mine) => (
                     <option key={mine.id} value={mine.id}>
                       {mine.name}
@@ -235,74 +242,70 @@ export default function VendorForm() {
                   ))}
                 </select>
               </div>
-              
-
-
             </div>
-          
-            <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newVendor.address}
-                  onChange={(e) => setNewVendor({ ...newVendor, address: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  vendor
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newVendor.vendor}
-                  onChange={(e) => setNewVendor({ ...newVendor, vendor: e.target.value })}
-                  required
-                />
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Address
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newVendor.address}
+                onChange={(e) => setNewVendor({ ...newVendor, address: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                vendor
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newVendor.vendor}
+                onChange={(e) => setNewVendor({ ...newVendor, vendor: e.target.value })}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Vendor Mobile No.
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newVendor.vendor_no}
-                  onChange={(e) => setNewVendor({ ...newVendor, vendor_no: e.target.value })}
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newVendor.vendor_no}
+                onChange={(e) => setNewVendor({ ...newVendor, vendor_no: e.target.value })}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Company Mobile No.
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newVendor.Company_no}
-                  onChange={(e) => setNewVendor({ ...newVendor, Company_no: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newVendor.Company_no}
+                onChange={(e) => setNewVendor({ ...newVendor, Company_no: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Mail id
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newVendor.mail_id}
-                  onChange={(e) => setNewVendor({ ...newVendor, mail_id: e.target.value })}
-                  required
-                />
-              </div>
-          
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newVendor.mail_id}
+                onChange={(e) => setNewVendor({ ...newVendor, mail_id: e.target.value })}
+                required
+              />
+            </div>
 
             <div className="flex justify-end gap-6">
               <button

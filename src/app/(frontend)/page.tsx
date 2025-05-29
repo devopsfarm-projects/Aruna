@@ -3,32 +3,13 @@ import Image from 'next/image'
 import { getPayload } from 'payload'
 import React from 'react'
 import config from '@/payload.config'
-import { millisecondsToSeconds } from 'framer-motion'
 
 export default async function HomePage() {
   const headers = await getHeaders()
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
   const { user } = await payload.auth({ headers })
-  const list = [0,1,0,0,1,1,2,2,1]
-  const list2=[]
-  for(let i=0;i<list.length;i++){
-  if(list[i]==0){
-      list2.push(list[i])
-  }
-  }
-  for(let i=0;i<list.length;i++){
-      if(list[i]==1){
-          list2.push(list[i])
-      }
-  }
-  for(let i=0;i<list.length;i++){
-      if(list[i]==2){
-          list2.push(list[i])
-      }
-  }
-
-console.log(list2)
+  
   return (
     <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center">
       <div className="max-w-2xl w-full">

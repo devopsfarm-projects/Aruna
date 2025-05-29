@@ -19,6 +19,7 @@ export default function TodiSection({
   todis,
   onRemove,
   onMeasureChange,
+  onMeasureRemove,
   onCostChange,
   onAddNewTodi,
 }: TodiSectionProps) {

@@ -47,22 +47,6 @@ const isErrorResponse = (obj: unknown): obj is ErrorResponse => {
   return ('errors' in data && Array.isArray(data.errors)) || 'message' in data
 }
 
-// Interfaces
-interface Labour {
-  id: number
-  name: string
-  rate?: number
-  createdAt: string
-  updatedAt: string
-}
-
-interface Truck {
-  id: number
-  number: string
-  capacity?: number
-  createdAt: string
-  updatedAt: string
-}
 
 // Response types
 interface ApiResponse<T> {
@@ -109,28 +93,29 @@ interface Phone {
 }
 
 interface Mines {
-  name: ReactNode
   id: number
   Mines_name: string
-  address: string
-  phone: Phone[]
-  mail_id: string
-  createdAt: string
-  updatedAt: string
+  name: ReactNode
 }
 
 interface Vendor {
-  name: ReactNode
-  id: number
+  id: string
   vendor: string
-  vendor_no: string
-  address: string
-  mail_id: string
   Company_no: string
-  Mines_name: Mines
-  phone: Phone[]
-  createdAt: string
-  updatedAt: string
+  name?: string
+  vendor_no?: string
+  address?: string
+  mail_id?: string
+  Mines_name?: {
+    id: number
+    Mines_name: string
+    address: string
+    phone: Phone[]
+    mail_id: string
+  }
+  phone?: Phone[]
+  createdAt?: string
+  updatedAt?: string
 }
 
 interface _StoneResponse {
@@ -195,12 +180,26 @@ export default function AddStonePage() {
         // Fetch vendors
         try {
           const vendorsRes = await axios.get('/api/vendor')
-          console.log('Vendors response:', vendorsRes.data)
-          const vendors = vendorsRes.data.docs.map(v => ({
+          const vendorsData = vendorsRes.data as { docs: { id: string; vendor: string; Company_no: string }[] }
+          console.log('Vendors response:', vendorsData)
+          const vendors = vendorsData.docs.map(v => ({
             id: v.id,
             vendor: v.vendor,
+            vendor_no: v.Company_no,
+            name: v.vendor,
             Company_no: v.Company_no,
-            name: `${v.vendor} - ${v.Company_no}`
+            address: '',
+            mail_id: '',
+            Mines_name: {
+              id: 0,
+              Mines_name: '',
+              address: '',
+              phone: [],
+              mail_id: ''
+            },
+            phone: [],
+            createdAt: '',
+            updatedAt: ''
           }))
           setVendors(vendors)
         } catch (vendorError) {
@@ -209,9 +208,9 @@ export default function AddStonePage() {
 
         // Fetch mines
         try {
-          const minesRes = await axios.get('/api/Mines')
+          const minesRes = await axios.get<ApiResponse<Mines>>('/api/Mines')
           console.log('Mines response:', minesRes.data)
-          const mines = minesRes.data.docs.map(m => ({
+          const mines = minesRes.data.docs.map((m: Mines) => ({
             id: m.id,
             Mines_name: m.Mines_name,
             name: m.Mines_name

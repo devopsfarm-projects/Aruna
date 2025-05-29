@@ -44,10 +44,14 @@ type Stone = {
   total_quantity: number | null
   issued_quantity: number | null
   left_quantity: number | null
+  total_amount: number | null
   final_total: number
   partyRemainingPayment: number
   partyAdvancePayment: number | null
   transportType: string | null
+  vehicle_number: string | null
+  vehicle_cost: number | null
+  labour_name: string | null
   createdBy: { name: string } | null
   createdAt: string
   updatedAt: string

@@ -2,10 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { GiGoldMine } from 'react-icons/gi'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Mines from '@/collections/Mines'
 
 interface Mine {
   id: string
@@ -17,13 +14,12 @@ interface Mine {
 
 export default function MinesPage() {
   const [mines, setMines] = useState<Mine[]>([])
-  const router = useRouter()
   const [filteredMine, setFilteredMine] = useState<Mine[]>([])
   const [searchMine, setSearchMine] = useState('')
   // Fetch Mines
   const fetchMines = async () => {
     try {
-      const res = await axios.get('/api/Mines')
+      const res = await axios.get<{ docs: Mine[] }>('/api/Mines')
       setMines(res.data.docs || [])
     } catch (error) {
       console.error('Error fetching mines:', error)
@@ -45,10 +41,6 @@ export default function MinesPage() {
     }
   }
 
-  const handleEdit = async (mine: Mine) => {
-    // Navigate to edit page with mine data
-    router.push(`/Mines/editmine/${mine.id}`)
-  }
 
   useEffect(() => {
     const filtered = mines.filter((mine) => {
@@ -131,12 +123,9 @@ export default function MinesPage() {
 
                   <td className="p-4">
                     <div className="flex gap-4">
-                      <button
-                        onClick={() => handleEdit(mine)}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
-                      >
-                        Edit
-                      </button>
+                    <Link href={`/Mines/edit?id=${mine.id}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition">
+                          Edit
+                        </Link>
                       <button
                         onClick={() => handleDelete(mine.id)}
                         className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"

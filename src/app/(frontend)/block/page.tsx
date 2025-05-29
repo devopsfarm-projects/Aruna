@@ -2,19 +2,17 @@
 import { useEffect, useState, useCallback } from 'react'
 import payload from './lib/payload'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import type { Block } from '../../../payload-types'
 
 export default function BlockList() {
-  const router = useRouter()
   const [blocks, setBlocks] = useState<Block[]>([])
   const [filteredBlocks, setFilteredBlocks] = useState<Block[]>([])
   const [searchVendor, setSearchVendor] = useState('')
   const [searchMine, setSearchMine] = useState('')
   const [selectedBlocks, setSelectedBlocks] = useState<Set<string>>(new Set())
   const [isSelectAll, setIsSelectAll] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [, setLoading] = useState(true)
+  const [, setError] = useState<string | null>(null)
   console.log(blocks)
   type BlockResponse = {
     docs: Block[]
@@ -52,10 +50,12 @@ export default function BlockList() {
   useEffect(() => {
     const filtered = blocks.filter((block) => {
       const vendorMatch = !searchVendor || 
-        (block.vender_id?.vendor?.toLowerCase().includes(searchVendor.toLowerCase()) ||
-         block.vender_id?.vendor_no?.toString().includes(searchVendor))
+        (typeof block.vender_id === 'object' && block.vender_id !== null &&
+         (block.vender_id.vendor?.toLowerCase().includes(searchVendor.toLowerCase()) ||
+          block.vender_id.vendor_no?.toString().toLowerCase().includes(searchVendor.toLowerCase())))
       const mineMatch = !searchMine || 
-        block.mines?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase())
+        (typeof block.mines === 'object' && block.mines !== null && 
+         block.mines?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase()))
       return vendorMatch && mineMatch
     })
     setFilteredBlocks(filtered)
@@ -90,9 +90,6 @@ export default function BlockList() {
     })
   }
 
-  const handleEdit = (block: Block) => {
-    router.push(`/block/editblock/${block.id}`)
-  }
 
   const handleBulkDelete = async () => {
     if (selectedBlocks.size === 0) return
@@ -202,8 +199,12 @@ export default function BlockList() {
                 <td className="p-4 text-center">{index + 1}</td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{Block.vender_id?.vendor || '-'}</span>
-                    {Block.vender_id?.vendor_no && (
+                    <span className="font-medium">
+                      {typeof Block.vender_id === 'object' && Block.vender_id !== null
+                        ? Block.vender_id.vendor || '-'
+                        : '-'}
+                    </span>
+                    {typeof Block.vender_id === 'object' && Block.vender_id !== null && Block.vender_id.vendor_no && (
                       <span className="text-gray-600 dark:text-gray-400">
                         ({Block.vender_id.vendor_no})
                       </span>
@@ -211,7 +212,7 @@ export default function BlockList() {
                   </div>
                 </td>
                 <td className="p-4">
-                  <span className="font-medium">{Block.mines?.Mines_name || '-'}</span>
+                  <span className="font-medium">{typeof Block.mines === 'object' && Block.mines !== null && Block.mines.Mines_name ? Block.mines.Mines_name : '-'}</span>
                 </td>
                 <td className="p-4">
                
@@ -241,11 +242,11 @@ export default function BlockList() {
                           Edit
                         </Link>
                       <button
-                        onClick={() => handleDelete(Block.id)}
-                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
-                      >
-                        Delete
-                      </button>
+              onClick={() => deleteBlock(Block.id)}
+              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
+            >
+              Delete
+            </button>
                     </div>
                 </td>
               </tr>

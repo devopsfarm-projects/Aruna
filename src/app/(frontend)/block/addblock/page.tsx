@@ -69,7 +69,12 @@ export default function AddBlockPage() {
     vender_id: '',
     BlockType: '',
     date: '',
-    mines: '',
+    mines: {
+      Mines_name: '',
+      address: '',
+      phone: [{ number: '' }],
+      mail_id: ''
+    },
     labour_name: '',
     qty: 0,
     vehicle_number: '',

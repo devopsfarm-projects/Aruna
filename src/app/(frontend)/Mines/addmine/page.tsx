@@ -28,6 +28,13 @@ const AddMineForm = () => {
     setFormData(prev => ({ ...prev, phone: [...prev.phone, { number: '' }] }))
   }
 
+  const removePhoneField = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      phone: prev.phone.filter((_, i) => i !== index)
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 

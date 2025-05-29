@@ -1,5 +1,5 @@
 import payload from '../lib/payload'
-import type { Block, Stone } from '../../../payload-types'
+import type { Block } from '../../../../payload-types'
 
 type BlockResponse = {
   docs: Block[]

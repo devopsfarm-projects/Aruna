@@ -81,11 +81,6 @@ export const Product: CollectionConfig = {
         { name: 'w', label: 'W', type: 'number' },
         { name: 'h', label: 'H', type: 'number' },
         { name: 'qty', label: 'Qty', type: 'number' },
-        {
-            name: 'labour',
-            type: 'relationship',
-            relationTo: 'labour',
-        },
       ],
     },
     {
@@ -103,7 +98,6 @@ export const Product: CollectionConfig = {
             { name: 'thodi', label: 'Todi', type: 'text' },
           ],
         },
-        { name: 'hydra', label: 'hydra', type: 'relationship', relationTo: 'truck' },
         { name: 'quantity', label: 'Quantity', type: 'text' },
         { name: 'total_amount', label: 'Total Amount', type: 'text' },
       ],

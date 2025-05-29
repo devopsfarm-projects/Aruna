@@ -5,7 +5,8 @@ import config from '@/payload.config';
 
 interface User {
   email: string;
-  [key: string]: any;
+  collection?: string;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export function useUser() {
@@ -17,7 +18,7 @@ export function useUser() {
       const payloadConfig = await config;
       const payload = await getPayload({ config: payloadConfig });
       const { user: fetchedUser } = await payload.auth({ headers });
-      setUser(fetchedUser as User);
+      setUser(fetchedUser as User | null);
     };
 
     fetchUser();

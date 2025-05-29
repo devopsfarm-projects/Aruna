@@ -32,6 +32,7 @@ type Stone = {
       mail_id: string
     }
   }
+  labour_name?: string
   stoneType: string
   date: string
   mines: {
@@ -41,6 +42,7 @@ type Stone = {
     phone: { number: string }[]
     mail_id: string
   }
+  vehicle_number?: string
   addmeasures: Measure[]
   total_quantity: number | null
   issued_quantity: number | null
@@ -52,6 +54,7 @@ type Stone = {
   createdBy: { name: string } | null
   createdAt: string
   updatedAt: string
+  vehicle_cost?: number
 }
 
 export default function EditStone() {
@@ -255,7 +258,7 @@ export default function EditStone() {
               </label>
               <input
                 type="number"
-                value={stone.total_quantity}
+                value={stone.total_quantity ?? ''}
                 onChange={(e) =>
                   setStone(
                     (prev) =>
@@ -275,7 +278,7 @@ export default function EditStone() {
               </label>
               <input
                 type="number"
-                value={stone.issued_quantity}
+                value={stone.issued_quantity ?? ''}
                 onChange={(e) =>
                   setStone(
                     (prev) =>
@@ -295,7 +298,7 @@ export default function EditStone() {
               </label>
               <input
                 type="number"
-                value={stone.left_quantity}
+                value={stone.left_quantity ?? ''}
                 onChange={(e) =>
                   setStone(
                     (prev) =>
@@ -315,7 +318,7 @@ export default function EditStone() {
               </label>
               <input
                 type="text"
-                value={stone.transportType}
+                value={stone.transportType ?? ''}
                 onChange={(e) =>
                   setStone(
                     (prev) =>
@@ -335,7 +338,7 @@ export default function EditStone() {
               </label>
               <input
                 type="text"
-                value={stone.vehicle_number}
+                value={stone.vehicle_number || ''}
                 onChange={(e) =>
                   setStone(
                     (prev) =>
@@ -394,7 +397,7 @@ export default function EditStone() {
             <h2 className="text-2xl font-bold mb-4">Measurements</h2>
             <div className="space-y-4">
               {stone.addmeasures.map((measure, index) => (
-                <div key={measure.id} className="grid grid-cols-2 gap-4">
+                <div key={index} className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                       Length

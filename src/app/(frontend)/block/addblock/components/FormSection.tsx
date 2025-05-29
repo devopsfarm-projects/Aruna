@@ -69,13 +69,13 @@ export default function FormSection({ block, vendors, mines, onChange }: FormSec
             </label>
             <select
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              value={block.mines}
-              onChange={(e) => onChange('mines', Number(e.target.value))}
+              value={typeof block.mines === 'object' ? block.mines?.Mines_name : block.mines ?? ''}
+              onChange={(e) => onChange('mines', e.target.value)}
               required
             >
               <option value="">Select Mine</option>
               {mines.map((mine) => (
-                <option key={mine.id} value={mine.id}>
+                <option key={mine.Mines_name} value={mine.Mines_name}>
                   {mine.Mines_name}
                 </option>
               ))}
