@@ -174,24 +174,9 @@ export default function Vendor({ VendorItems }: { VendorItems: any[] }) {
                   </td>
                   <td className="p-4">
                     <div className="flex justify-center gap-4">
-                      <button
-                        onClick={() => {
-                          setFormData({
-                            Mines_name: item.Mines_name,
-                            address: item.address,
-                            mail_id: item.mail_id,
-                            phone: item.phone?.map((p: { number: string }) => p.number) || ['', ''],
-                            vendor: item.vendor || '',
-                            vendor_no: item.vendor_no || '',
-                            Company_no: item.Company_no || '',
-                          })
-                          setEditId(item.id)
-                          setShowForm(true)
-                        }}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
-                      >
-                        <span className="text-sm">Edit</span>
-                      </button>
+                    <Link href={`/vendor/edit?id=${item.id}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition">
+                          Edit
+                        </Link>
                       <button
                         onClick={() => handleDelete(item.id)}
                         className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"

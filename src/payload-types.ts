@@ -69,12 +69,9 @@ export interface Config {
   collections: {
     users: User;
     accounts: Account;
-    transactions: Transaction;
     media: Media;
-    labour: Labour;
     Mines: Mine;
     Block: Block;
-    truck: Truck;
     vendor: Vendor;
     stone: Stone;
     'payload-locked-documents': PayloadLockedDocument;
@@ -85,12 +82,9 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     accounts: AccountsSelect<false> | AccountsSelect<true>;
-    transactions: TransactionsSelect<false> | TransactionsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    labour: LabourSelect<false> | LabourSelect<true>;
     Mines: MinesSelect<false> | MinesSelect<true>;
     Block: BlockSelect<false> | BlockSelect<true>;
-    truck: TruckSelect<false> | TruckSelect<true>;
     vendor: VendorSelect<false> | VendorSelect<true>;
     stone: StoneSelect<false> | StoneSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -165,23 +159,6 @@ export interface Account {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "transactions".
- */
-export interface Transaction {
-  id: number;
-  account?: (number | null) | Account;
-  type?: ('credit' | 'debit') | null;
-  amount?: number | null;
-  mode?: ('cash' | 'upi' | 'bank' | 'cheque') | null;
-  description?: string | null;
-  txn_date?: string | null;
-  document?: (number | null) | Media;
-  entered_by?: (number | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -198,17 +175,6 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "labour".
- */
-export interface Labour {
-  id: number;
-  name?: string | null;
-  mobile?: number | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -282,19 +248,6 @@ export interface Vendor {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "truck".
- */
-export interface Truck {
-  id: number;
-  driver_name: string;
-  phone?: string | null;
-  truck_no?: string | null;
-  truck_cost?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "stone".
  */
 export interface Stone {
@@ -341,16 +294,8 @@ export interface PayloadLockedDocument {
         value: number | Account;
       } | null)
     | ({
-        relationTo: 'transactions';
-        value: number | Transaction;
-      } | null)
-    | ({
         relationTo: 'media';
         value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'labour';
-        value: number | Labour;
       } | null)
     | ({
         relationTo: 'Mines';
@@ -359,10 +304,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'Block';
         value: number | Block;
-      } | null)
-    | ({
-        relationTo: 'truck';
-        value: number | Truck;
       } | null)
     | ({
         relationTo: 'vendor';
@@ -447,22 +388,6 @@ export interface AccountsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "transactions_select".
- */
-export interface TransactionsSelect<T extends boolean = true> {
-  account?: T;
-  type?: T;
-  amount?: T;
-  mode?: T;
-  description?: T;
-  txn_date?: T;
-  document?: T;
-  entered_by?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -478,16 +403,6 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "labour_select".
- */
-export interface LabourSelect<T extends boolean = true> {
-  name?: T;
-  mobile?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -539,18 +454,6 @@ export interface BlockSelect<T extends boolean = true> {
   issued_quantity?: T;
   left_quantity?: T;
   createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "truck_select".
- */
-export interface TruckSelect<T extends boolean = true> {
-  driver_name?: T;
-  phone?: T;
-  truck_no?: T;
-  truck_cost?: T;
   updatedAt?: T;
   createdAt?: T;
 }

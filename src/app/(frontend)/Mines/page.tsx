@@ -5,6 +5,7 @@ import axios from 'axios'
 import { GiGoldMine } from 'react-icons/gi'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Mines from '@/collections/Mines'
 
 interface Mine {
   id: string
@@ -17,7 +18,8 @@ interface Mine {
 export default function MinesPage() {
   const [mines, setMines] = useState<Mine[]>([])
   const router = useRouter()
-
+  const [filteredMine, setFilteredMine] = useState<Mine[]>([])
+  const [searchMine, setSearchMine] = useState('')
   // Fetch Mines
   const fetchMines = async () => {
     try {
@@ -31,7 +33,6 @@ export default function MinesPage() {
   useEffect(() => {
     fetchMines()
   }, [])
-
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this mine?')) {
@@ -49,64 +50,105 @@ export default function MinesPage() {
     router.push(`/Mines/editmine/${mine.id}`)
   }
 
+  useEffect(() => {
+    const filtered = mines.filter((mine) => {
+      const mineMatch = !searchMine || 
+        mine.Mines_name?.toLowerCase().includes(searchMine.toLowerCase())
+      return  mineMatch
+    })
+    setFilteredMine(filtered)
+  }, [ mines, searchMine])
+
+
   return (
     <div className="p-8 max-w-7xl pt-24 mx-auto">
       <div className="flex flex-col gap-8">
-  <Link href="/Mines/addmine">
-  <button className="mt-4 md:mt-0 inline-flex items-center gap-2 bg-primary-500 dark:bg-primary-600 text-white font-semibold px-5 py-2 rounded-xl shadow hover:bg-primary-600 dark:hover:bg-primary-700 transition">
-            Add Mine
-  </button> 
-  </Link>
+         <div className="flex flex-col md:flex-row justify-between items-center  gap-4">
+                  <div >
+                  <div className="flex gap-6">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Search Mine
+                      </label>
+                      <input
+                        type="text"
+                        value={searchMine}
+                        onChange={(e) => setSearchMine(e.target.value)}
+                        placeholder="Search by mine name..."
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                  </div>
+                  </div>
+                  <Link   href="/Mines/addmine">
+                    <button className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition">
+                      <span className="text-sm font-medium">Add New Mine</span>
+                    </button>
+                  </Link>
+                </div>
+    
 
-        {/* List Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mines.map((mine) => (
-            <div
-              key={mine.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
-            >
-              <div className="flex items-center mb-4">
-                <div className="bg-primary-100 dark:bg-primary-900/20 p-3 rounded-full mr-4">
-                  <GiGoldMine className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{mine.Mines_name}</h3>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-start gap-2">
-                  <span className="w-12 text-gray-500 dark:text-gray-400">Address:</span>
-                  <p className="text-gray-700 dark:text-gray-300">{mine.address}</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="w-12 text-gray-500 dark:text-gray-400">Email:</span>
-                  <p className="text-gray-700 dark:text-gray-300">{mine.mail_id}</p>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-gray-500 dark:text-gray-400">Phones:</span>
-                  <ul className="list-disc list-inside pl-2 text-gray-700 dark:text-gray-300">
-                    {mine.phone?.map((p, i) => (
-                      <li key={i}>{p.number}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="mt-6 flex gap-3">
-                <button
-                  onClick={() => handleEdit(mine)}
-                  className="flex-1 bg-blue-600 dark:bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+        <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md">
+          <table className="min-w-full">
+            <thead className="bg-gray-800 dark:bg-gray-700 text-white">
+              <tr>
+                <th className="p-4 text-center">S.No.</th>
+                <th className="p-4 text-left">Mines_name</th>
+                <th className="p-4 text-left">address</th>
+                <th className="p-4 text-left">Phone Number</th>
+                <th className="p-4 text-left">mail_id</th>
+                <th className="p-4 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-900 dark:text-white">
+              {filteredMine.map((mine, index) => (
+                <tr
+                  key={mine.id}
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(mine.id)}
-                  className="flex-1 bg-red-600 dark:bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+                  <td className="p-4 text-center">{index + 1}</td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{mine.Mines_name || '-'}</span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{mine.address || '-'}</span>
+                    </div>
+                  </td>
+
+                  <td className="p-4">
+                    <span className="font-medium">
+                      {' '}
+                      {mine.phone?.map((p, i) => <li key={i}>{p.number}</li>)}
+                    </span>
+                  </td>
+
+                  <td className="p-4">
+                    <span>{mine.mail_id}</span>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => handleEdit(mine)}
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(mine.id)}
+                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

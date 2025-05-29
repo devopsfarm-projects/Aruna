@@ -2,9 +2,11 @@
 import { useEffect, useState, useCallback } from 'react'
 import payload from './lib/payload'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { Block } from '../../../payload-types'
 
 export default function BlockList() {
+  const router = useRouter()
   const [blocks, setBlocks] = useState<Block[]>([])
   const [filteredBlocks, setFilteredBlocks] = useState<Block[]>([])
   const [searchVendor, setSearchVendor] = useState('')
@@ -86,6 +88,10 @@ export default function BlockList() {
       }
       return newSet
     })
+  }
+
+  const handleEdit = (block: Block) => {
+    router.push(`/block/editblock/${block.id}`)
   }
 
   const handleBulkDelete = async () => {
@@ -231,12 +237,9 @@ export default function BlockList() {
                 <td className="p-4">
                   
                     <div className="flex gap-4">
-                      <button
-                        onClick={() => handleEdit(Block)}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
-                      >
-                        Edit
-                      </button>
+                    <Link href={`/block/edit?id=${Block.id}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition">
+                          Edit
+                        </Link>
                       <button
                         onClick={() => handleDelete(Block.id)}
                         className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"

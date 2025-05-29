@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
-import Link from 'next/link'
 import payload from './lib/payload'
 import type { Block } from '../../../payload-types'
 type Measure = {
@@ -90,34 +89,6 @@ export default function StoneList() {
     fetchBlocks()
   }, [fetchBlocks])
 
-  const [editData, setEditData] = useState<Partial<Stone>>({
-    stoneType: '',
-    date: '',
-    mines: undefined,
-    vender_id: {
-      id: 0,
-      vendor: '',
-      vendor_no: '',
-      address: '',
-      mail_id: '',
-      Company_no: '',
-      Mines_name: {
-        id: 0,
-        Mines_name: '',
-        address: '',
-        phone: [],
-        mail_id: '',
-      },
-    },
-    addmeasures: [],
-    total_quantity: undefined,
-    issued_quantity: undefined,
-    left_quantity: undefined,
-    final_total: undefined,
-    partyRemainingPayment: undefined,
-    partyAdvancePayment: undefined,
-    transportType: undefined,
-  })
   const [selectedStones, setSelectedStones] = useState<Set<string>>(new Set())
   const [isSelectAll, setIsSelectAll] = useState(false)
 
@@ -135,52 +106,6 @@ export default function StoneList() {
     } catch (err) {
       console.error('Error fetching data:', err)
     }
-  }
-
-  const handleSelectAll = () => {
-    if (isSelectAll) {
-      setSelectedStones(new Set())
-    } else {
-      const newSelection = new Set(stones.map((stone) => stone.id.toString()))
-      setSelectedStones(newSelection)
-    }
-    setIsSelectAll(!isSelectAll)
-  }
-
-  const handleEdit = (stone: Stone) => {
-    setEditData(stone)
-    // You'll need to implement the navigation to edit page
-    // For example:
-    // router.push(`/accounts/edit/${stone.id}`)
-  }
-
-  const handleDelete = async (id: string | number) => {
-    if (!confirm('Are you sure you want to delete this stone?')) return
-
-    try {
-      await axios.delete(`/api/stone/${id}`)
-      setStones(stones.filter((s) => s.id !== id))
-      if (selectedStones.has(id.toString())) {
-        const newSelection = new Set(selectedStones)
-        newSelection.delete(id.toString())
-        setSelectedStones(newSelection)
-        setIsSelectAll(false)
-      }
-    } catch (err) {
-      console.error(err)
-      alert('Error deleting stone')
-    }
-  }
-
-  const handleSelectStone = (id: string) => {
-    const newSelection = new Set(selectedStones)
-    if (newSelection.has(id)) {
-      newSelection.delete(id)
-    } else {
-      newSelection.add(id)
-    }
-    setSelectedStones(newSelection)
-    setIsSelectAll(newSelection.size === stones.length)
   }
 
   const handleBulkDelete = async () => {
@@ -221,14 +146,7 @@ export default function StoneList() {
           <table className="min-w-full">
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
               <tr>
-                <th className="p-4">
-                  <input
-                    type="checkbox"
-                    checked={isSelectAll}
-                    onChange={handleSelectAll}
-                    className="rounded cursor-pointer"
-                  />
-                </th>
+                <th className="p-4 text-center">S.No.</th>
                 <th className="p-4 text-left">Date</th>
                 <th className="p-4 text-left">Mine Name</th>
                 <th className="p-4 text-left">Vendor Name</th>
@@ -237,70 +155,46 @@ export default function StoneList() {
               </tr>
             </thead>
             <tbody className="text-gray-900 dark:text-white">
-              {stones.map((stone) => (
-                <tr
-                  key={stone.id}
-                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                >
-                  <td className="p-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedStones.has(stone.id.toString())}
-                      onChange={() => handleSelectStone(stone.id.toString())}
-                      className="rounded cursor-pointer"
-                    />
-                  </td>
-                  <td className="p-4">
-                    <span>{stone.date}</span>
-                  </td>
-                  <td className="p-4">
-                    <span className="font-medium">{stone.mines?.Mines_name || '-'}</span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{stone.vender_id?.vendor || '-'}</span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <span className="font-medium">{stone.stoneType}</span>
-                  </td>
-                  <td className="p-4">
-                    ₹{stone.final_total ? stone.final_total.toLocaleString('en-IN') : '0'}
-                  </td>
-                </tr>
-              ))}
-              {blocks.map((block) => (
-                <tr
-                  key={block.id}
-                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                >
-                  <td className="p-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedStones.has(block.id.toString())}
-                      onChange={() => handleSelectStone(block.id.toString())}
-                      className="rounded cursor-pointer"
-                    />
-                  </td>
-                  <td className="p-4">
-                    <span>{block.date}</span>
-                  </td>
-                  <td className="p-4">
-                    <span className="font-medium">{block.mines?.Mines_name || '-'}</span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{block.vender_id?.vendor || '-'}</span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <span className="font-medium">{block.BlockType}</span>
-                  </td>
-                  <td className="p-4">
-                    ₹{block.total_amount ? block.total_amount.toLocaleString('en-IN') : '0'}
-                  </td>
-                </tr>
-              ))}
+              {/* Combine stones and blocks into a single array with type information */}
+              {[
+                ...stones.map((stone) => ({ ...stone, type: 'stone' })),
+                ...blocks.map((block) => ({ ...block, type: 'block' })),
+              ]
+                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                .map((item, index) => (
+                  <tr
+                    key={item.id}
+                    className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
+                    <td className="p-4 text-center">{index + 1}</td>
+                    <td className="p-4">
+                      <span>{item.date}</span>
+                    </td>
+                    <td className="p-4">
+                      <span className="font-medium">
+                        {item.mines?.Mines_name || '-'}
+                        {item.type === 'block' ? ' (Block)' : ''}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{item.vender_id?.vendor || '-'}</span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <span className="font-medium">
+                        {item.type === 'stone' ? item.stoneType : item.BlockType}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      ₹
+                      {(item.type === 'stone'
+                        ? item.final_total
+                        : item.total_amount
+                      )?.toLocaleString('en-IN') || '0'}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

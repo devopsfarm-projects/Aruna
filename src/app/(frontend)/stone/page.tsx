@@ -58,35 +58,6 @@ export default function StoneList() {
   const [filteredStones, setFilteredStones] = useState<Stone[]>([])
   const [searchVendor, setSearchVendor] = useState('')
   const [searchMine, setSearchMine] = useState('')
-  const [, setEditingId] = useState<string | null>(null)
-  const [, setEditData] = useState<Partial<Stone>>({
-    stoneType: '',
-    date: '',
-    mines: undefined,
-    vender_id: {
-      id: 0,
-      vendor: '',
-      vendor_no: '',
-      address: '',
-      mail_id: '',
-      Company_no: '',
-      Mines_name: {
-        id: 0,
-        Mines_name: '',
-        address: '',
-        phone: [],
-        mail_id: '',
-      },
-    },
-    addmeasures: [],
-    total_quantity: undefined,
-    issued_quantity: undefined,
-    left_quantity: undefined,
-    final_total: undefined,
-    partyRemainingPayment: undefined,
-    partyAdvancePayment: undefined,
-    transportType: undefined,
-  })
   const [selectedStones, setSelectedStones] = useState<Set<string>>(new Set())
   const [isSelectAll, setIsSelectAll] = useState(false)
 
@@ -166,27 +137,6 @@ export default function StoneList() {
       alert('Error deleting stone')
     }
   }
-
-  const handleEdit = (stone: Stone) => {
-    setEditingId(stone.id?.toString())
-    setEditData({
-      stoneType: stone.stoneType,
-      date: stone.date,
-      mines: stone.mines,
-      vender_id: stone.vender_id,
-      addmeasures: stone.addmeasures,
-      total_quantity: stone.total_quantity,
-      issued_quantity: stone.issued_quantity,
-      left_quantity: stone.left_quantity,
-      final_total: stone.final_total,
-      partyRemainingPayment: stone.partyRemainingPayment,
-      partyAdvancePayment: stone.partyAdvancePayment,
-      transportType: stone.transportType,
-    })
-  }
-
-
-
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
@@ -303,7 +253,7 @@ export default function StoneList() {
 
                   <td className="p-4">
                  
-                      <span>{stone.date}</span>
+                      <span>{new Date(stone.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                  
                   </td>
 
@@ -319,12 +269,9 @@ export default function StoneList() {
                   <td className="p-4">
                     
                       <div className="flex gap-4">
-                        <button
-                          onClick={() => handleEdit(stone)}
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
-                        >
+                        <Link href={`/stone/edit?id=${stone.id}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition">
                           Edit
-                        </button>
+                        </Link>
                         <button
                           onClick={() => handleDelete(stone.id)}
                           className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition"
