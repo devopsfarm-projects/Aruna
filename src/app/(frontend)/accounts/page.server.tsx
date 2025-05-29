@@ -1,5 +1,5 @@
 import { fetchBlocks, fetchStones } from './lib/fetchData'
-import type { Block, Stone } from '../../../payload-types'
+import StoneList from './StoneList.tsx'
 
 export default async function AccountsPage() {
   const [stones, blocks] = await Promise.all([
