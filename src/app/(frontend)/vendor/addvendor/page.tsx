@@ -208,26 +208,33 @@ export default function VendorForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 sm:pt-24">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-10 text-gray-900 dark:text-white">
           <span className="text-indigo-600 dark:text-indigo-400">Add</span> New Vendor
         </h1>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 sm:p-10">
           <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Mines */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Mines Select */}
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="mine"
+                  className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
+                >
                   Mine
                 </label>
                 <select
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  id="mine"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                   value={newVendor.Mines_name ?? ''}
                   onChange={(e) => {
-                    const selectedMine = mines.find(m => m.id === parseInt(e.target.value));
-                    setNewVendor({ ...newVendor, Mines_name: selectedMine ? selectedMine.id.toString() : '' });
+                    const selectedMine = mines.find((m) => m.id === parseInt(e.target.value))
+                    setNewVendor({
+                      ...newVendor,
+                      Mines_name: selectedMine ? selectedMine.id.toString() : '',
+                    })
                   }}
                   required
                   disabled={mines.length === 0}
@@ -242,85 +249,122 @@ export default function VendorForm() {
                   ))}
                 </select>
               </div>
+
+              {/* Vendor Name */}
+              <div>
+                <label
+                  htmlFor="vendor"
+                  className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
+                >
+                  Vendor Name
+                </label>
+                <input
+                  id="vendor"
+                  type="text"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  value={newVendor.vendor}
+                  onChange={(e) => setNewVendor({ ...newVendor, vendor: e.target.value })}
+                  required
+                  placeholder="Enter vendor name"
+                />
+              </div>
             </div>
 
+            {/* Address */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="address"
+                className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
+              >
                 Address
               </label>
               <input
+                id="address"
                 type="text"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                 value={newVendor.address}
                 onChange={(e) => setNewVendor({ ...newVendor, address: e.target.value })}
                 required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                vendor
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={newVendor.vendor}
-                onChange={(e) => setNewVendor({ ...newVendor, vendor: e.target.value })}
-                required
+                placeholder="Enter address"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Vendor Mobile No.
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={newVendor.vendor_no}
-                onChange={(e) => setNewVendor({ ...newVendor, vendor_no: e.target.value })}
-                required
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Vendor Mobile No */}
+              <div>
+                <label
+                  htmlFor="vendor_no"
+                  className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
+                >
+                  Vendor Mobile No.
+                </label>
+                <input
+                  id="vendor_no"
+                  type="tel"
+                  pattern="[0-9]{10,15}"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  value={newVendor.vendor_no}
+                  onChange={(e) => setNewVendor({ ...newVendor, vendor_no: e.target.value })}
+                  required
+                  placeholder="Enter vendor mobile number"
+                />
+              </div>
+
+              {/* Company Mobile No */}
+              <div>
+                <label
+                  htmlFor="company_no"
+                  className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
+                >
+                  Company Mobile No.
+                </label>
+                <input
+                  id="company_no"
+                  type="tel"
+                  pattern="[0-9]{10,15}"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  value={newVendor.Company_no}
+                  onChange={(e) => setNewVendor({ ...newVendor, Company_no: e.target.value })}
+                  required
+                  placeholder="Enter company mobile number"
+                />
+              </div>
             </div>
 
+            {/* Mail ID */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Company Mobile No.
+              <label
+                htmlFor="mail_id"
+                className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
+              >
+                Email Address
               </label>
               <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={newVendor.Company_no}
-                onChange={(e) => setNewVendor({ ...newVendor, Company_no: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Mail id
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                id="mail_id"
+                type="email"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                 value={newVendor.mail_id}
                 onChange={(e) => setNewVendor({ ...newVendor, mail_id: e.target.value })}
                 required
+                placeholder="Enter email address"
               />
             </div>
 
-            <div className="flex justify-end gap-6">
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row justify-end gap-4">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="bg-gray-600 dark:bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200"
+                className="w-full sm:w-auto bg-gray-600 dark:bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200"
               >
-                <span className="font-medium">Cancel</span>
+                <span className="font-semibold">Cancel</span>
               </button>
               <button
                 type="submit"
-                className="bg-indigo-600 dark:bg-indigo-500 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
                 disabled={isSubmitting}
+                className="w-full sm:w-auto bg-indigo-600 dark:bg-indigo-500 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span className="font-medium">{isSubmitting ? 'Saving...' : 'Save Vendor'}</span>
+                <span className="font-semibold">{isSubmitting ? 'Saving...' : 'Save Vendor'}</span>
               </button>
             </div>
           </form>

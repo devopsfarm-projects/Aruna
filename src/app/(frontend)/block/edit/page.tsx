@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
+import { ApiResponse } from './types'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 type Measure = {
@@ -17,30 +18,10 @@ type Measure = {
 
 type block = {
   id: number | string
-  vender_id: {
-    id: number
-    vendor: string
-    vendor_no: string
-    address: string
-    mail_id: string
-    Company_no: string
-    Mines_name: {
-      id: number
-      Mines_name: string
-      address: string
-      phone: { number: string }[]
-      mail_id: string
-    }
-  }
+  vender_id: number
   blockType: string
   date: string
-  mines: {
-    id: number
-    Mines_name: string
-    address: string
-    phone: { number: string }[]
-    mail_id: string
-  }
+  mines: number
   labour_name: string
   addmeasures: Measure[]
   total_quantity: number | null
@@ -57,34 +38,75 @@ type block = {
   vehicle_number: string | null
 }
 
+type Vendor = {
+  id: number
+  vendor: string
+  vendor_no: string
+  address: string
+  mail_id: string
+  Company_no: string
+  Mines_name: {
+    id: number
+    Mines_name: string
+    address: string
+    phone: { number: string }[]
+    mail_id: string
+  }
+}
+
+type Mine = {
+  id: number
+  Mines_name: string
+  address: string
+  phone: { number: string }[]
+  mail_id: string
+}
+
 export default function EditBlock() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [block, setblock] = useState<block | null>(null)
   const [loading, setLoading] = useState(true)
+  const [vendors, setVendors] = useState<Vendor[]>([])
+  const [mines, setMines] = useState<Mine[]>([])
+  const [loadingData, setLoadingData] = useState(true)
   const id = searchParams.get('id')
 
   useEffect(() => {
-    const fetchBlock = async () => {
+    const fetchAllData = async () => {
       if (!id) return
 
       try {
-        const res = await axios.get<block>(`/api/Block/${id}`)
-        const data = res.data
+        // Fetch block data
+        const blockRes = await axios.get<block>(`/api/Block/${id}`)
+        const blockData = blockRes.data
+        
+        // Fetch vendors
+        const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
+        const vendorsData = vendorsRes.data.docs
+
+        // Fetch mines
+        const minesRes = await axios.get<ApiResponse<Mine>>('/api/Mines')
+        const minesData = minesRes.data.docs
+
         // Ensure measurements array exists
-        if (!data.addmeasures) {
-          data.addmeasures = []
+        if (!blockData.addmeasures) {
+          blockData.addmeasures = []
         }
-        setblock(data)
+
+        setblock(blockData)
+        setVendors(vendorsData)
+        setMines(minesData)
       } catch (error) {
-        console.error('Error fetching block:', error)
-        alert('Error loading block data')
+        console.error('Error fetching data:', error)
+        alert('Error loading data')
       } finally {
         setLoading(false)
+        setLoadingData(false)
       }
     }
 
-    fetchBlock()
+    fetchAllData()
   }, [id])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -129,80 +151,61 @@ export default function EditBlock() {
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Vendor Name
               </label>
-              <input
-                type="text"
-                value={block.vender_id.vendor}
-                onChange={(e) => 
-                  setblock(prev => prev && {
-                    ...prev,
-                    vender_id: {
-                      ...prev.vender_id,
-                      vendor: e.target.value
-                    }
-                  })
-                }
+              <select
+                value={block?.vender_id || ''}
+                onChange={(e) => {
+                  const selectedId = Number(e.target.value);
+                  const selectedVendor = vendors.find(v => v.id === selectedId);
+                  if (selectedVendor) {
+                    setblock(prev => prev && {
+                      ...prev,
+                      vender_id: selectedId,
+                      vendor_no: selectedVendor.vendor_no,
+                      Company_no: selectedVendor.Company_no
+                    });
+                  } else {
+                    setblock(prev => prev && {
+                      ...prev,
+                      vender_id: selectedId
+                    });
+                  }
+                }}
+                disabled={loadingData}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              >
+                <option value="">Select Vendor</option>
+                {vendors.map(vendor => (
+                  <option key={vendor.id} value={vendor.id}>
+                    {vendor.vendor}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Vendor Number
-              </label>
-              <input
-                type="text"
-                value={block.vender_id.vendor_no}
-                onChange={(e) => 
-                  setblock(prev => prev && {
-                    ...prev,
-                    vender_id: {
-                      ...prev.vender_id,
-                      vendor_no: e.target.value
-                    }
-                  })
-                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Company Number
-              </label>
-              <input
-                type="text"
-                value={block.vender_id.Company_no}
-                onChange={(e) => 
-                  setblock(prev => prev && {
-                    ...prev,
-                    vender_id: {
-                      ...prev.vender_id,
-                      Company_no: e.target.value
-                    }
-                  })
-                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
+ 
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Mine Name
               </label>
-              <input
-                type="text"
-                value={block.mines.Mines_name}
+              <select
+                value={block?.mines || ''}
                 onChange={(e) => 
                   setblock(prev => prev && {
                     ...prev,
-                    mines: {
-                      ...prev.mines,
-                      Mines_name: e.target.value
-                    }
+                    mines: Number(e.target.value)
                   })
                 }
+                disabled={loadingData}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              >
+                <option value="">Select Mine</option>
+                {mines.map(mine => (
+                  <option key={mine.id} value={mine.id}>
+                    {mine.Mines_name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -212,9 +215,12 @@ export default function EditBlock() {
               <select
                 value={block.blockType}
                 onChange={(e) => 
-                  setblock(prev => prev && {
-                    ...prev,
-                    blockType: e.target.value
+                  setblock(prev => {
+                    if (!prev) return null;
+                    return {
+                      ...prev,
+                      blockType: e.target.value
+                    };
                   })
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -278,25 +284,6 @@ export default function EditBlock() {
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Left Quantity
-              </label>
-              <input
-                type="number"
-                value={block.left_quantity ?? ''}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setblock(prev => prev && {
-                    ...prev,
-                    left_quantity: value ? parseInt(value) : null
-                  });
-                }}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Transport Type

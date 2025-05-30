@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
+import { ApiResponse } from './types'
 import { useRouter, useSearchParams } from 'next/navigation'
-
 
 interface Vendor {
   name: string
@@ -14,36 +14,59 @@ interface Vendor {
   address: string
   mail_id: string
   Company_no: string
-  Mines_name: string
   phone: string[]
   createdAt: string
   updatedAt: string
+  Mines_name: number | null | string | { id: number }
 }
 
+type Mine = {
+  id: number
+  Mines_name: string
+  address: string
+  phone: { number: string }[]
+  mail_id: string
+}
 
 export default function EditVendor() {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const [vendor, setvendor] = useState<Vendor | null>(null)
+  const router = useRouter()
+  const id = searchParams.get('id') as string
+  const [vendor, setVendor] = useState<Vendor | null>(null)
+  const [mines, setMines] = useState<Mine[]>([])
   const [loading, setLoading] = useState(true)
-  const id = searchParams.get('id')
 
   useEffect(() => {
-    const fetchVendor = async () => {
+    const fetchAllData = async () => {
       if (!id) return
 
       try {
-        const res = await axios.get<Vendor>(`/api/vendor/${id}`)
-        setvendor(res.data)
+        // Fetch mines first
+        const minesRes = await axios.get<ApiResponse<Mine>>('/api/Mines')
+        const minesData = minesRes.data.docs
+        if (minesData) {
+          setMines(minesData)
+        }
+
+        // Then fetch vendor
+        const res = await axios.get<Vendor>(`/api/vendor/${Number(id)}`)
+        const vendorData = res.data
+        
+        // Handle Mines_name being either a number, null, or an object with id
+        if (vendorData.Mines_name && typeof vendorData.Mines_name === 'object' && 'id' in vendorData.Mines_name) {
+          vendorData.Mines_name = vendorData.Mines_name.id
+        }
+        
+        setVendor(vendorData)
       } catch (error) {
-        console.error('Error fetching vendor:', error)
-        alert('Error loading vendor data')
+        console.error('Error fetching data:', error)
+        alert('Error loading data')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchVendor()
+    fetchAllData()
   }, [id])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +75,7 @@ export default function EditVendor() {
 
     try {
       await axios.patch(`/api/vendor/${id}`, vendor)
-      alert('vendor updated successfully')
+      alert('Vendor updated successfully')
       router.push('/vendor')
     } catch (error) {
       console.error('Error updating vendor:', error)
@@ -65,17 +88,14 @@ export default function EditVendor() {
   }
 
   if (!vendor) {
-    return <div className="flex justify-center items-center min-h-screen">vendor not found</div>
+    return <div className="flex justify-center items-center min-h-screen">Vendor not found</div>
   }
-
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Edit Vendor
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit Vendor</h1>
           <Link href="/vendor" className="text-gray-600 hover:text-gray-800">
             ← Back to Vendor List
           </Link>
@@ -90,11 +110,14 @@ export default function EditVendor() {
               <input
                 type="text"
                 value={vendor.vendor}
-                onChange={(e) => 
-                  setvendor(prev => prev && {
-                    ...prev,
-                    vendor: e.target.value
-                  })
+                onChange={(e) =>
+                  setVendor(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        vendor: e.target.value,
+                      },
+                  )
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -107,11 +130,14 @@ export default function EditVendor() {
               <input
                 type="text"
                 value={vendor.vendor_no}
-                onChange={(e) => 
-                  setvendor(prev => prev && {
-                    ...prev,
-                    vendor_no: e.target.value
-                  })
+                onChange={(e) =>
+                  setVendor(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        vendor_no: e.target.value,
+                      },
+                  )
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -124,11 +150,14 @@ export default function EditVendor() {
               <input
                 type="text"
                 value={vendor.Company_no}
-                onChange={(e) => 
-                  setvendor(prev => prev && {
-                    ...prev,
-                    Company_no: e.target.value
-                  })
+                onChange={(e) =>
+                  setVendor(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        Company_no: e.target.value,
+                      },
+                  )
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -141,11 +170,14 @@ export default function EditVendor() {
               <input
                 type="text"
                 value={vendor.address}
-                onChange={(e) => 
-                  setvendor(prev => prev && {
-                    ...prev,
-                    address: e.target.value
-                  })
+                onChange={(e) =>
+                  setVendor(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        address: e.target.value,
+                      },
+                  )
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -158,11 +190,14 @@ export default function EditVendor() {
               <input
                 type="email"
                 value={vendor.mail_id}
-                onChange={(e) => 
-                  setvendor(prev => prev && {
-                    ...prev,
-                    mail_id: e.target.value
-                  })
+                onChange={(e) =>
+                  setVendor(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        mail_id: e.target.value,
+                      },
+                  )
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -172,27 +207,33 @@ export default function EditVendor() {
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Mine Name
               </label>
-              <input
-                type="text"
-                value={vendor.Mines_name}
-                onChange={(e) => 
-                  setvendor(prev => ({
-                    ...(prev || {}),
-                    name: prev?.name || '',
-                    Mines_name: e.target.value,
-                    id: prev?.id || 0, // Ensure id is always a number
-                    vendor: prev?.vendor || '',
-                    vendor_no: prev?.vendor_no || '',
-                    address: prev?.address || '',
-                    mail_id: prev?.mail_id || '',
-                    Company_no: prev?.Company_no || '',
-                    phone: prev?.phone || [],
-                    createdAt: prev?.createdAt || '',
-                    updatedAt: prev?.updatedAt || ''
-                  }))
+              <select
+                value={
+                  vendor.Mines_name 
+                    ? (typeof vendor.Mines_name === 'object' && 'id' in vendor.Mines_name
+                        ? vendor.Mines_name.id
+                        : vendor.Mines_name)
+                    : ''
                 }
+                onChange={(e) =>
+                  setVendor(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        Mines_name: Number(e.target.value),
+                      },
+                  )
+                }
+                disabled={loading}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              >
+                <option value="">Select Mine</option>
+                {mines.map((mine) => (
+                  <option key={mine.id} value={mine.id}>
+                    {mine.Mines_name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -209,3 +250,5 @@ export default function EditVendor() {
     </div>
   )
 }
+
+

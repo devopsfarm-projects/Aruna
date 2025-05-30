@@ -478,9 +478,9 @@ export default function AddStonePage() {
                 <input
                   type="number"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.total_quantity}
+                  value={newStone.total_quantity=== 0 ? '' : newStone.total_quantity}
                   onChange={(e) => setNewStone({ ...newStone, total_quantity: Number(e.target.value) })}
-                  min="0"
+                 
                   required
                 />
               </div>
@@ -491,9 +491,9 @@ export default function AddStonePage() {
                 <input
                   type="number"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.issued_quantity}
+                  value={newStone.issued_quantity=== 0 ? '' : newStone.issued_quantity}
                   onChange={(e) => setNewStone({ ...newStone, issued_quantity: Number(e.target.value) })}
-                  min="0"
+                 
                   required
                 />
               </div>
@@ -542,9 +542,9 @@ export default function AddStonePage() {
                 <input
                   type="number"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.vehicle_cost}
+                  value={newStone.vehicle_cost=== 0 ? '' : newStone.vehicle_cost}
                   onChange={(e) => setNewStone({ ...newStone, vehicle_cost: Number(e.target.value) })}
-                  min="0"
+                
                   required
                 />
               </div>

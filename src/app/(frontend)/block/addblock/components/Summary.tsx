@@ -7,36 +7,41 @@ interface SummaryProps {
 
 export default function Summary({ block }: SummaryProps) {
   return (
-    <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-6">
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+    <section className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 max-w-md mx-auto sm:max-w-xl md:max-w-3xl">
+      <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-8 text-center sm:text-left">
         <span className="text-indigo-600 dark:text-indigo-400">Summary</span>
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {/* Total Quantity Card */}
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-md flex flex-col items-center sm:items-start">
+          <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">
             Total Quantity
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="text-3xl font-extrabold text-gray-900 dark:text-white">
             {block.total_quantity.toFixed(2)}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-          Issued Quantity
+
+        {/* Issued Quantity Card */}
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-md flex flex-col items-center sm:items-start">
+          <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">
+            Issued Quantity
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="text-3xl font-extrabold text-gray-900 dark:text-white">
             {block.issued_quantity.toFixed(2)}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+
+        {/* Remaining Quantity Card */}
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-md flex flex-col items-center sm:items-start">
+          <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">
             Remaining Quantity
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="text-3xl font-extrabold text-gray-900 dark:text-white">
             {(block.total_quantity - block.issued_quantity).toFixed(2)}
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

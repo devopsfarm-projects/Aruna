@@ -9,7 +9,7 @@ export type Block = {
   vender_id: string
   BlockType: string
   date: string
-  mines: string
+  mines: { id: string } | null
   labour_name: string
   qty: number
   vehicle_number: string
