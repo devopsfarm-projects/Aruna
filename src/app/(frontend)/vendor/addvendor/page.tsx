@@ -218,7 +218,7 @@ export default function VendorForm() {
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* Mines Select */}
-              <div>
+              {/* <div>
                 <label
                   htmlFor="mine"
                   className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
@@ -248,7 +248,7 @@ export default function VendorForm() {
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
 
               {/* Vendor Name */}
               <div>
@@ -311,7 +311,7 @@ export default function VendorForm() {
               </div>
 
               {/* Company Mobile No */}
-              <div>
+              {/* <div>
                 <label
                   htmlFor="company_no"
                   className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
@@ -328,11 +328,11 @@ export default function VendorForm() {
                   required
                   placeholder="Enter company mobile number"
                 />
-              </div>
+              </div> */}
             </div>
 
             {/* Mail ID */}
-            <div>
+            {/* <div>
               <label
                 htmlFor="mail_id"
                 className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
@@ -348,7 +348,7 @@ export default function VendorForm() {
                 required
                 placeholder="Enter email address"
               />
-            </div>
+            </div> */}
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row justify-end gap-4">

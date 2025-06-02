@@ -47,7 +47,6 @@ const isErrorResponse = (obj: unknown): obj is ErrorResponse => {
   return ('errors' in data && Array.isArray(data.errors)) || 'message' in data
 }
 
-
 // Response types
 interface ApiResponse<T> {
   docs: T[]
@@ -147,8 +146,8 @@ interface ApiResponse<T> {
 
 export default function AddStonePage() {
   const router = useRouter()
-  const [vendors, setVendors] = useState<Vendor[]>([])
-  const [mines, setMines] = useState<Mines[]>([])
+  // const [vendors, setVendors] = useState<Vendor[]>([])
+  // const [mines, setMines] = useState<Mines[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [, setIsLoading] = useState(true)
   const [, setError] = useState<string | null>(null)
@@ -176,13 +175,15 @@ export default function AddStonePage() {
       try {
         setIsLoading(true)
         setError(null)
-        
+
         // Fetch vendors
         try {
           const vendorsRes = await axios.get('/api/vendor')
-          const vendorsData = vendorsRes.data as { docs: { id: string; vendor: string; Company_no: string }[] }
+          const vendorsData = vendorsRes.data as {
+            docs: { id: string; vendor: string; Company_no: string }[]
+          }
           console.log('Vendors response:', vendorsData)
-          const vendors = vendorsData.docs.map(v => ({
+          const vendors = vendorsData.docs.map((v) => ({
             id: v.id,
             vendor: v.vendor,
             vendor_no: v.Company_no,
@@ -195,13 +196,13 @@ export default function AddStonePage() {
               Mines_name: '',
               address: '',
               phone: [],
-              mail_id: ''
+              mail_id: '',
             },
             phone: [],
             createdAt: '',
-            updatedAt: ''
+            updatedAt: '',
           }))
-          setVendors(vendors)
+         // setVendors(vendors)
         } catch (vendorError) {
           console.error('Error fetching vendors:', vendorError)
         }
@@ -213,13 +214,12 @@ export default function AddStonePage() {
           const mines = minesRes.data.docs.map((m: Mines) => ({
             id: m.id,
             Mines_name: m.Mines_name,
-            name: m.Mines_name
+            name: m.Mines_name,
           }))
-          setMines(mines)
+         // setMines(mines)
         } catch (mineError) {
           console.error('Error fetching mines:', mineError)
         }
-
       } catch (error) {
         setError('Failed to load data. Please try again later.')
         console.error('Error fetching data:', error)
@@ -231,52 +231,50 @@ export default function AddStonePage() {
     fetchData()
   }, [])
 
-  const updateMeasure = (index: number, field: keyof Measure, value: string | number) => {
-    const newMeasures = [...newStone.addmeasures]
-    newMeasures[index] = { ...newMeasures[index], [field]: Number(value) }
+  // const updateMeasure = (index: number, field: keyof Measure, value: string | number) => {
+  //   const newMeasures = [...newStone.addmeasures]
+  //   newMeasures[index] = { ...newMeasures[index], [field]: Number(value) }
 
-    // Calculate total volume from all measures
-    const totalVolume = newMeasures.reduce((sum, m) => {
-      const l = m.l || 0
-      const b = m.b || 0
-      const h = m.h || 0
-      return sum + (l * b * h)
-    }, 0)
+  //   // Calculate total volume from all measures
+  //   const totalVolume = newMeasures.reduce((sum, m) => {
+  //     const l = m.l || 0
+  //     const b = m.b || 0
+  //     const h = m.h || 0
+  //     return sum + l * b * h
+  //   }, 0)
 
-    // Calculate block amount: total_quantity * (rate * total_volume)
-    const blockAmount = (newStone.total_quantity || 0) * ((newStone.rate || 0) * totalVolume)
-    // Calculate total amount: block_amount + vehicle_cost
-    const totalAmount = blockAmount + (newStone.vehicle_cost || 0)
+  //   // Calculate block amount: total_quantity * (rate * total_volume)
+  //   const blockAmount = (newStone.total_quantity || 0) * ((newStone.rate || 0) * totalVolume)
+  //   // Calculate total amount: block_amount + vehicle_cost
+  //   const totalAmount = blockAmount + (newStone.vehicle_cost || 0)
 
-    setNewStone((prev) => ({
-      ...prev,
-      addmeasures: newMeasures,
-      block_amount: blockAmount,
-      total_amount: totalAmount,
-      left_quantity: prev.total_quantity - prev.issued_quantity,
-    }))
-  }
+  //   setNewStone((prev) => ({
+  //     ...prev,
+  //     addmeasures: newMeasures,
+  //     block_amount: blockAmount,
+  //     total_amount: totalAmount,
+  //     left_quantity: prev.total_quantity - prev.issued_quantity,
+  //   }))
+  // }
 
+  // const addNewMeasure = () => {
+  //   setNewStone((prev) => ({
+  //     ...prev,
+  //     addmeasures: [...prev.addmeasures, { qty: 0, l: 0, b: 0, h: 0, rate: 0 }],
+  //   }))
+  // }
 
+  // const removeMeasure = (index: number) => {
+  //   const newMeasures = newStone.addmeasures.filter((_, i) => i !== index)
+  //   const totalQty = newMeasures.reduce((sum, m) => sum + (Number(m.qty) || 0), 0)
 
-  const addNewMeasure = () => {
-    setNewStone((prev) => ({
-      ...prev,
-      addmeasures: [...prev.addmeasures, { qty: 0, l: 0, b: 0, h: 0, rate: 0 }],
-    }))
-  }
-
-  const removeMeasure = (index: number) => {
-    const newMeasures = newStone.addmeasures.filter((_, i) => i !== index)
-    const totalQty = newMeasures.reduce((sum, m) => sum + (Number(m.qty) || 0), 0)
-
-    setNewStone((prev) => ({
-      ...prev,
-      addmeasures: newMeasures,
-      total_quantity: totalQty,
-      left_quantity: totalQty - (prev.issued_quantity || 0),
-    }))
-  }
+  //   setNewStone((prev) => ({
+  //     ...prev,
+  //     addmeasures: newMeasures,
+  //     total_quantity: totalQty,
+  //     left_quantity: totalQty - (prev.issued_quantity || 0),
+  //   }))
+  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -294,7 +292,7 @@ export default function AddStonePage() {
         rate: Number(newStone.rate),
         block_amount: Number(newStone.block_amount),
         total_amount: Number(newStone.total_amount),
-        vehicle_cost: Number(newStone.vehicle_cost)
+        vehicle_cost: Number(newStone.vehicle_cost),
       }
 
       console.log('Submitting data:', JSON.stringify(payload, null, 2))
@@ -351,10 +349,14 @@ export default function AddStonePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-          <span className="text-indigo-600 dark:text-indigo-400">Add</span> New Stone
-        </h1>
-
+        <div className="flex justify-between mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            <span className="text-indigo-600 dark:text-indigo-400">Add</span> New Stone
+          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            <span className="text-indigo-600 dark:text-indigo-400">Mines: </span>The Jodhpur Mines
+          </h1>
+        </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -389,243 +391,82 @@ export default function AddStonePage() {
                 />
               </div>
 
-              {/* Vendor */}
+          
+
+           
+
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  Vendor
-                </label>
-                <select
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.vender_id}
-                  onChange={(e) => setNewStone({ ...newStone, vender_id: e.target.value })}
-                  required
-                  disabled={vendors.length === 0}
-                >
-                  <option value="">{vendors.length === 0 ? 'Loading vendors...' : 'Select Vendor'}</option>
-                  {vendors.map((vendor) => (
-                    <option key={vendor.id} value={vendor.id}>
-                      {vendor.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Mines */}
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  Mine
-                </label>
-                <select
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.mines}
-                  onChange={(e) => setNewStone({ ...newStone, mines: e.target.value })}
-                  required
-                  disabled={mines.length === 0}
-                >
-                  <option value="">{mines.length === 0 ? 'Loading mines...' : 'Select Mine'}</option>
-                  {mines.map((mine) => (
-                    <option key={mine.id} value={mine.id}>
-                      {mine.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-    
-
-              <div> 
                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                   Rate
                 </label>
                 <input
                   type="number"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.rate || 0}
+                  value={newStone.rate === 0 ? '' : newStone.rate}
                   onChange={(e) => {
                     const rate = Number(e.target.value)
                     setNewStone((prev) => {
-                      const totalVolume = prev.addmeasures.reduce((sum, m) => {
-                        const l = m.l || 0
-                        const b = m.b || 0
-                        const h = m.h || 0
-                        return sum + (l * b * h)
-                      }, 0)
-
-                      const blockAmount = (prev.issued_quantity || 0) * (rate * totalVolume)
-                      const totalAmount = blockAmount + (prev.vehicle_cost || 0)
-
+                      const totalAmount = (prev.total_quantity || 0) * rate * (prev.vehicle_cost || 0)
+                      
                       return {
                         ...prev,
                         rate: rate,
-                        block_amount: blockAmount,
-                        total_amount: totalAmount
+                        total_amount: totalAmount,
                       }
                     })
                   }}
-                  min="0"
+                  defaultValue={1}
                   required
                 />
               </div>
+            </div>
 
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Total Quantity
+              </label>
+              <input
+                type="number"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newStone.total_quantity === 0 ? '' : newStone.total_quantity}
+             defaultValue={1}
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Munim
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newStone.labour_name}
+                onChange={(e) => setNewStone({ ...newStone, labour_name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+               Loading: - Hydra
+              </label>
+             
+            </div>
+           
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Hydra Cost
+              </label>
+              <input
+                type="number"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newStone.vehicle_cost === 0 ? '' : newStone.vehicle_cost}
+              defaultValue={1}
+                required
+              />
             </div>
 
           
-
-            <div> 
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Total Quantity
-                </label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.total_quantity=== 0 ? '' : newStone.total_quantity}
-                  onChange={(e) => setNewStone({ ...newStone, total_quantity: Number(e.target.value) })}
-                 
-                  required
-                />
-              </div>
-              <div> 
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Issued Quantity
-                </label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.issued_quantity=== 0 ? '' : newStone.issued_quantity}
-                  onChange={(e) => setNewStone({ ...newStone, issued_quantity: Number(e.target.value) })}
-                 
-                  required
-                />
-              </div>
-              <div> 
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Labour Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.labour_name}
-                  onChange={(e) => setNewStone({ ...newStone, labour_name: e.target.value })}
-                  required
-                />
-              </div>
-              <div> 
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Transport Type
-                </label>
-                <select
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.transportType}
-                  onChange={(e) => setNewStone({ ...newStone, transportType: e.target.value })}
-                  required
-                >
-                  <option value="Hydra">Hydra</option>
-                  <option value="Truck">Truck</option>
-                </select>
-              </div>
-              <div> 
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Vehicle Number
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.vehicle_number}
-                  onChange={(e) => setNewStone({ ...newStone, vehicle_number: e.target.value })}
-                  required
-                />
-              </div>
-              <div> 
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Vehicle Cost
-                </label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.vehicle_cost=== 0 ? '' : newStone.vehicle_cost}
-                  onChange={(e) => setNewStone({ ...newStone, vehicle_cost: Number(e.target.value) })}
-                
-                  required
-                />
-              </div>
-
-
-                {/* Measurements */}
-            <div className="mt-8">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  <span className="text-indigo-600 dark:text-indigo-400">Measurements</span>
-                </h2>
-                <button
-                  type="button"
-                  onClick={addNewMeasure}
-                  className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
-                >
-                  <span className="font-medium">Add Measurement</span>
-                </button>
-              </div>
-
-              {newStone.addmeasures.map((measure, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
-                >
-              
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      L
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={measure.l}
-                      onChange={(e) => updateMeasure(index, 'l', e.target.value)}
-                      min="0"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      B
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={measure.b}
-                      onChange={(e) => updateMeasure(index, 'b', e.target.value)}
-                      min="0"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      H
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={measure.h}
-                      onChange={(e) => updateMeasure(index, 'h', e.target.value)}
-                      min="0"
-                      required
-                    />
-                  </div>
-                  <div className="flex items-end justify-end">
-                    <button
-                      type="button"
-                      onClick={() => removeMeasure(index)}
-                      className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
-                      disabled={newStone.addmeasures.length === 1}
-                    >
-                      <span className="font-medium">Remove</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
 
             {/* Summary */}
             <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-6">
@@ -641,25 +482,10 @@ export default function AddStonePage() {
                     {newStone.total_quantity.toFixed(2)}
                   </div>
                 </div>
+               
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    Issued Quantity
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {newStone.issued_quantity.toFixed(2)}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  Left Quantity
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {newStone.left_quantity.toFixed(2)}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  Block Amount
+                    Block Amount
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     ₹{(newStone.block_amount || 0).toFixed(2)}
@@ -667,13 +493,13 @@ export default function AddStonePage() {
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    Total Amount
+                    Total Amount  
+
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     ₹{(newStone.total_amount || 0).toFixed(2)}
                   </div>
                 </div>
-              
               </div>
             </div>
 
