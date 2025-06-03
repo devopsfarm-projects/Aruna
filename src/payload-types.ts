@@ -69,8 +69,6 @@ export interface Config {
   collections: {
     users: User;
     accounts: Account;
-    media: Media;
-    Mines: Mine;
     Block: Block;
     vendor: Vendor;
     stone: Stone;
@@ -82,8 +80,6 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     accounts: AccountsSelect<false> | AccountsSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    Mines: MinesSelect<false> | MinesSelect<true>;
     Block: BlockSelect<false> | BlockSelect<true>;
     vendor: VendorSelect<false> | VendorSelect<true>;
     stone: StoneSelect<false> | StoneSelect<true>;
@@ -159,43 +155,6 @@ export interface Account {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Mines".
- */
-export interface Mine {
-  id: number;
-  Mines_name: string;
-  address?: string | null;
-  phone?:
-    | {
-        number?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  mail_id?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Block".
  */
 export interface Block {
@@ -203,30 +162,37 @@ export interface Block {
   BlockType: 'Brown' | 'White';
   date?: string | null;
   vender_id?: (number | null) | Vendor;
-  mines?: (number | null) | Mine;
-  todi?:
+  munim?: string | null;
+  total_cost?: number | null;
+  hydra_cost?: number | null;
+  truck_cost?: number | null;
+  total_quantity?: number | null;
+  issued_quantity?: number | null;
+  left_quantity?: number | null;
+  final_total?: number | null;
+  front_l: number;
+  front_b?: number | null;
+  front_h?: number | null;
+  back_l?: number | null;
+  back_b?: number | null;
+  back_h?: number | null;
+  total_area?: number | null;
+  total_todi_cost?: number | null;
+  block?:
     | {
-        todicost?: number | null;
         addmeasures?:
           | {
               l?: number | null;
               b?: number | null;
               h?: number | null;
+              black_area?: number | null;
+              black_cost?: number | null;
               id?: string | null;
             }[]
           | null;
         id?: string | null;
       }[]
     | null;
-  block_amount?: number | null;
-  labour_name?: string | null;
-  transportType?: ('Hydra' | 'Truck') | null;
-  vehicle_number?: string | null;
-  vehicle_cost?: number | null;
-  total_amount?: number | null;
-  total_quantity?: number | null;
-  issued_quantity?: number | null;
-  left_quantity?: number | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -237,12 +203,9 @@ export interface Block {
  */
 export interface Vendor {
   id: number;
-  Mines_name?: (number | null) | Mine;
   address?: string | null;
   vendor?: string | null;
   vendor_no?: string | null;
-  Company_no?: string | null;
-  mail_id?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -254,25 +217,12 @@ export interface Stone {
   id: number;
   stoneType: 'Khanda' | 'Raskat';
   date?: string | null;
-  vender_id?: (number | null) | Vendor;
-  mines?: (number | null) | Mine;
-  addmeasures?:
-    | {
-        l?: number | null;
-        b?: number | null;
-        h?: number | null;
-        id?: string | null;
-      }[]
-    | null;
   rate?: number | null;
   total_quantity?: number | null;
   issued_quantity?: number | null;
   left_quantity?: number | null;
-  block_amount?: number | null;
-  labour_name?: string | null;
-  transportType?: ('Hydra' | 'Truck') | null;
-  vehicle_number?: string | null;
-  vehicle_cost?: number | null;
+  minum?: string | null;
+  hydra_cost?: number | null;
   total_amount?: number | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
@@ -292,14 +242,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'accounts';
         value: number | Account;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'Mines';
-        value: number | Mine;
       } | null)
     | ({
         relationTo: 'Block';
@@ -388,71 +330,43 @@ export interface AccountsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Mines_select".
- */
-export interface MinesSelect<T extends boolean = true> {
-  Mines_name?: T;
-  address?: T;
-  phone?:
-    | T
-    | {
-        number?: T;
-        id?: T;
-      };
-  mail_id?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Block_select".
  */
 export interface BlockSelect<T extends boolean = true> {
   BlockType?: T;
   date?: T;
   vender_id?: T;
-  mines?: T;
-  todi?:
+  munim?: T;
+  total_cost?: T;
+  hydra_cost?: T;
+  truck_cost?: T;
+  total_quantity?: T;
+  issued_quantity?: T;
+  left_quantity?: T;
+  final_total?: T;
+  front_l?: T;
+  front_b?: T;
+  front_h?: T;
+  back_l?: T;
+  back_b?: T;
+  back_h?: T;
+  total_area?: T;
+  total_todi_cost?: T;
+  block?:
     | T
     | {
-        todicost?: T;
         addmeasures?:
           | T
           | {
               l?: T;
               b?: T;
               h?: T;
+              black_area?: T;
+              black_cost?: T;
               id?: T;
             };
         id?: T;
       };
-  block_amount?: T;
-  labour_name?: T;
-  transportType?: T;
-  vehicle_number?: T;
-  vehicle_cost?: T;
-  total_amount?: T;
-  total_quantity?: T;
-  issued_quantity?: T;
-  left_quantity?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -462,12 +376,9 @@ export interface BlockSelect<T extends boolean = true> {
  * via the `definition` "vendor_select".
  */
 export interface VendorSelect<T extends boolean = true> {
-  Mines_name?: T;
   address?: T;
   vendor?: T;
   vendor_no?: T;
-  Company_no?: T;
-  mail_id?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -478,25 +389,12 @@ export interface VendorSelect<T extends boolean = true> {
 export interface StoneSelect<T extends boolean = true> {
   stoneType?: T;
   date?: T;
-  vender_id?: T;
-  mines?: T;
-  addmeasures?:
-    | T
-    | {
-        l?: T;
-        b?: T;
-        h?: T;
-        id?: T;
-      };
   rate?: T;
   total_quantity?: T;
   issued_quantity?: T;
   left_quantity?: T;
-  block_amount?: T;
-  labour_name?: T;
-  transportType?: T;
-  vehicle_number?: T;
-  vehicle_cost?: T;
+  minum?: T;
+  hydra_cost?: T;
   total_amount?: T;
   createdBy?: T;
   updatedAt?: T;

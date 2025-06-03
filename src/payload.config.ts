@@ -8,8 +8,6 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Accounts } from './collections/Accounts'
-import { Media } from './collections/Media'
-import { Mines } from './collections/Mines'
 import { Vendor } from './collections/Vendor'
 import { Stone } from './collections/Stone'
 import { Block } from './collections/Block'
@@ -26,8 +24,6 @@ export default buildConfig({
   collections: [
     Users,
     Accounts,
-    Media,
-    Mines,
     Block,
     Vendor,
     Stone,

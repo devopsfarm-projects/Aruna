@@ -3,10 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
-import { Mines } from './types'
-import { Block, Measure } from './types'
-
-import TodiSection from './components/TodiSection'
+import { Block } from './types'
 import Summary from './components/Summary'
 
 const isAxiosError = (
@@ -36,8 +33,6 @@ const isAxiosError = (
   )
 }
 
-
-
 interface Vendor {
   id: number
   vendor: string
@@ -45,10 +40,6 @@ interface Vendor {
   address: string
   mail_id: string
   Company_no: string
-  Mines_name: {
-    id: number
-    Mines_name: string
-  }
   phone: Array<{
     number: string
     type?: string
@@ -62,7 +53,6 @@ interface _StoneResponse {
   vender_id: number
   stoneType: string
   date: string
-  mines: Mines
   addmeasures: Measure[]
   final_total: number
   issued_quantity: number | null
@@ -104,17 +94,22 @@ export default function AddBlockPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [vendors, setVendors] = useState<Vendor[]>([])
-  const [mines, setMines] = useState<Mines[]>([])
   const [newBlock, setNewBlock] = useState<Block>({
     vender_id: '',
     BlockType: '',
     date: new Date().toISOString().split('T')[0],
-    mines: null, // Initialize with null as per Block type definition
     labour_name: '',
+    block: [{
+      blockcost: 0,
+      addmeasures: []
+    }],
     qty: 0,
     vehicle_number: '',
-    vehicle_cost: 0,
-    todi: [],
+    hydra_cost: 0,
+    truck_cost: 0,
+    total_cost: 0,
+    total_area: 0,
+    total_todi_cost: 0,
     total_quantity: 0,
     issued_quantity: 0,
     left_quantity: 0,
@@ -123,157 +118,20 @@ export default function AddBlockPage() {
     partyAdvancePayment: 0,
     transportType: 'Hydra',
     createdBy: '',
+    block_id: '',
+    front_l: 0,
+    front_b: 0,
+    front_h: 0,
+    back_l: 0,
+    back_b: 0,
+    back_h: 0,
+    transport_cost: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   })
 
-  // Add new Todi section
-  const addNewTodi = () => {
-    setNewBlock((prev) => ({
-      ...prev,
-      todi: [
-        ...(prev.todi || []),
-        {
-          todicost: 0,
-          addmeasures: [
-            {
-              qty: 0,
-              l: 0,
-              b: 0,
-              h: 0,
-              rate: 0,
-            },
-          ],
-        },
-      ],
-    }))
-  }
 
-  // Remove Todi section
-  const removeTodi = (index: number) => {
-    setNewBlock((prev) => ({
-      ...prev,
-      todi: prev.todi?.filter((_, i) => i !== index) || [],
-    }))
-  }
 
- 
-
-  // Update Todi measure
-  const updateTodiMeasure = (
-    todiIndex: number,
-    measureIndex: number,
-    field: keyof Measure | 'add' | 'remove',
-    value: string | number,
-  ) => {
-    const newTodi = [...newBlock.todi]
-
-    if (field === 'add') {
-      newTodi[todiIndex].addmeasures = [
-        ...(newTodi[todiIndex].addmeasures || []),
-        {
-          l: 0,
-          b: 0,
-          h: 0,
-          qty: 0,
-        },
-      ]
-    } else if (field === 'remove') {
-      // Remove measure
-      newTodi[todiIndex].addmeasures = newTodi[todiIndex].addmeasures.filter(
-        (_, i) => i !== measureIndex,
-      )
-    } else {
-      // Update existing measure
-      const newMeasures = [...newTodi[todiIndex].addmeasures]
-      newMeasures[measureIndex] = { ...newMeasures[measureIndex], [field]: Number(value) }
-      newTodi[todiIndex].addmeasures = newMeasures
-    }
-
-    // Calculate final total
-    const finalTotal = newTodi.reduce((sum, todi) => {
-      return (
-        sum +
-        todi.addmeasures.reduce((tSum, m) => {
-          const l = m.l || 0
-          const b = m.b || 0
-          const h = m.h || 0
-          const todicost = todi.todicost || 0
-          const qty = newBlock.qty || 0
-          return tSum + l * b * h * qty * todicost
-        }, 0)
-      )
-    }, 0)
-
-    // Calculate remaining payment
-    const remainingPayment = finalTotal - (Number(newBlock.partyAdvancePayment) || 0)
-
-    setNewBlock((prev) => ({
-      ...prev,
-      todi: newTodi,
-      final_total: finalTotal,
-      partyRemainingPayment: remainingPayment,
-    }))
-  }
-
-  // Remove a measure from a todi
-  const removeMeasure = (todiIndex: number, measureIndex: number) => {
-    const newTodi = [...newBlock.todi]
-    newTodi[todiIndex].addmeasures = [
-      ...newTodi[todiIndex].addmeasures.slice(0, measureIndex),
-      ...newTodi[todiIndex].addmeasures.slice(measureIndex + 1),
-    ]
-
-    // Calculate final total
-    let finalTotal = 0
-    for (const todi of newTodi) {
-      const todicost = todi.todicost || 0
-      for (const measure of todi.addmeasures) {
-        const l = measure.l || 0
-        const b = measure.b || 0
-        const h = measure.h || 0
-        finalTotal += l * b * h * newBlock.qty * todicost
-      }
-    }
-
-    // Calculate remaining payment
-    const remainingPayment = finalTotal - (Number(newBlock.partyAdvancePayment) || 0)
-
-    setNewBlock((prev) => ({
-      ...prev,
-      todi: newTodi,
-      final_total: finalTotal,
-      partyRemainingPayment: remainingPayment,
-    }))
-  }
-
-  // Update Todi cost
-  const updateTodiCost = (todiIndex: number, value: string | number) => {
-    const newTodi = [...newBlock.todi]
-    newTodi[todiIndex].todicost = Number(value)
-
-    // Calculate final total
-    let finalTotal = 0
-    for (const todi of newTodi) {
-      const todicost = todi.todicost || 0
-      for (const measure of todi.addmeasures) {
-        const l = measure.l || 0
-        const b = measure.b || 0
-        const h = measure.h || 0
-        finalTotal += l * b * h * newBlock.qty * todicost
-      }
-    }
-
-    // Calculate remaining payment
-    const remainingPayment = finalTotal - (Number(newBlock.partyAdvancePayment) || 0)
-
-    setNewBlock((prev) => ({
-      ...prev,
-      todi: newTodi,
-      final_total: finalTotal,
-      partyRemainingPayment: remainingPayment,
-    }))
-  }
-
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -295,18 +153,16 @@ export default function AddBlockPage() {
           }
         })(),
         vender_id: newBlock.vender_id ? Number(newBlock.vender_id) : null,
-        mines: newBlock.mines ? Number(newBlock.mines.id) : null,
-        todi:
-          newBlock.todi?.map((t) => ({
-            todicost: Number(t.todicost),
-            addmeasures:
-              t.addmeasures?.map((m) => ({
-                qty: Number(m.qty),
-                l: Number(m.l),
-                b: Number(m.b),
-                h: Number(m.h),
-              })) || [],
+        block: newBlock.block?.map((b) => ({
+          blockcost: Number(b.blockcost),
+          addmeasures: b.addmeasures?.map((m) => ({
+            l: Number(m.l),
+            b: Number(m.b),
+            h: Number(m.h),
+            black_area: Number(m.black_area),
+            black_cost: Number(m.black_cost),
           })) || [],
+        })) || [],
         qty: Number(newBlock.qty),
         issued_quantity: newBlock.issued_quantity
           ? Number(newBlock.issued_quantity).toString()
@@ -348,65 +204,20 @@ export default function AddBlockPage() {
     }
   }
 
-
-useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        // Fetch mines
-        try {
-          const minesRes = await axios.get<ApiResponse<Mines>>('/api/Mines')
-          console.log('Mines response:', minesRes.data)
-          const mines = minesRes.data.docs.map((m: Mines) => ({
-            id: m.id,
-            Mines_name: m.Mines_name,
-            name: m.Mines_name,
-            address: m.address,
-            phone: m.phone,
-            mail_id: m.mail_id,
-            createdAt: m.createdAt,
-            updatedAt: m.updatedAt
-          }))
-          setMines(mines)
-        } catch (mineError) {
-          console.error('Error fetching mines:', mineError)
-        }
-
-      } catch (error) {
-        setError('Failed to load data. Please try again later.')
-        console.error('Error fetching data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
-
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true)
         setError(null)
-        const [vendorsRes] = await Promise.all([
-          axios.get<ApiResponse<Vendor>>('/api/vendor'),
-        ])
+        const [vendorsRes] = await Promise.all([axios.get<ApiResponse<Vendor>>('/api/vendor')])
 
         // Convert vendor IDs to numbers
         const vendorsWithNumberIds = (vendorsRes.data.docs || []).map((vendor) => ({
           ...vendor,
           id: Number(vendor.id),
-          Mines_name: vendor.Mines_name ? {
-            ...vendor.Mines_name,
-            id: Number(vendor.Mines_name.id),
-          } : { id: 0, Mines_name: '' }, // Provide default values when Mines_name is undefined
         }))
 
         setVendors(vendorsWithNumberIds)
-      
       } catch (error) {
         setError('Failed to load data. Please try again later.')
         console.error('Error fetching data:', error)
@@ -446,229 +257,358 @@ useEffect(() => {
                 Block Information
               </h2>
               <div className="space-y-6">
-              <div className="space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* Basic Block Information */}
-      <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Basic Block Information</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="blockType" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Block Type
-            </label>
-            <select
-              id="blockType"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                <div className="space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                  {/* Basic Block Information */}
+                  <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
+                      Basic Block Information
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="blockType"
+                          className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                        >
+                          Block Type
+                        </label>
+                        <select
+                          id="blockType"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.BlockType}
-              onChange={(e) => setNewBlock({ ...newBlock, BlockType: e.target.value })}
-              required
-            >
-              <option value="">Select Type</option>
-              <option value="Brown">Brown</option>
-              <option value="White">White</option>
-            </select>
-          </div>
+                          value={newBlock.BlockType}
+                          onChange={(e) => setNewBlock({ ...newBlock, BlockType: e.target.value })}
+                          required
+                        >
+                          <option value="">Select Type</option>
+                          <option value="Brown">Brown</option>
+                          <option value="White">White</option>
+                        </select>
+                      </div>
 
-          <div>
-            <label htmlFor="date" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Date
-            </label>
-            <input
-              id="date"
-              type="date"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                      <div>
+                        <label
+                          htmlFor="date"
+                          className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                        >
+                          Date
+                        </label>
+                        <input
+                          id="date"
+                          type="date"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.date}
-              onChange={(e) => setNewBlock({ ...newBlock, date: e.target.value })}
-              required
-            />
-          </div>
+                          value={newBlock.date}
+                          onChange={(e) => setNewBlock({ ...newBlock, date: e.target.value })}
+                          required
+                        />
+                      </div>
 
-          <div>
-            <label htmlFor="vendor" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Vendor
-            </label>
-            <select
-              id="vendor"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                      <div>
+                        <label
+                          htmlFor="vendor"
+                          className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                        >
+                          Vendor
+                        </label>
+                        <select
+                          id="vendor"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.vender_id || ''}
-              onChange={(e) => setNewBlock({ ...newBlock, vender_id: e.target.value })}
-              required
-              disabled={vendors.length === 0}
-            >
-              <option value="">{vendors.length === 0 ? 'Loading vendors...' : 'Select Vendor'}</option>
-              {vendors.map((vendor) => (
-                <option key={vendor.id} value={vendor.id}>
-                  {vendor.vendor}
-                </option>
-              ))}
-            </select>
-          </div>
-
-               {/* Mines */}
-               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  Mine
-                </label>
-                <select
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newBlock.mines?.id || ''}
-                  onChange={(e) => {
-                    const selectedId = e.target.value;
-  
-                    setNewBlock({ ...newBlock, mines: { id: selectedId } });
-                  }}
-                  required
-                  disabled={mines.length === 0}
-                >
-                  <option value="">{mines.length === 0 ? 'Loading mines...' : 'Select Mine'}</option>
-                  {mines.map((mine) => (
-                    <option key={mine.id} value={mine.id}>
-                      {mine.Mines_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-        </div>
-      </section>
-
-      {/* Block Details */}
-      <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Block Details</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div>
-            <label htmlFor="totalQuantity" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Total Quantity
-            </label>
-            <input
-              id="totalQuantity"
-              type="number"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                          value={newBlock.vender_id || ''}
+                          onChange={(e) => setNewBlock({ ...newBlock, vender_id: e.target.value })}
+                          required
+                          disabled={vendors.length === 0}
+                        >
+                          <option value="">
+                            {vendors.length === 0 ? 'Loading vendors...' : 'Select Vendor'}
+                          </option>
+                          {vendors.map((vendor) => (
+                            <option key={vendor.id} value={vendor.id}>
+                              {vendor.vendor}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="munim"
+                          className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                        >
+                          Munim
+                        </label>
+                        <input
+                          id="munim"
+                          type="text"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.total_quantity === 0 ? '' : newBlock.total_quantity}
-              onChange={(e) => setNewBlock({ ...newBlock, total_quantity: Number(e.target.value) })}
-              required
-            />
-          </div>
+                          value={newBlock.munim}
+                          onChange={(e) => setNewBlock({ ...newBlock, munim: e.target.value })}
+                          required
+                        />
+                      </div>
 
-          <div>
-            <label htmlFor="issuedQuantity" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Issued Quantity
-            </label>
-            <input
-              id="issuedQuantity"
-              type="number"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                      <div>
+                        <label
+                          htmlFor="todiCost"
+                          className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                        >
+                          Todi cost
+                        </label>
+                        <input
+                          id="todiCost"
+                          type="text"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.issued_quantity === 0 ? '' : newBlock.issued_quantity}
-              onChange={(e) => setNewBlock({ ...newBlock, issued_quantity: Number(e.target.value) })}
-              required
-            />
-          </div>
+                          value={newBlock.total_cost}
+                          onChange={(e) => setNewBlock({ ...newBlock, total_cost: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </section>
 
-          <div>
-            <label htmlFor="leftQuantity" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Left Quantity
-            </label>
-            <input
-              id="leftQuantity"
-              type="number"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white cursor-not-allowed"
-              value={newBlock.total_quantity - newBlock.issued_quantity}
-              readOnly
-              disabled
-            />
-          </div>
-        </div>
-      </section>
+                  {/* Block Details */}
+                  <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
+                      Todi Details
+                    </h2>
 
-      {/* Transport Details */}
-      <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Transport Details</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="transportType" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Transport Type
-            </label>
-            <select
-              id="transportType"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                    {/* Front Side Measurements */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">
+                        Front Side
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div>
+                          <label
+                            htmlFor="front-l"
+                            className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                          >
+                            Front L (लम्बाई) - Length
+                          </label>
+                          <input
+                            id="front-l"
+                            type="number"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            value={newBlock.front_l || ''}
+                            onChange={(e) =>
+                              setNewBlock({ ...newBlock, front_l: Number(e.target.value) || 0 })
+                            }
+                            required
+                            min="0"
+                            placeholder="Enter front length"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="front-b"
+                            className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                          >
+                            Front B (चौड़ाई) - Breadth
+                          </label>
+                          <input
+                            id="front-b"
+                            type="number"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            value={newBlock.front_b || ''}
+                            onChange={(e) =>
+                              setNewBlock({ ...newBlock, front_b: Number(e.target.value) || 0 })
+                            }
+                            required
+                            min="0"
+                            placeholder="Enter front breadth"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="front-h"
+                            className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                          >
+                            Front H (ऊंचाई) - Height
+                          </label>
+                          <input
+                            id="front-h"
+                            type="number"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            value={newBlock.front_h || ''}
+                            onChange={(e) =>
+                              setNewBlock({ ...newBlock, front_h: Number(e.target.value) || 0 })
+                            }
+                            required
+                            min="0"
+                            placeholder="Enter front height"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Back Side Measurements */}
+                    <div className="mt-8">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">
+                        Back Side
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div>
+                          <label
+                            htmlFor="back-l"
+                            className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                          >
+                            Back L (लम्बाई) - Length
+                          </label>
+                          <input
+                            id="back-l"
+                            type="number"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            value={newBlock.back_l || ''}
+                            onChange={(e) =>
+                              setNewBlock({ ...newBlock, back_l: Number(e.target.value) || 1 })
+                            }
+                            required
+                            min="1"
+                            placeholder="Enter back length"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="back-b"
+                            className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                          >
+                            Back B (चौड़ाई) - Breadth
+                          </label>
+                          <input
+                            id="back-b"
+                            type="number"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            value={newBlock.back_b || ''}
+                            onChange={(e) =>
+                              setNewBlock({ ...newBlock, back_b: Number(e.target.value) || 1 })
+                            }
+                            required
+                            min="1"
+                            placeholder="Enter back breadth"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="back-h"
+                            className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                          >
+                            Back H (ऊंचाई) - Height
+                          </label>
+                          <input
+                            id="back-h"
+                            type="number"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            value={newBlock.back_h || ''}
+                            onChange={(e) =>
+                              setNewBlock({ ...newBlock, back_h: Number(e.target.value) || 1 })
+                            }
+                            required
+                            min="1"
+                            placeholder="Enter back height"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <div>
+                    <label
+                      htmlFor="todiCost"
+                      className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                    >
+                      Total Area
+                    </label>
+                    <input
+                      id="todiCost"
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.transportType}
-              onChange={(e) => setNewBlock({ ...newBlock, transportType: e.target.value })}
-              required
-            >
-              <option value="Hydra">Hydra</option>
-              <option value="Truck">Truck</option>
-            </select>
-          </div>
+                      value={newBlock.total_area}
+                      onChange={(e) => setNewBlock({ ...newBlock, todi_cost: e.target.value })}
+                      required
+                    />
+                  </div>
 
-          <div>
-            <label htmlFor="vehicleNumber" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Vehicle Number
-            </label>
-            <input
-              id="vehicleNumber"
-              type="text"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  <div>
+                    <label
+                      htmlFor="todiCost"
+                      className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                    >
+                      Total Todi cost
+                    </label>
+                    <input
+                      id="todiCost"
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.vehicle_number}
-              onChange={(e) => setNewBlock({ ...newBlock, vehicle_number: e.target.value })}
-              required
-            />
-          </div>
+                      value={newBlock.total_todi_cost}
+                      onChange={(e) => setNewBlock({ ...newBlock, todi_cost: e.target.value })}
+                      required
+                    />
+                  </div>
 
-          <div>
-            <label htmlFor="vehicleCost" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Vehicle Cost
-            </label>
-            <input
-              id="vehicleCost"
-              type="number"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.vehicle_cost === 0 ? '' : newBlock.vehicle_cost}
-              onChange={(e) => setNewBlock({ ...newBlock, vehicle_cost: Number(e.target.value) })}
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="labourName" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Labour Name
-            </label>
-            <input
-              id="labourName"
-              type="text"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={newBlock.labour_name}
-              onChange={(e) => setNewBlock({ ...newBlock, labour_name: e.target.value })}
-              required
-            />
-          </div>
-        </div>
-      </section>
-    </div>
+                  {/* Transport Details */}
+                  <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
+                      Transport Details
+                    </h2>
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <label
+                            htmlFor="hydraCost"
+                            className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                          >
+                            Hydra Cost
+                          </label>
+                          <input
+                            id="hydraCost"
+                            type="number"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            value={newBlock.hydra_cost}
+                            onChange={(e) => setNewBlock({ ...newBlock, hydra_cost: e.target.value })}
+                            min="1"
+                            placeholder="Enter hydra cost"
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="truckCost"
+                            className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+                          >
+                            Truck Cost
+                          </label>
+                          <input
+                            id="truckCost"
+                            type="number"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            value={newBlock.truck_cost}
+                            onChange={(e) => setNewBlock({ ...newBlock, truck_cost: e.target.value })}
+                            min="1"
+                            placeholder="Enter truck cost"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
               </div>
             </section>
 
-            {/* Todi Section */}
-            <section className="px-6 py-6 sm:px-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-5">
-                Todi Measurements
-              </h2>
-              <TodiSection
-                todis={newBlock.todi}
-                onRemove={removeTodi}
-                onMeasureChange={updateTodiMeasure}
-                onCostChange={updateTodiCost}
-                onAddNewTodi={addNewTodi}
-                onMeasureRemove={removeMeasure}
-              />
-            </section>
+           
+     
 
             {/* Summary */}
             <section className="px-6 py-6 sm:px-8 bg-gray-50 dark:bg-gray-800 rounded-lg mt-8">

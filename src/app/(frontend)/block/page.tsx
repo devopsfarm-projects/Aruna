@@ -176,12 +176,8 @@ export default function BlockList() {
               </th>
               <th className="p-3">S.No.</th>
               <th className="p-3">Vendor</th>
-              <th className="p-3">Mine</th>
               <th className="p-3">Block Type</th>
               <th className="p-3">Date</th>
-              <th className="p-3">Total Qty</th>
-              <th className="p-3">Issued Qty</th>
-              <th className="p-3">Amount</th>
               <th className="p-3">Actions</th>
             </tr>
           </thead>
@@ -197,7 +193,6 @@ export default function BlockList() {
                 </td>
                 <td className="p-3 text-center">{index + 1}</td>
                 <td className="p-3">{typeof block.vender_id === 'object' && block.vender_id?.vendor ? block.vender_id.vendor : '-'}</td>
-                <td className="p-3">{typeof block.mines === 'object' && block.mines?.Mines_name ? block.mines.Mines_name : '-'}</td>
                 <td className="p-3">{block.BlockType}</td>
                 <td className="p-3">
                 {block.date ? new Date(block.date).toLocaleString('en-IN', {
@@ -209,9 +204,6 @@ export default function BlockList() {
                         hour12: true
                       }) : '-'}
                 </td>
-                <td className="p-3">{block.total_quantity || '-'}</td>
-                <td className="p-3">{block.issued_quantity || '-'}</td>
-                <td className="p-3">{block.total_amount || '-'}</td>
                 <td className="p-3">
                   <div className="flex gap-4"> 
                   <Link href={`/block/edit?id=${block.id}`} className="text-blue-500">
