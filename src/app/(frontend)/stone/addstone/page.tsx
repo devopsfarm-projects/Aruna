@@ -244,7 +244,6 @@ export default function AddStonePage() {
                       }
                     })
                   }}
-                  defaultValue={1}
                   required
                 />
               </div>

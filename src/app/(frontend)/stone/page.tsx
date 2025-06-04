@@ -196,8 +196,7 @@ export default function StoneList() {
                   className="rounded"
                 />
               </div>
-              <div className="text-gray-900 dark:text-white font-semibold">{stone.vender_id.vendor}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{stone.mines?.Mines_name}</div>
+              <div className="text-gray-900 dark:text-white font-semibold">{stone.vender_id?.vendor || '-'}</div>
               <div className="text-sm mt-1">Type: {stone.stoneType}</div>
               <div className="text-sm">Date: {new Date(stone.date).toLocaleDateString()}</div>
               <div className="text-sm">Qty: {stone.total_quantity || '-'}</div>
@@ -224,8 +223,6 @@ export default function StoneList() {
                   />
                 </th>
                 <th className="p-3 text-left">S.No.</th>
-                <th className="p-3 text-left">Vendor</th>
-                <th className="p-3 text-left">Mine</th>
                 <th className="p-3 text-left">Stone Type</th>
                 <th className="p-3 text-left">Date</th>
                 <th className="p-3 text-left">Qty</th>
@@ -245,8 +242,6 @@ export default function StoneList() {
                     />
                   </td>
                   <td className="p-3 text-center">{index + 1}</td>
-                  <td className="p-3">{stone.vender_id?.vendor}</td>
-                  <td className="p-3">{stone.mines?.Mines_name}</td>
                   <td className="p-3">{stone.stoneType}</td>
                   <td className="p-3"> {stone.date ? new Date(stone.date).toLocaleString('en-IN', {
                         year: 'numeric',

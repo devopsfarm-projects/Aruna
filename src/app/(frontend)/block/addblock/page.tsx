@@ -65,12 +65,12 @@ export default function AddBlockPage() {
     }))
   }
 
- 
+
 
   const handleMeasureChange = (
     blockIndex: number,
     measureIndex: number,
-    field: keyof Measure | 'add',
+    field: keyof Measure | 'add' | 'remove',
     value: string | number,
   ) => {
     setNewBlock((prev) => {

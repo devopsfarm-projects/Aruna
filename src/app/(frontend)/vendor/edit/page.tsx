@@ -12,28 +12,18 @@ interface Vendor {
   vendor: string
   vendor_no: string
   address: string
-  mail_id: string
-  Company_no: string
   phone: string[]
   createdAt: string
   updatedAt: string
-  Mines_name: number | null | string | { id: number }
+ 
 }
-
-type Mine = {
-  id: number
-  Mines_name: string
-  address: string
-  phone: { number: string }[]
-  mail_id: string
-}
+ 
 
 export default function EditVendor() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const id = searchParams.get('id') as string
   const [vendor, setVendor] = useState<Vendor | null>(null)
-  const [mines, setMines] = useState<Mine[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -41,21 +31,14 @@ export default function EditVendor() {
       if (!id) return
 
       try {
-        // Fetch mines first
-        const minesRes = await axios.get<ApiResponse<Mine>>('/api/Mines')
-        const minesData = minesRes.data.docs
-        if (minesData) {
-          setMines(minesData)
-        }
+      
+   
 
         // Then fetch vendor
         const res = await axios.get<Vendor>(`/api/vendor/${Number(id)}`)
         const vendorData = res.data
         
-        // Handle Mines_name being either a number, null, or an object with id
-        if (vendorData.Mines_name && typeof vendorData.Mines_name === 'object' && 'id' in vendorData.Mines_name) {
-          vendorData.Mines_name = vendorData.Mines_name.id
-        }
+        
         
         setVendor(vendorData)
       } catch (error) {
@@ -143,25 +126,7 @@ export default function EditVendor() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Company Number
-              </label>
-              <input
-                type="text"
-                value={vendor.Company_no}
-                onChange={(e) =>
-                  setVendor(
-                    (prev) =>
-                      prev && {
-                        ...prev,
-                        Company_no: e.target.value,
-                      },
-                  )
-                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
+
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -183,58 +148,9 @@ export default function EditVendor() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Email
-              </label>
-              <input
-                type="email"
-                value={vendor.mail_id}
-                onChange={(e) =>
-                  setVendor(
-                    (prev) =>
-                      prev && {
-                        ...prev,
-                        mail_id: e.target.value,
-                      },
-                  )
-                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
+ 
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Mine Name
-              </label>
-              <select
-                value={
-                  vendor.Mines_name 
-                    ? (typeof vendor.Mines_name === 'object' && 'id' in vendor.Mines_name
-                        ? vendor.Mines_name.id
-                        : vendor.Mines_name)
-                    : ''
-                }
-                onChange={(e) =>
-                  setVendor(
-                    (prev) =>
-                      prev && {
-                        ...prev,
-                        Mines_name: Number(e.target.value),
-                      },
-                  )
-                }
-                disabled={loading}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select Mine</option>
-                {mines.map((mine) => (
-                  <option key={mine.id} value={mine.id}>
-                    {mine.Mines_name}
-                  </option>
-                ))}
-              </select>
-            </div>
+         
           </div>
 
           <div className="mt-8">

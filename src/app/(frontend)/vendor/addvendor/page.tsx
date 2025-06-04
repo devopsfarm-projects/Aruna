@@ -61,16 +61,7 @@ interface Phone {
   type?: string
 }
 
-interface Mines {
-  name: ReactNode
-  id: number
-  Mines_name: string
-  address: string
-  phone: Phone[]
-  mail_id: string
-  createdAt: string
-  updatedAt: string
-}
+
 
 interface Vendor {
   name: ReactNode
@@ -78,17 +69,12 @@ interface Vendor {
   vendor: string
   vendor_no: string
   address: string
-  mail_id: string
   Company_no: string
-  Mines_name: string
   phone: Phone[]
-  createdAt: string
-  updatedAt: string
 }
 
 export default function VendorForm() {
   const router = useRouter()
-  const [mines, setMines] = useState<Mines[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [, setIsLoading] = useState(true)
   const [, setError] = useState<string | null>(null)
@@ -97,48 +83,12 @@ export default function VendorForm() {
     vendor: '',
     vendor_no: '',
     address: '',
-    mail_id: '',
     Company_no: '',
-    Mines_name: '',
     phone: [],
-    createdAt: '',
-    updatedAt: '',
     name: '',
   })
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        // Fetch mines
-        try {
-          const minesRes = await axios.get<MinesApiResponse>('/api/Mines')
-          console.log('Mines response:', minesRes.data)
-          const Mines_name = minesRes.data.docs.map((m: Mines) => ({
-            id: m.id,
-            Mines_name: m.Mines_name,
-            name: m.Mines_name,
-            address: m.address || '',
-            phone: m.phone || [],
-            mail_id: m.mail_id || '',
-            createdAt: m.createdAt || '',
-            updatedAt: m.updatedAt || '',
-          }))
-          setMines(Mines_name)
-        } catch (mineError) {
-          console.error('Error fetching mines:', mineError)
-        }
-      } catch (error) {
-        setError('Failed to load data. Please try again later.')
-        console.error('Error fetching data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
 
-    fetchData()
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -147,13 +97,9 @@ export default function VendorForm() {
     try {
       // Prepare the data in the format expected by the API
       const payload = {
-        ...newVendor,
-        Mines_name: Number(newVendor.Mines_name),
         vendor_no: Number(newVendor.vendor_no),
-        Company_no: Number(newVendor.Company_no),
         address: newVendor.address,
         vendor: newVendor.vendor,
-        mail_id: newVendor.mail_id,
       }
 
       console.log('Submitting data:', JSON.stringify(payload, null, 2))
@@ -217,40 +163,7 @@ export default function VendorForm() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 sm:p-10">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Mines Select */}
-              {/* <div>
-                <label
-                  htmlFor="mine"
-                  className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
-                >
-                  Mine
-                </label>
-                <select
-                  id="mine"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={newVendor.Mines_name ?? ''}
-                  onChange={(e) => {
-                    const selectedMine = mines.find((m) => m.id === parseInt(e.target.value))
-                    setNewVendor({
-                      ...newVendor,
-                      Mines_name: selectedMine ? selectedMine.id.toString() : '',
-                    })
-                  }}
-                  required
-                  disabled={mines.length === 0}
-                >
-                  <option value="">
-                    {mines.length === 0 ? 'Loading mines...' : 'Select Mine'}
-                  </option>
-                  {mines.map((mine) => (
-                    <option key={mine.id} value={mine.id}>
-                      {mine.name}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
-
-              {/* Vendor Name */}
+        
               <div>
                 <label
                   htmlFor="vendor"
@@ -310,45 +223,7 @@ export default function VendorForm() {
                 />
               </div>
 
-              {/* Company Mobile No */}
-              {/* <div>
-                <label
-                  htmlFor="company_no"
-                  className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
-                >
-                  Company Mobile No.
-                </label>
-                <input
-                  id="company_no"
-                  type="tel"
-                  pattern="[0-9]{10,15}"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={newVendor.Company_no}
-                  onChange={(e) => setNewVendor({ ...newVendor, Company_no: e.target.value })}
-                  required
-                  placeholder="Enter company mobile number"
-                />
-              </div> */}
-            </div>
-
-            {/* Mail ID */}
-            {/* <div>
-              <label
-                htmlFor="mail_id"
-                className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
-              >
-                Email Address
-              </label>
-              <input
-                id="mail_id"
-                type="email"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                value={newVendor.mail_id}
-                onChange={(e) => setNewVendor({ ...newVendor, mail_id: e.target.value })}
-                required
-                placeholder="Enter email address"
-              />
-            </div> */}
+   </div>
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row justify-end gap-4">

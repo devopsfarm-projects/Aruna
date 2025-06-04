@@ -68,7 +68,6 @@ export default function EditBlock() {
   const [block, setblock] = useState<block | null>(null)
   const [loading, setLoading] = useState(true)
   const [vendors, setVendors] = useState<Vendor[]>([])
-  const [mines, setMines] = useState<Mine[]>([])
   const [loadingData, setLoadingData] = useState(true)
   const id = searchParams.get('id')
 
@@ -85,9 +84,7 @@ export default function EditBlock() {
         const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
         const vendorsData = vendorsRes.data.docs
 
-        // Fetch mines
-        const minesRes = await axios.get<ApiResponse<Mine>>('/api/Mines')
-        const minesData = minesRes.data.docs
+  
 
         // Ensure measurements array exists
         if (!blockData.addmeasures) {
@@ -96,7 +93,6 @@ export default function EditBlock() {
 
         setblock(blockData)
         setVendors(vendorsData)
-        setMines(minesData)
       } catch (error) {
         console.error('Error fetching data:', error)
         alert('Error loading data')
@@ -182,31 +178,6 @@ export default function EditBlock() {
               </select>
             </div>
 
- 
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Mine Name
-              </label>
-              <select
-                value={block?.mines || ''}
-                onChange={(e) => 
-                  setblock(prev => prev && {
-                    ...prev,
-                    mines: Number(e.target.value)
-                  })
-                }
-                disabled={loadingData}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select Mine</option>
-                {mines.map(mine => (
-                  <option key={mine.id} value={mine.id}>
-                    {mine.Mines_name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">

@@ -66,18 +66,6 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Search Mine
-            </label>
-            <input
-              type="text"
-              value={searchMine}
-              onChange={(e) => setSearchMine(e.target.value)}
-              placeholder="Mine name"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
           <div className="flex items-end">
             <Link href="/vendor/addvendor" className="w-full">
               <button className="w-full bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition">
@@ -94,11 +82,8 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               <tr>
                 <th className="p-4">S.No</th>
                 <th className="p-4">Vendor</th>
-                <th className="p-4">Mine</th>
                 <th className="p-4">Address</th>
                 <th className="p-4">Vendor No.</th>
-                <th className="p-4">Company No.</th>
-                <th className="p-4">Email</th>
                 <th className="p-4">Actions</th>
               </tr>
             </thead>
@@ -108,25 +93,16 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
                   key={item.id || index}
                   className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
+                 
                   <td className="p-4">{index + 1}</td>
                   <td className="p-4">{item.vendor}</td>
-                  <td className="p-4">{typeof item.Mines_name === 'object' ? item.Mines_name?.Mines_name ?? '-' : item.Mines_name ?? '-'}</td>
-                  <td className="p-4">{item.address}</td>
+                   <td className="p-4">{item.address}</td>
                   <td className="p-4">
                     <a href={`tel:${item.vendor_no}`} className="text-blue-600 dark:text-blue-400">
                       {item.vendor_no ?? '-'}
                     </a>
                   </td>
-                  <td className="p-4">
-                    <a href={`tel:${item.Company_no}`} className="text-blue-600 dark:text-blue-400">
-                      {item.Company_no ?? '-'}
-                    </a>
-                  </td>
-                  <td className="p-4">
-                    <a href={`mailto:${item.mail_id}`} className="text-blue-600 dark:text-blue-400">
-                      {item.mail_id ?? '-'}
-                    </a>
-                  </td>
+                  
                   <td className="p-4">
                     <div className="flex gap-3">
                       <Link href={`/vendor/edit?id=${item.id}`} className="text-blue-600">Edit</Link>

@@ -39,8 +39,9 @@ export default function TodiSection({
                 </h2>
                 <button
                   type="button"
-                  onClick={() => {
-                    onMeasureChange(blockIndex, 0, 'add', 0)
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onMeasureChange(blockIndex, -1, 'add', 0)
                   }}
                   className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
                 >
@@ -62,7 +63,7 @@ export default function TodiSection({
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       value={measure.l}
                       onChange={(e) => onMeasureChange(blockIndex, index, 'l', e.target.value)}
-                      min="0"
+                      min="1"
                       required
                     />
                   </div>
@@ -76,7 +77,7 @@ export default function TodiSection({
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       value={measure.b}
                       onChange={(e) => onMeasureChange(blockIndex, index, 'b', e.target.value)}
-                      min="0"
+                      min="1"
                       required
                     />
                   </div>
@@ -90,7 +91,7 @@ export default function TodiSection({
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       value={measure.h}
                       onChange={(e) => onMeasureChange(blockIndex, index, 'h', e.target.value)}
-                      min="0"
+                      min="1"
                       required
                     />
                   </div>
@@ -103,7 +104,7 @@ export default function TodiSection({
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       value={measure.black_area}
                       onChange={(e) => onMeasureChange(blockIndex, index, 'black_area', e.target.value)}
-                      min="0"
+                      min="1"
                       required
                     />
                   </div>
@@ -116,7 +117,7 @@ export default function TodiSection({
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       value={measure.black_cost}
                       onChange={(e) => onMeasureChange(blockIndex, index, 'black_cost', e.target.value)}
-                      min="0"
+                      min="1"
                       required
                     />
                   </div>
