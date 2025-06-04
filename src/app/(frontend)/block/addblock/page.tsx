@@ -60,6 +60,14 @@ export default function AddBlockPage() {
     updatedAt: new Date().toISOString(),
   })
 
+  const calculateTotalCost = (block: Block) => {
+    if (block.total_todi_cost && block.block[0]?.addmeasures[0]?.black_area && block.todirate) {
+      const blackArea = block.block[0].addmeasures[0].black_area / 144
+      return (block.total_todi_cost * blackArea) / block.todirate
+    }
+    return 0
+  }
+
   const handleChange = (field: keyof Block, value: unknown) => {
     setNewBlock((prev) => {
       const updatedBlock = {
@@ -80,7 +88,7 @@ export default function AddBlockPage() {
           Number(updatedBlock.front_l) * Number(updatedBlock.front_b) * Number(updatedBlock.front_h)
         const backVolume =
           Number(updatedBlock.back_l) * Number(updatedBlock.back_b) * Number(updatedBlock.back_h)
-        updatedBlock.total_area = frontVolume + backVolume
+        updatedBlock.total_area = (frontVolume + backVolume) / 144
 
         // Calculate total_todi_cost if todirate is available
         if (updatedBlock.todirate) {
@@ -91,9 +99,11 @@ export default function AddBlockPage() {
 
       // Calculate total_todi_cost if todirate changes
       if (field === 'todirate' && updatedBlock.total_area) {
-        updatedBlock.total_todi_cost =
-          (updatedBlock.total_area * Number(updatedBlock.todirate)) / 144
+        updatedBlock.total_todi_cost = updatedBlock.total_area * Number(updatedBlock.todirate)
       }
+
+      // Always recalculate total_cost whenever any relevant field changes
+      updatedBlock.total_cost = calculateTotalCost(updatedBlock)
 
       return updatedBlock
     })
@@ -389,22 +399,6 @@ export default function AddBlockPage() {
                       />
                     </div>
 
-                    {/* <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Total Cost
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.total_cost}
-                        onChange={(e) => handleChange('total_cost', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        required
-                        min="0"
-                        placeholder="Enter Total Cost"
-                      />
-                    </div> */}
-
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Todi Rate
@@ -462,36 +456,6 @@ export default function AddBlockPage() {
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                         min="0"
                         placeholder="Enter total_quantity"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Issued Quantity
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.issued_quantity}
-                        onChange={(e) => handleChange('issued_quantity', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter issued quantity"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Final Total
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.final_total}
-                        onChange={(e) => handleChange('final_total', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter final total"
                       />
                     </div>
                   </div>
@@ -587,7 +551,7 @@ export default function AddBlockPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Total Area (Front Volume + Back Volume)
+                        Total Area (Front Volume + Back Volume)/ 144
                       </label>
                       <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
                         {newBlock.total_area || 0}
@@ -595,7 +559,7 @@ export default function AddBlockPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Total Todi Cost = (Total Area * Todi Rate) / 144
+                        Total Todi Cost = (Total Area * Todi Rate)
                       </label>
                       <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
                         {newBlock.total_todi_cost || 0}
@@ -617,6 +581,54 @@ export default function AddBlockPage() {
                   onMeasureRemove={removeMeasure}
                   onAddNewBlock={addBlock}
                 />
+              </section>
+
+              <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center sm:text-left">
+                  <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-3 py-1 rounded-full inline-block">
+                    Summary
+                  </span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[
+                    { label: 'Todi Rate', value: newBlock.todirate || 0 },
+                    { label: 'Hydra Cost', value: newBlock.hydra_cost || 0 },
+                    { label: 'Truck Cost', value: newBlock.truck_cost || 0 },
+                    {
+                      label: 'Total Area (Front Volume + Back Volume)/144',
+                      value: newBlock.total_area || 0,
+                    },
+                    {
+                      label: 'Total Todi Cost = (Total Area * Todi Rate)',
+                      value: newBlock.total_todi_cost || 0,
+                    },
+
+                    {
+                      label: 'Black Area (L*B*H)/144',
+                      value: (newBlock.block[0]?.addmeasures[0]?.black_area ?? 0) / 144,
+                    },
+                    {
+                      label: 'Black Cost (L*B*H)',
+                      value: newBlock.block[0]?.addmeasures[0]?.black_area ?? 0,
+                    },
+                    {
+                      label: 'Total Cost = (Total Todi Cost *Black area)/todi area',
+                      value: calculateTotalCost(newBlock) || 0,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        {item.label}
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {item.value}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </section>
 
               {/* Form Actions */}
