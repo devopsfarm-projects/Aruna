@@ -1,14 +1,13 @@
 import React from 'react'
-import { Block, Vendor, Mines } from '../types'
+import { Block, Vendor } from '../types'
 
 interface FormSectionProps {
   block: Block
   vendors: Vendor[]
-  mines: Mines[]
   onChange: (field: keyof Block, value: string | number) => void
 }
 
-export default function FormSection({ block, vendors, mines, onChange }: FormSectionProps) {
+export default function FormSection({ block, vendors, onChange }: FormSectionProps) {
   return (
     <div className="space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Basic Block Information */}
@@ -69,26 +68,6 @@ export default function FormSection({ block, vendors, mines, onChange }: FormSec
             </select>
           </div>
 
-          <div>
-            <label htmlFor="mine" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Mine
-            </label>
-            <select
-              id="mine"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={block.mines?.id || ''}
-              onChange={(e) => onChange('mines', e.target.value)}
-              required
-            >
-              <option value="">Select Mine</option>
-              {mines.map((mine) => (
-                <option key={mine.id} value={mine.id}>
-                  {mine.Mines_name}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </section>
 
@@ -180,21 +159,7 @@ export default function FormSection({ block, vendors, mines, onChange }: FormSec
             />
           </div>
 
-          <div>
-            <label htmlFor="vehicleCost" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Vehicle Cost
-            </label>
-            <input
-              id="vehicleCost"
-              type="number"
-              min={0}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              value={block.vehicle_cost}
-              onChange={(e) => onChange('vehicle_cost', Number(e.target.value))}
-              required
-            />
-          </div>
+ 
 
           <div>
             <label htmlFor="labourName" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">

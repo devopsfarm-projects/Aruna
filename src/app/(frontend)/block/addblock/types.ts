@@ -5,8 +5,8 @@ export type Measure = {
   rate: number
   labour?: string
   hydra?: string
-  black_cost?: number
-  black_area?: number
+  black_cost: number
+  black_area: number
 }
 
 export interface Block {

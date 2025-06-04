@@ -43,13 +43,12 @@ export default function BlockList() {
         (typeof block.vender_id === 'object' && block.vender_id !== null &&
           (block.vender_id.vendor?.toLowerCase().includes(searchVendor.toLowerCase()) ||
             block.vender_id.vendor_no?.toString().toLowerCase().includes(searchVendor.toLowerCase())))
-      const mineMatch = !searchMine ||
-        (typeof block.mines === 'object' && block.mines !== null &&
-          block.mines?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase()))
-      return vendorMatch && mineMatch
+      
+     
+      return vendorMatch 
     })
     setFilteredBlocks(filtered)
-  }, [blocks, searchVendor, searchMine])
+  }, [blocks, searchVendor])
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked
@@ -145,12 +144,10 @@ export default function BlockList() {
                 className="rounded cursor-pointer"
               />
             </div>
-            <p><strong>Mine:</strong> {typeof block.mines === 'object' ? block.mines?.Mines_name || '-' : '-'}</p>
             <p><strong>Type:</strong> {block.BlockType}</p>
             <p><strong>Date:</strong> {block.date}</p>
             <p><strong>Total Qty:</strong> {block.total_quantity || '-'}</p>
             <p><strong>Issued Qty:</strong> {block.issued_quantity || '-'}</p>
-            <p><strong>Amount:</strong> {block.total_amount || '-'}</p>
             <div className="flex justify-end gap-4 mt-2">
               <Link href={`/block/edit?id=${block.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
                 Edit

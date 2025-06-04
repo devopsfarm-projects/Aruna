@@ -25,6 +25,7 @@ export default function AddBlockPage() {
             l: 0,
             b: 0,
             h: 0,
+            rate: 0,
             black_area: 0,
             black_cost: 0,
           },
@@ -113,6 +114,7 @@ export default function AddBlockPage() {
           l: 0,
           b: 0,
           h: 0,
+          rate: 0,
           black_area: 0,
           black_cost: 0,
         },
@@ -272,7 +274,7 @@ export default function AddBlockPage() {
       try {
         setIsLoading(true)
         setError(null)
-        const [vendorsRes] = await Promise.all([axios.get<Vendor[]>('/api/vendor')])
+        const [vendorsRes] = await Promise.all([axios.get<{ docs: Vendor[] }>('/api/vendor')])
         setVendors(vendorsRes.data.docs || [])
       } catch (error) {
         setError('Failed to load data. Please try again later.')
