@@ -96,18 +96,18 @@ export default function TodiSection({
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      Black Area (L*B*H)
+                      Block Area (L*B*H)/144
                     </label>
                     <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                      {measure.l * measure.b * measure.h || 0}
+                      {(measure.l * measure.b * measure.h)/144 || 0}
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    black_cost ((L*B*H)/144)
+                    black_cost (L*B*H)
                     </label>
                     <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                      {(measure.black_area ?? 0) / 144}
+                      {(measure.black_area ?? 0) }
                     </div>
                   </div>
  
