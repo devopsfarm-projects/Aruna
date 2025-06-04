@@ -67,12 +67,14 @@ export default function Navbar() {
               <Link href="/" className="flex ms-2 md:me-24">
                 <Image
                   src="/image.png"
-                  className="h-8 me-3"
-                  width={40}
-                  height={40}
-                  alt="FlowBite Logo"
+                  className="h-12 w-20 me-3"
+                  height={205}
+                  width={205}
+                  alt="The Jodhpur Mines Logo"
+                  priority
                 />
-                {/* <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Flowbite</span> */}
+                
+                {/* <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-gold-600">The Jodhpur Mines</span> */}
               </Link>
             </div>
             <div className="flex items-center">
