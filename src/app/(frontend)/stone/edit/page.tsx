@@ -4,8 +4,6 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ApiResponse } from './types'
-import { error } from 'console'
 type Measure = {
   qty: number
   l: number
@@ -56,30 +54,7 @@ type Stone = {
   createdAt: string
   updatedAt: string
   vehicle_cost?: number
-}
-
-type Vendor = {
-  id: number
-  vendor: string
-  vendor_no: string
-  address: string
-  mail_id: string
-  Company_no: string
-  Mines_name: {
-    id: number
-    Mines_name: string
-    address: string
-    phone: { number: string }[]
-    mail_id: string
-  }
-}
-
-type Mine = {
-  id: number
-  Mines_name: string
-  address: string
-  phone: { number: string }[]
-  mail_id: string
+  rate: number
 }
 
 export default function EditStone() {
@@ -202,7 +177,7 @@ export default function EditStone() {
                 type="number"
                 value={stone.rate}
                 onChange={(e) =>
-                  setStone((prev) => (prev ? { ...prev, rate: e.target.value } : prev))
+                  setStone((prev) => (prev ? { ...prev, rate: parseFloat(e.target.value) } : prev))
                 }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />

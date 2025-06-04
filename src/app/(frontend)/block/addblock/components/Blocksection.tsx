@@ -5,13 +5,13 @@ interface TodiSectionProps {
   blocks: Block['block']
   onRemove: (index: number) => void
   onMeasureChange: (
-    todiIndex: number,
+    blockIndex: number,
     measureIndex: number,
     field: keyof Measure | 'add',
     value: string | number,
   ) => void
-  onMeasureRemove: (todiIndex: number, measureIndex: number) => void
-  onAddNewTodi: () => void
+  onMeasureRemove: (blockIndex: number, measureIndex: number) => void
+  onAddNewBlock: () => void
 }
 
 export default function TodiSection({
@@ -19,11 +19,11 @@ export default function TodiSection({
   onRemove,
   onMeasureChange,
   onMeasureRemove,
-  onAddNewTodi,
+  onAddNewBlock,
 }: TodiSectionProps) {
   return (
     <div className="space-y-6">
-      {blocks?.map((todi, blockIndex) => (
+      {blocks?.map((block, blockIndex) => (
         <div key={blockIndex} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
@@ -39,9 +39,8 @@ export default function TodiSection({
                 </h2>
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onMeasureChange(blockIndex, -1, 'add', 0)
+                  onClick={() => {
+                    onMeasureChange(blockIndex, 0, 'add', 0);
                   }}
                   className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
                 >
@@ -49,7 +48,7 @@ export default function TodiSection({
                 </button>
               </div>
 
-              {todi.addmeasures?.map((measure, index) => (
+              {block.addmeasures?.map((measure, index) => (
                 <div
                   key={index}
                   className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
@@ -97,29 +96,19 @@ export default function TodiSection({
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    black_area
+                      Black Area (L*B*H)
                     </label>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={measure.black_area}
-                      onChange={(e) => onMeasureChange(blockIndex, index, 'black_area', e.target.value)}
-                      min="1"
-                      required
-                    />
+                    <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                      {measure.l * measure.b * measure.h || 0}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    black_cost
+                    black_cost ((L*B*H)/144)
                     </label>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={measure.black_cost}
-                      onChange={(e) => onMeasureChange(blockIndex, index, 'black_cost', e.target.value)}
-                      min="1"
-                      required
-                    />
+                    <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                      {(measure.black_area ?? 0) / 144}
+                    </div>
                   </div>
  
                   <div className="flex items-end justify-end">
@@ -155,7 +144,7 @@ export default function TodiSection({
       <div className="flex justify-end">
         <button
           type="button"
-          onClick={onAddNewTodi}
+          onClick={onAddNewBlock}
           className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
         >
           Add New Block

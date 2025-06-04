@@ -60,8 +60,8 @@ type Stone = {
 export default function StoneList() {
   const [stones, setStones] = useState<Stone[]>([])
   const [filteredStones, setFilteredStones] = useState<Stone[]>([])
-  const [searchVendor, setSearchVendor] = useState('')
-  const [searchMine, setSearchMine] = useState('')
+  const [searchVendor] = useState('')
+  const [searchMine] = useState('')
   const [selectedStones, setSelectedStones] = useState<Set<string>>(new Set())
   const [isSelectAll, setIsSelectAll] = useState(false)
 
@@ -159,28 +159,7 @@ export default function StoneList() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">Search Vendor</label>
-              <input
-                type="text"
-                value={searchVendor}
-                onChange={(e) => setSearchVendor(e.target.value)}
-                placeholder="Vendor name or company no."
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">Search Mine</label>
-              <input
-                type="text"
-                value={searchMine}
-                onChange={(e) => setSearchMine(e.target.value)}
-                placeholder="Mine name"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-            </div>
-          </div>
+        
         </div>
 
         {/* Mobile View */}
@@ -226,7 +205,7 @@ export default function StoneList() {
                 <th className="p-3 text-left">Stone Type</th>
                 <th className="p-3 text-left">Date</th>
                 <th className="p-3 text-left">Qty</th>
-                <th className="p-3 text-left">Issued</th>
+            
                 <th className="p-3 text-left">Amount</th>
                 <th className="p-3 text-left">Actions</th>
               </tr>
@@ -252,7 +231,6 @@ export default function StoneList() {
                         hour12: true
                       }) : '-'}</td>
                   <td className="p-3">{stone.total_quantity || '-'}</td>
-                  <td className="p-3">{stone.issued_quantity || '-'}</td>
                   <td className="p-3">₹{stone.total_amount || '-'}</td>
                   <td className="p-3">
                     <div className="flex gap-4">

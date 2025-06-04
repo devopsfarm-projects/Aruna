@@ -235,7 +235,7 @@ export default function AddStonePage() {
                   onChange={(e) => {
                     const rate = Number(e.target.value)
                     setNewStone((prev) => {
-                      const totalAmount = (prev.total_quantity || 0) * rate * (prev.vehicle_cost || 0)
+                      const totalAmount = ((prev.total_quantity || 0) * rate) + (prev.vehicle_cost || 0)
                       
                       return {
                         ...prev,
@@ -257,7 +257,17 @@ export default function AddStonePage() {
                 type="number"
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={newStone.total_quantity || ''}
-                onChange={(e) => setNewStone({...newStone, total_quantity: Number(e.target.value) || 0})}
+                onChange={(e) => {
+                  const quantity = Number(e.target.value) || 0;
+                  setNewStone((prev) => {
+                    const totalAmount = (quantity * (prev.rate || 0)) + (prev.vehicle_cost || 0);
+                    return {
+                      ...prev,
+                      total_quantity: quantity,
+                      total_amount: totalAmount,
+                    };
+                  });
+                }}
                 min="0"
                 required
                 placeholder="Enter quantity"
@@ -291,7 +301,17 @@ export default function AddStonePage() {
                 type="number"
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 value={newStone.vehicle_cost || ''}
-                onChange={(e) => setNewStone({...newStone, vehicle_cost: Number(e.target.value) || 0})}
+                onChange={(e) => {
+                  const cost = Number(e.target.value) || 0;
+                  setNewStone((prev) => {
+                    const totalAmount = ((prev.total_quantity || 0) * (prev.rate || 0)) + cost;
+                    return {
+                      ...prev,
+                      vehicle_cost: cost,
+                      total_amount: totalAmount,
+                    };
+                  });
+                }}
                 min="0"
                 required
                 placeholder="Enter cost"
@@ -333,7 +353,7 @@ export default function AddStonePage() {
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    Total Amount  
+                    Total Amount  = ((Total Quantity * Rate) + Hydra Cost)
 
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">

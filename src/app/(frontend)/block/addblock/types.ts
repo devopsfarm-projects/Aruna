@@ -2,11 +2,14 @@ export type Measure = {
   l: number
   b: number
   h: number
-  black_area: number
-  black_cost: number
+  rate: number
+  labour?: string
+  hydra?: string
+  black_cost?: number
+  black_area?: number
 }
 
-export type Block = {
+export interface Block {
   _id?: string
   block_id: string
   BlockType: string
@@ -41,6 +44,10 @@ export type Block = {
   total_cost?: number
   total_area?: number
   total_todi_cost?: number
+  todirate?: number
+  rate?: number
+  block_amount?: number
+  total_amount?: number
   munim?: string
 }
 

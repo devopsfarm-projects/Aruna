@@ -38,6 +38,7 @@ export default function AddBlockPage() {
     total_cost: 0,
     total_area: 0,
     total_todi_cost: 0,
+    todirate: 0, // Added todirate field
     total_quantity: 0,
     issued_quantity: 0,
     left_quantity: 0,
@@ -58,14 +59,44 @@ export default function AddBlockPage() {
     updatedAt: new Date().toISOString(),
   })
 
-  const handleChange = (field: keyof Block, value: any) => {
-    setNewBlock((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
+  const handleChange = (field: keyof Block, value: unknown) => {
+    setNewBlock((prev) => {
+      const updatedBlock = {
+        ...prev,
+        [field]: value,
+      } as Block
+
+      // Calculate total_area if any of the dimensions changed
+      if (
+        field === 'front_l' ||
+        field === 'front_b' ||
+        field === 'front_h' ||
+        field === 'back_l' ||
+        field === 'back_b' ||
+        field === 'back_h'
+      ) {
+        const frontVolume =
+          Number(updatedBlock.front_l) * Number(updatedBlock.front_b) * Number(updatedBlock.front_h)
+        const backVolume =
+          Number(updatedBlock.back_l) * Number(updatedBlock.back_b) * Number(updatedBlock.back_h)
+        updatedBlock.total_area = frontVolume + backVolume
+
+        // Calculate total_todi_cost if todirate is available
+        if (updatedBlock.todirate) {
+          updatedBlock.total_todi_cost =
+            (updatedBlock.total_area * Number(updatedBlock.todirate)) / 144
+        }
+      }
+
+      // Calculate total_todi_cost if todirate changes
+      if (field === 'todirate' && updatedBlock.total_area) {
+        updatedBlock.total_todi_cost =
+          (updatedBlock.total_area * Number(updatedBlock.todirate)) / 144
+      }
+
+      return updatedBlock
+    })
   }
-
-
 
   const handleMeasureChange = (
     blockIndex: number,
@@ -73,28 +104,63 @@ export default function AddBlockPage() {
     field: keyof Measure | 'add' | 'remove',
     value: string | number,
   ) => {
-    setNewBlock((prev) => {
-      const newBlocks = [...prev.block]
-      const newMeasures = [...newBlocks[blockIndex].addmeasures]
+    const newBlocks = [...newBlock.block]
 
-      if (field === 'add') {
-        newMeasures.push({
+    if (field === 'add') {
+      newBlocks[blockIndex].addmeasures = [
+        ...(newBlocks[blockIndex].addmeasures || []),
+        {
           l: 0,
           b: 0,
           h: 0,
           black_area: 0,
           black_cost: 0,
-        })
-      } else {
-        newMeasures[measureIndex] = {
-          ...newMeasures[measureIndex],
-          [field]: Number(value),
-        }
+        },
+      ]
+    } else if (field === 'remove') {
+      // Remove measure
+      newBlocks[blockIndex].addmeasures = newBlocks[blockIndex].addmeasures.filter(
+        (_, i) => i !== measureIndex,
+      )
+    } else {
+      // Update existing measure
+      const newMeasures = [...newBlocks[blockIndex].addmeasures]
+      const currentMeasure = newMeasures[measureIndex]
+      const updatedMeasure = { ...currentMeasure, [field]: Number(value) }
+
+      // Calculate black_area if L, B, or H changed
+      if (field === 'l' || field === 'b' || field === 'h') {
+        updatedMeasure.black_area = updatedMeasure.l * updatedMeasure.b * updatedMeasure.h
       }
 
+      newMeasures[measureIndex] = updatedMeasure
       newBlocks[blockIndex].addmeasures = newMeasures
-      return { ...prev, block: newBlocks }
-    })
+    }
+
+    // Calculate final total
+    const finalTotal = newBlocks.reduce((sum, block) => {
+      return (
+        sum +
+        block.addmeasures.reduce((tSum, m) => {
+          const l = m.l || 0
+          const b = m.b || 0
+          const h = m.h || 0
+          const blockcost = block.blockcost || 0
+          const qty = newBlock.qty || 0
+          return tSum + l * b * h * qty * blockcost
+        }, 0)
+      )
+    }, 0)
+
+    // Calculate remaining payment
+    const remainingPayment = finalTotal - (Number(newBlock.partyAdvancePayment) || 0)
+
+    setNewBlock((prev) => ({
+      ...prev,
+      block: newBlocks,
+      final_total: finalTotal,
+      partyRemainingPayment: remainingPayment,
+    }))
   }
 
   const removeMeasure = (blockIndex: number, measureIndex: number) => {
@@ -119,6 +185,7 @@ export default function AddBlockPage() {
               l: 0,
               b: 0,
               h: 0,
+              rate: 0,
               black_area: 0,
               black_cost: 0,
             },
@@ -129,11 +196,10 @@ export default function AddBlockPage() {
   }
 
   const removeBlock = (index: number) => {
-    setNewBlock((prev) => {
-      const newBlocks = [...prev.block]
-      newBlocks.splice(index, 1)
-      return { ...prev, block: newBlocks }
-    })
+    setNewBlock((prev) => ({
+      ...prev,
+      block: prev.block?.filter((_, i) => i !== index) || [],
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -152,6 +218,7 @@ export default function AddBlockPage() {
                 l: Number(m.l),
                 b: Number(m.b),
                 h: Number(m.h),
+                rate: Number(m.rate),
                 black_area: Number(m.black_area),
                 black_cost: Number(m.black_cost),
               })) || [],
@@ -205,9 +272,7 @@ export default function AddBlockPage() {
       try {
         setIsLoading(true)
         setError(null)
-        const [vendorsRes] = await Promise.all([
-          axios.get<Vendor[]>('/api/vendor'),
-        ])
+        const [vendorsRes] = await Promise.all([axios.get<Vendor[]>('/api/vendor')])
         setVendors(vendorsRes.data.docs || [])
       } catch (error) {
         setError('Failed to load data. Please try again later.')
@@ -241,13 +306,14 @@ export default function AddBlockPage() {
                 Enter block details and measurements
               </p>
             </header>
-            <form onSubmit={handleSubmit} className="divide-y divide-gray-200 dark:divide-gray-700">
-              <section className="px-6 py-6 sm:px-8">
-                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-5">
-                  Block Information
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Basic Information Section */}
+              <section className="px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+                  Basic Information
                 </h2>
                 <div className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                     <div>
                       <label
                         htmlFor="blockType"
@@ -308,7 +374,7 @@ export default function AddBlockPage() {
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      Munim
+                        Munim
                       </label>
                       <input
                         type="text"
@@ -321,9 +387,9 @@ export default function AddBlockPage() {
                       />
                     </div>
 
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      Total Cost
+                        Total Cost
                       </label>
                       <input
                         type="number"
@@ -335,9 +401,22 @@ export default function AddBlockPage() {
                         min="0"
                         placeholder="Enter Total Cost"
                       />
-                    </div>
+                    </div> */}
 
-          
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Todi Rate
+                      </label>
+                      <input
+                        type="number"
+                        value={newBlock.todirate}
+                        onChange={(e) => handleChange('todirate', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        min="0"
+                        placeholder="Enter Todi Rate"
+                      />
+                    </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -369,83 +448,6 @@ export default function AddBlockPage() {
                       />
                     </div>
 
-               
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      Total Quantity
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.total_quantity}
-                        onChange={(e) => handleChange('total_quantity', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter total_quantity"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      Issued Quantity
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.issued_quantity}
-                        onChange={(e) => handleChange('issued_quantity', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter issued_quantity"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      Left Quantity
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.left_quantity}
-                        onChange={(e) => handleChange('left_quantity', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter left_quantity"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      final_total
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.final_total}
-                        onChange={(e) => handleChange('final_total', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter final_total"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Total Todi Cost
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.total_todi_cost}
-                        onChange={(e) => handleChange('total_todi_cost', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter total todi cost"
-                      />
-                    </div>
-
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Total Quantity
@@ -457,7 +459,7 @@ export default function AddBlockPage() {
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                         min="0"
-                        placeholder="Enter total quantity"
+                        placeholder="Enter total_quantity"
                       />
                     </div>
 
@@ -478,21 +480,6 @@ export default function AddBlockPage() {
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Left Quantity
-                      </label>
-                      <input
-                        type="number"
-                        value={newBlock.left_quantity}
-                        onChange={(e) => handleChange('left_quantity', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter left quantity"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Final Total
                       </label>
                       <input
@@ -505,7 +492,8 @@ export default function AddBlockPage() {
                         placeholder="Enter final total"
                       />
                     </div>
-
+                  </div>
+                  <div className="mt-8 grid grid-cols-1 md:grid-cols-3  gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Front L (लम्बाई) - Length
@@ -597,38 +585,27 @@ export default function AddBlockPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      total_area
+                        Total Area (Front Volume + Back Volume)
                       </label>
-                      <input
-                        type="number"
-                        value={newBlock.total_area}
-                        onChange={(e) => handleChange('total_area', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter total area"
-                      />
+                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                        {newBlock.total_area || 0}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      total_todi_cost
+                        Total Todi Cost = (Total Area * Todi Rate) / 144
                       </label>
-                      <input
-                        type="number"
-                        value={newBlock.total_todi_cost}
-                        onChange={(e) => handleChange('total_todi_cost', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
-                        placeholder="Enter total area"
-                      />
+                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                        {newBlock.total_todi_cost || 0}
+                      </div>
                     </div>
                   </div>
                 </div>
               </section>
 
-              <section className="px-6 py-6 sm:px-8">
-                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-5">
+              {/* Block Details Section */}
+              <section className="px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                   Block Details
                 </h2>
                 <BlockSection
@@ -636,51 +613,54 @@ export default function AddBlockPage() {
                   onRemove={removeBlock}
                   onMeasureChange={handleMeasureChange}
                   onMeasureRemove={removeMeasure}
-                  onAddNewTodi={addBlock}
+                  onAddNewBlock={addBlock}
                 />
               </section>
 
-              <div className="px-6 py-6 sm:px-8 bg-gray-50 dark:bg-gray-700 mt-8 rounded-lg flex flex-col sm:flex-row sm:justify-end sm:space-x-4 space-y-3 sm:space-y-0">
-                <button
-                  type="button"
-                  onClick={() => router.push('/block')}
-                  className="w-full sm:w-auto inline-flex justify-center py-3 px-5 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto inline-flex justify-center py-3 px-5 border border-transparent rounded-md shadow-sm bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Submitting...
-                    </>
-                  ) : (
-                    'Add Block'
-                  )}
-                </button>
+              {/* Form Actions */}
+              <div className="px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:justify-end sm:space-x-4 space-y-3 sm:space-y-0">
+                  <button
+                    type="button"
+                    onClick={() => router.push('/block')}
+                    className="w-full sm:w-auto inline-flex justify-center py-3 px-5 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto inline-flex justify-center py-3 px-5 border border-transparent rounded-md shadow-sm bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Submitting...
+                      </>
+                    ) : (
+                      'Add Block'
+                    )}
+                  </button>
+                </div>
               </div>
             </form>
           </div>

@@ -54,13 +54,7 @@ type Vendor = {
   }
 }
 
-type Mine = {
-  id: number
-  Mines_name: string
-  address: string
-  phone: { number: string }[]
-  mail_id: string
-}
+
 
 export default function EditBlock() {
   const router = useRouter()

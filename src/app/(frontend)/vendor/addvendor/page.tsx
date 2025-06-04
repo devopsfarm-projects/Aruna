@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, ReactNode } from 'react'
+import React, { useState, ReactNode } from 'react'
 import axios from 'axios'
 const isAxiosError = (
   error: unknown,
@@ -30,14 +30,6 @@ const isAxiosError = (
 }
 import { useRouter } from 'next/navigation'
 
-// API response types
-interface MinesApiResponse {
-  docs: Mines[]
-  totalDocs: number
-  limit: number
-  page: number
-  totalPages: number
-}
 
 // Error response types
 interface ValidationError {
@@ -76,8 +68,6 @@ interface Vendor {
 export default function VendorForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [, setIsLoading] = useState(true)
-  const [, setError] = useState<string | null>(null)
   const [newVendor, setNewVendor] = useState<Vendor>({
     id: '',
     vendor: '',

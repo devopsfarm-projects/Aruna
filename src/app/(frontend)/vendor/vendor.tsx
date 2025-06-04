@@ -5,25 +5,17 @@ import type { Vendor as PayloadVendor } from "../../../payload-types"
 
 export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }) {
   const [searchVendor, setSearchVendor] = useState('')
-  const [searchMine, setSearchMine] = useState('')
   const [filteredVendor, setFilteredVendor] = useState<PayloadVendor[]>([])
 
   useEffect(() => {
     const filtered = VendorItems.filter((vendor) => {
       const matchesVendor =
         !searchVendor ||
-        vendor.vendor?.toLowerCase().includes(searchVendor.toLowerCase()) ||
-        vendor.Company_no?.toLowerCase().includes(searchVendor.toLowerCase())
-
-      const matchesMine =
-        !searchMine ||
-        (typeof vendor.Mines_name === 'object' &&
-          vendor.Mines_name?.Mines_name?.toLowerCase().includes(searchMine.toLowerCase()))
-
-      return matchesVendor && matchesMine
+        vendor.vendor?.toLowerCase().includes(searchVendor.toLowerCase())
+      return matchesVendor
     })
     setFilteredVendor(filtered)
-  }, [VendorItems, searchVendor, searchMine])
+  }, [VendorItems, searchVendor])
 
   const handleDelete = async (id: string) => {
     const confirmDelete = confirm('Are you sure you want to delete this Vendor?')
@@ -124,19 +116,12 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               key={item.id || index}
               className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex flex-col gap-2"
             >
-              <div className="text-lg font-semibold text-indigo-700 dark:text-indigo-400">
-                {item.vendor} ({typeof item.Mines_name === 'object' ? item.Mines_name?.Mines_name ?? '-' : item.Mines_name ?? '-'})
-              </div>
+              
               <div className="text-sm text-gray-700 dark:text-gray-300">{item.address}</div>
               <div className="text-sm">
                 📞 Vendor: <a href={`tel:${item.vendor_no}`} className="text-blue-600">{item.vendor_no ?? '-'}</a>
               </div>
-              <div className="text-sm">
-                ☎️ Company: <a href={`tel:${item.Company_no}`} className="text-blue-600">{item.Company_no ?? '-'}</a>
-              </div>
-              <div className="text-sm">
-                📧 Email: <a href={`mailto:${item.mail_id}`} className="text-blue-600">{item.mail_id ?? '-'}</a>
-              </div>
+            
               <div className="flex gap-4 mt-2">
                 <Link href={`/vendor/edit?id=${item.id}`} className="text-sm text-blue-600">Edit</Link>
                 <button

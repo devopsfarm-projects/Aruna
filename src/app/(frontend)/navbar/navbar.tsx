@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState, useCallback } from 'react'
-import { RiAccountCircle2Fill, RiSunLine, RiMoonLine } from 'react-icons/ri'
+import { useEffect, useState } from 'react'
+import { RiAccountCircle2Fill } from 'react-icons/ri'
 import { FaHome } from 'react-icons/fa'
 import Image from 'next/image'
 import { GiStoneBlock, GiStonePile } from 'react-icons/gi'
@@ -56,13 +56,7 @@ export default function Navbar() {
     fetchUser()
   }, [setUser])
 
-  // Toggle dark mode callback
-  const toggleDarkMode = useCallback(() => {
-    const newMode = !isDarkMode
-    setIsDarkMode(newMode)
-    localStorage.setItem('theme', newMode ? 'dark' : 'light')
-    document.documentElement.classList.toggle('dark', newMode)
-  }, [isDarkMode])
+ 
 
   return (
     <>
@@ -106,6 +100,21 @@ export default function Navbar() {
                     >
                       {user?.email || 'user@example.com'}
                     </p>
+                  </div>
+                  <div className="px-4 py-3">
+                    <label className="flex items-center text-sm font-medium text-gray-900 dark:text-white">
+                      Dark Mode
+                      <input
+                        type="checkbox"
+                        className="ml-2"
+                        checked={isDarkMode}
+                        onChange={(e) => {
+                          setIsDarkMode(e.target.checked)
+                          localStorage.setItem('theme', e.target.checked ? 'dark' : 'light')
+                          document.documentElement.classList.toggle('dark', e.target.checked)
+                        }}
+                      />
+                    </label>
                   </div>
                   <ul className="py-1" role="none">
                     <li>

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
-import { ApiResponse } from './types'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Vendor {
