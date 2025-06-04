@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, ReactNode } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 const isAxiosError = (
   error: unknown,
@@ -47,15 +47,7 @@ const isErrorResponse = (obj: unknown): obj is ErrorResponse => {
   return ('errors' in data && Array.isArray(data.errors)) || 'message' in data
 }
 
-// Response types
-interface ApiResponse<T> {
-  docs: T[]
-  // Add other pagination fields if your API returns them
-  // total?: number
-  // limit?: number
-  // offset?: number
-  // etc.
-}
+
 
 type Measure = {
   qty: number
@@ -86,71 +78,11 @@ type Stone = {
   createdBy: string
 }
 
-interface Phone {
-  number: string
-  type?: string
-}
 
-interface Mines {
-  id: number
-  Mines_name: string
-  name: ReactNode
-}
-
-interface Vendor {
-  id: string
-  vendor: string
-  Company_no: string
-  name?: string
-  vendor_no?: string
-  address?: string
-  mail_id?: string
-  Mines_name?: {
-    id: number
-    Mines_name: string
-    address: string
-    phone: Phone[]
-    mail_id: string
-  }
-  phone?: Phone[]
-  createdAt?: string
-  updatedAt?: string
-}
-
-interface _StoneResponse {
-  id: number
-  vender_id: number
-  stoneType: string
-  date: string
-  mines: Mines
-  addmeasures: Measure[]
-  final_total: number
-  issued_quantity: number | null
-  left_quantity: number | null
-  partyAdvancePayment: number | null
-  partyRemainingPayment: number
-  total_quantity: number | null
-  transportType: string | null
-  createdAt: string
-  updatedAt: string
-  createdBy: string | null
-}
-
-interface ApiResponse<T> {
-  docs: T[]
-  // Add other pagination fields if your API returns them
-  // total?: number
-  // limit?: number
-  // offset?: number
-}
 
 export default function AddStonePage() {
   const router = useRouter()
-  // const [vendors, setVendors] = useState<Vendor[]>([])
-  // const [mines, setMines] = useState<Mines[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [, setIsLoading] = useState(true)
-  const [, setError] = useState<string | null>(null)
   const [newStone, setNewStone] = useState<Stone>({
     vender_id: '',
     stoneType: '',
@@ -170,111 +102,8 @@ export default function AddStonePage() {
     createdBy: '',
   })
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
 
-        // Fetch vendors
-        try {
-          const vendorsRes = await axios.get('/api/vendor')
-          const vendorsData = vendorsRes.data as {
-            docs: { id: string; vendor: string; Company_no: string }[]
-          }
-          console.log('Vendors response:', vendorsData)
-          const vendors = vendorsData.docs.map((v) => ({
-            id: v.id,
-            vendor: v.vendor,
-            vendor_no: v.Company_no,
-            name: v.vendor,
-            Company_no: v.Company_no,
-            address: '',
-            mail_id: '',
-            Mines_name: {
-              id: 0,
-              Mines_name: '',
-              address: '',
-              phone: [],
-              mail_id: '',
-            },
-            phone: [],
-            createdAt: '',
-            updatedAt: '',
-          }))
-         // setVendors(vendors)
-        } catch (vendorError) {
-          console.error('Error fetching vendors:', vendorError)
-        }
 
-        // Fetch mines
-        try {
-          const minesRes = await axios.get<ApiResponse<Mines>>('/api/Mines')
-          console.log('Mines response:', minesRes.data)
-          const mines = minesRes.data.docs.map((m: Mines) => ({
-            id: m.id,
-            Mines_name: m.Mines_name,
-            name: m.Mines_name,
-          }))
-         // setMines(mines)
-        } catch (mineError) {
-          console.error('Error fetching mines:', mineError)
-        }
-      } catch (error) {
-        setError('Failed to load data. Please try again later.')
-        console.error('Error fetching data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
-
-  // const updateMeasure = (index: number, field: keyof Measure, value: string | number) => {
-  //   const newMeasures = [...newStone.addmeasures]
-  //   newMeasures[index] = { ...newMeasures[index], [field]: Number(value) }
-
-  //   // Calculate total volume from all measures
-  //   const totalVolume = newMeasures.reduce((sum, m) => {
-  //     const l = m.l || 0
-  //     const b = m.b || 0
-  //     const h = m.h || 0
-  //     return sum + l * b * h
-  //   }, 0)
-
-  //   // Calculate block amount: total_quantity * (rate * total_volume)
-  //   const blockAmount = (newStone.total_quantity || 0) * ((newStone.rate || 0) * totalVolume)
-  //   // Calculate total amount: block_amount + vehicle_cost
-  //   const totalAmount = blockAmount + (newStone.vehicle_cost || 0)
-
-  //   setNewStone((prev) => ({
-  //     ...prev,
-  //     addmeasures: newMeasures,
-  //     block_amount: blockAmount,
-  //     total_amount: totalAmount,
-  //     left_quantity: prev.total_quantity - prev.issued_quantity,
-  //   }))
-  // }
-
-  // const addNewMeasure = () => {
-  //   setNewStone((prev) => ({
-  //     ...prev,
-  //     addmeasures: [...prev.addmeasures, { qty: 0, l: 0, b: 0, h: 0, rate: 0 }],
-  //   }))
-  // }
-
-  // const removeMeasure = (index: number) => {
-  //   const newMeasures = newStone.addmeasures.filter((_, i) => i !== index)
-  //   const totalQty = newMeasures.reduce((sum, m) => sum + (Number(m.qty) || 0), 0)
-
-  //   setNewStone((prev) => ({
-  //     ...prev,
-  //     addmeasures: newMeasures,
-  //     total_quantity: totalQty,
-  //     left_quantity: totalQty - (prev.issued_quantity || 0),
-  //   }))
-  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -406,7 +235,7 @@ export default function AddStonePage() {
                   onChange={(e) => {
                     const rate = Number(e.target.value)
                     setNewStone((prev) => {
-                      const totalAmount = (prev.total_quantity || 0) * rate * (prev.vehicle_cost || 0)
+                      const totalAmount = ((prev.total_quantity || 0) * rate) + (prev.vehicle_cost || 0)
                       
                       return {
                         ...prev,
@@ -415,7 +244,6 @@ export default function AddStonePage() {
                       }
                     })
                   }}
-                  defaultValue={1}
                   required
                 />
               </div>
@@ -428,9 +256,21 @@ export default function AddStonePage() {
               <input
                 type="number"
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={newStone.total_quantity === 0 ? '' : newStone.total_quantity}
-             defaultValue={1}
+                value={newStone.total_quantity || ''}
+                onChange={(e) => {
+                  const quantity = Number(e.target.value) || 0;
+                  setNewStone((prev) => {
+                    const totalAmount = (quantity * (prev.rate || 0)) + (prev.vehicle_cost || 0);
+                    return {
+                      ...prev,
+                      total_quantity: quantity,
+                      total_amount: totalAmount,
+                    };
+                  });
+                }}
+                min="0"
                 required
+                placeholder="Enter quantity"
               />
             </div>
             
@@ -460,9 +300,21 @@ export default function AddStonePage() {
               <input
                 type="number"
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={newStone.vehicle_cost === 0 ? '' : newStone.vehicle_cost}
-              defaultValue={1}
+                value={newStone.vehicle_cost || ''}
+                onChange={(e) => {
+                  const cost = Number(e.target.value) || 0;
+                  setNewStone((prev) => {
+                    const totalAmount = ((prev.total_quantity || 0) * (prev.rate || 0)) + cost;
+                    return {
+                      ...prev,
+                      vehicle_cost: cost,
+                      total_amount: totalAmount,
+                    };
+                  });
+                }}
+                min="0"
                 required
+                placeholder="Enter cost"
               />
             </div>
 
@@ -473,7 +325,7 @@ export default function AddStonePage() {
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                 <span className="text-indigo-600 dark:text-indigo-400">Summary</span>
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                     Total Quantity
@@ -485,15 +337,23 @@ export default function AddStonePage() {
                
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    Block Amount
+                  Hydra Cost
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    ₹{(newStone.block_amount || 0).toFixed(2)}
+                    ₹{(newStone.vehicle_cost || 0).toFixed(2)}
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    Total Amount  
+                  Rate
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    ₹{(newStone.rate || 0).toFixed(2)}
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Total Amount  = ((Total Quantity * Rate) + Hydra Cost)
 
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">

@@ -54,16 +54,7 @@ export const Accounts: CollectionConfig = {
           position: 'sidebar'
         }
       },
-      {
-        name: 'mine',
-        type: 'relationship',
-        relationTo: 'Mines',
-        hasMany: true,
-        required: true,
-        admin: {
-          position: 'sidebar'
-        }
-      },
+     
       {
         name: 'vendor',
         type: 'relationship',

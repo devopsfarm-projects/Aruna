@@ -16,14 +16,6 @@ interface CardProps {
 export default function DashboardPage() {
   const cards: CardProps[] = [
     {
-      title: 'Mines',
-      color: 'bg-blue-500 dark:bg-blue-600',
-      icon: <MdOutlineSupervisorAccount size={28} className="text-white" />,
-      link: '/Mines',
-      description: 'Manage your mines and mining operations',
-      stats: '5 Active Mines'
-    },
-    {
       title: 'Vendors',
       color: 'bg-purple-500 dark:bg-purple-600',
       icon: <MdOutlineSupervisorAccount size={28} className="text-white" />,

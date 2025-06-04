@@ -171,7 +171,7 @@ export default function StoneList() {
               <tr>
                 <th className="px-4 py-3">S.No.</th>
                 <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Mine Name</th>
+            
                 <th className="px-4 py-3">Vendor Name</th>
                 <th className="px-4 py-3">Type</th>
                 <th className="px-4 py-3">Total Amount</th>
@@ -197,7 +197,6 @@ export default function StoneList() {
                         hour12: true
                       }) : '-'}
                     </td>
-                    <td className="px-4 py-3">{typeof item.mines === 'object' && item.mines ? item.mines.Mines_name || '-' : '-'}</td>
                     <td className="px-4 py-3">{typeof item.vender_id === 'object' ? item.vender_id.vendor || '-' : item.vender_id || '-'}</td>
                     <td className="px-4 py-3">
                       {item.type === 'stone' ? `Stone: ${item.stoneType || '-'}` : `Block: ${item.BlockType}`}
