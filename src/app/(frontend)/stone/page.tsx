@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 
@@ -15,6 +15,7 @@ type Measure = {
 }
 
 type Stone = {
+  minum: ReactNode
   id: number | string
   vender_id: {
     id: number
@@ -223,6 +224,7 @@ export default function StoneList() {
                 </th>
                 <th className="p-3 text-left">S.No.</th>
                 <th className="p-3 text-left">Stone Type</th>
+                <th className="p-3 text-left">Minum</th>
                 <th className="p-3 text-left">Date</th>
                 <th className="p-3 text-left">Qty</th>
             
@@ -242,6 +244,7 @@ export default function StoneList() {
                   </td>
                   <td className="p-3 text-center">{index + 1}</td>
                   <td className="p-3">{stone.stoneType}</td>
+                  <td className="p-3">{stone.minum}</td>
                   <td className="p-3"> {stone.date ? new Date(stone.date).toLocaleString('en-IN', {
                         year: 'numeric',
                         month: 'long',

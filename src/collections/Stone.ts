@@ -67,7 +67,7 @@ export const Stone: CollectionConfig = {
 
         // Calculate total amount
         const hydraCost = data.hydra_cost || 0;
-        totalAmount = blockAmount + hydraCost;
+        totalAmount = blockAmount * hydraCost;
 
         return {
           ...data,
