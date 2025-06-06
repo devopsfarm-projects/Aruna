@@ -1,16 +1,16 @@
-'use client';
-import Link from 'next/link';
-import { GiStonePile } from 'react-icons/gi';
-import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md';
-import { JSX } from 'react';
+'use client'
+import Link from 'next/link'
+import { GiStonePile } from 'react-icons/gi'
+import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md'
+import { JSX } from 'react'
 
 interface CardProps {
-  title: string;
-  color: string;
-  icon: JSX.Element;
-  link: string;
-  description?: string;
-  stats: string;
+  title: string
+  color: string
+  icon: JSX.Element
+  link: string
+  description?: string
+  stats: string
 }
 
 export default function DashboardPage() {
@@ -21,7 +21,7 @@ export default function DashboardPage() {
       icon: <MdOutlineSupervisorAccount size={28} className="text-white" />,
       link: '/vendor',
       description: 'Manage your vendor relationships',
-      stats: '12 Active Vendors'
+      stats: '12 Active Vendors',
     },
     {
       title: 'Accounts',
@@ -29,7 +29,7 @@ export default function DashboardPage() {
       icon: <MdAccountBalance size={28} className="text-white" />,
       link: '/accounts',
       description: 'View and manage account statements',
-      stats: 'Updated Today'
+      stats: 'Updated Today',
     },
     {
       title: 'Stones',
@@ -37,7 +37,7 @@ export default function DashboardPage() {
       icon: <GiStonePile size={28} className="text-white" />,
       link: '/stone',
       description: 'Manage stone categories and inventory',
-      stats: '250+ Stones'
+      stats: '250+ Stones',
     },
     {
       title: 'Blocks',
@@ -45,17 +45,18 @@ export default function DashboardPage() {
       icon: <GiStonePile size={28} className="text-white" />,
       link: '/block',
       description: 'Manage block categories and inventory',
-      stats: '150+ Blocks'
-    }
-  ];
+      stats: '150+ Blocks',
+    },
+  ]
 
   return (
     <main className="min-h-screen bg-gray-100 dark:bg-gray-900 py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
-        
         {/* Hero Section */}
         <section className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6 sm:p-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">Dashboard</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            Dashboard
+          </h1>
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
             Welcome to your mining management dashboard
           </p>
@@ -87,5 +88,5 @@ export default function DashboardPage() {
         </section>
       </div>
     </main>
-  );
+  )
 }
