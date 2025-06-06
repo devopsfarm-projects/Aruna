@@ -182,20 +182,17 @@ export default function AddStonePage() {
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
             <span className="text-indigo-600 dark:text-indigo-400">Add</span> New Stone
           </h1>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-            <span className="text-indigo-600 dark:text-indigo-400">Mines: </span>The Jodhpur Mines
-          </h1>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Stone Type */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                   Stone Type
                 </label>
                 <select
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={newStone.stoneType}
                   onChange={(e) => setNewStone({ ...newStone, stoneType: e.target.value })}
                   required
@@ -213,167 +210,165 @@ export default function AddStonePage() {
                 </label>
                 <input
                   type="date"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={newStone.date}
                   onChange={(e) => setNewStone({ ...newStone, date: e.target.value })}
                   required
                 />
               </div>
 
-          
-
-           
-
+              {/* Rate */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                   Rate
                 </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                    value={newStone.rate === 0 ? '' : newStone.rate}
+                    onChange={(e) => {
+                      const rate = Number(e.target.value)
+                      setNewStone((prev) => {
+                        const totalAmount = ((prev.total_quantity || 0) * rate) * (prev.vehicle_cost || 0)
+                        return {
+                          ...prev,
+                          rate: rate,
+                          total_amount: totalAmount,
+                        }
+                      })
+                    }}
+                    required
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
+                </div>
+              </div>
+
+              {/* Total Quantity */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  Total Quantity
+                </label>
                 <input
                   type="number"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.rate === 0 ? '' : newStone.rate}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={newStone.total_quantity || ''}
                   onChange={(e) => {
-                    const rate = Number(e.target.value)
+                    const quantity = Number(e.target.value) || 0;
                     setNewStone((prev) => {
-                      const totalAmount = ((prev.total_quantity || 0) * rate) + (prev.vehicle_cost || 0)
-                      
+                      const totalAmount = (quantity * (prev.rate || 0)) * (prev.vehicle_cost || 0);
                       return {
                         ...prev,
-                        rate: rate,
+                        total_quantity: quantity,
                         total_amount: totalAmount,
-                      }
-                    })
+                      };
+                    });
                   }}
+                  min="0"
+                  required
+                  placeholder="Enter quantity"
+                />
+              </div>
+
+              {/* Munim */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  Munim
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={newStone.labour_name}
+                  onChange={(e) => setNewStone({ ...newStone, labour_name: e.target.value })}
                   required
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Quantity
-              </label>
-              <input
-                type="number"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={newStone.total_quantity || ''}
-                onChange={(e) => {
-                  const quantity = Number(e.target.value) || 0;
-                  setNewStone((prev) => {
-                    const totalAmount = (quantity * (prev.rate || 0)) + (prev.vehicle_cost || 0);
-                    return {
-                      ...prev,
-                      total_quantity: quantity,
-                      total_amount: totalAmount,
-                    };
-                  });
-                }}
-                min="0"
-                required
-                placeholder="Enter quantity"
-              />
+              {/* Hydra Cost */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  Hydra Cost
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                    value={newStone.vehicle_cost || ''}
+                    onChange={(e) => {
+                      const cost = Number(e.target.value) || 0;
+                      setNewStone((prev) => {
+                        const totalAmount = ((prev.total_quantity || 0) * (prev.rate || 0)) * cost;
+                        return {
+                          ...prev,
+                          vehicle_cost: cost,
+                          total_amount: totalAmount,
+                        };
+                      });
+                    }}
+                    min="0"
+                    required
+                    placeholder="Enter cost"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
+                </div>
+              </div>
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Munim
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={newStone.labour_name}
-                onChange={(e) => setNewStone({ ...newStone, labour_name: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-               Loading: - Hydra
-              </label>
-             
-            </div>
-           
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Hydra Cost
-              </label>
-              <input
-                type="number"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={newStone.vehicle_cost || ''}
-                onChange={(e) => {
-                  const cost = Number(e.target.value) || 0;
-                  setNewStone((prev) => {
-                    const totalAmount = ((prev.total_quantity || 0) * (prev.rate || 0)) + cost;
-                    return {
-                      ...prev,
-                      vehicle_cost: cost,
-                      total_amount: totalAmount,
-                    };
-                  });
-                }}
-                min="0"
-                required
-                placeholder="Enter cost"
-              />
-            </div>
-
-          
 
             {/* Summary */}
-            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 <span className="text-indigo-600 dark:text-indigo-400">Summary</span>
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+              <div className="space-y-4">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                     Total Quantity
                   </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {newStone.total_quantity.toFixed(2)}
                   </div>
                 </div>
-               
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  Hydra Cost
+                    Rate
                   </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    ₹{(newStone.vehicle_cost || 0).toFixed(2)}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  Rate
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     ₹{(newStone.rate || 0).toFixed(2)}
                   </div>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    Total Amount  = ((Total Quantity * Rate) + Hydra Cost)
 
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Hydra Cost
                   </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                    ₹{(newStone.vehicle_cost || 0).toFixed(2)}
+                  </div>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    Total Amount
+                  </div>
+                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                     ₹{(newStone.total_amount || 0).toFixed(2)}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-6">
+            <div className="flex flex-col md:flex-row justify-end gap-4">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="bg-gray-600 dark:bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200"
+                className="w-full md:w-auto bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200 text-sm md:text-base"
               >
                 <span className="font-medium">Cancel</span>
               </button>
               <button
                 type="submit"
-                className="bg-indigo-600 dark:bg-indigo-500 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+                className="w-full md:w-auto bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 text-sm md:text-base"
                 disabled={isSubmitting}
               >
                 <span className="font-medium">{isSubmitting ? 'Saving...' : 'Save Stone'}</span>

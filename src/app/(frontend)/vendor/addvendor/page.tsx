@@ -2,6 +2,9 @@
 
 import React, { useState, ReactNode } from 'react'
 import axios from 'axios'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
 const isAxiosError = (
   error: unknown,
 ): error is {
@@ -28,7 +31,7 @@ const isAxiosError = (
     'message' in error
   )
 }
-import { useRouter } from 'next/navigation'
+
 
 
 // Error response types
@@ -145,46 +148,74 @@ export default function VendorForm() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 sm:pt-24">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-10 text-gray-900 dark:text-white">
-          <span className="text-indigo-600 dark:text-indigo-400">Add</span> New Vendor
-        </h1>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <span className="text-indigo-600 dark:text-indigo-400">Add</span> New Vendor
+          </h1>
+          <Link
+            href="/vendor"
+            className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-600 transition"
+          >
+            ← Back to Vendor List
+          </Link>
+        </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 sm:p-10">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label
                   htmlFor="vendor"
-                  className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
+                  className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
                 >
                   Vendor Name
                 </label>
                 <input
                   id="vendor"
                   type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                   value={newVendor.vendor}
                   onChange={(e) => setNewVendor({ ...newVendor, vendor: e.target.value })}
                   required
                   placeholder="Enter vendor name"
                 />
               </div>
+
+              <div>
+                <label
+                  htmlFor="vendor_no"
+                  className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
+                >
+                  Vendor Mobile No.
+                </label>
+                <div className="relative">
+                  <input
+                    id="vendor_no"
+                    type="tel"
+                    pattern="[0-9]{10,15}"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition pr-8"
+                    value={newVendor.vendor_no}
+                    onChange={(e) => setNewVendor({ ...newVendor, vendor_no: e.target.value })}
+                    required
+                    placeholder="Enter vendor mobile number"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">📞</span>
+                </div>
+              </div>
             </div>
 
-            {/* Address */}
             <div>
               <label
                 htmlFor="address"
-                className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
               >
                 Address
               </label>
               <input
                 id="address"
                 type="text"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                 value={newVendor.address}
                 onChange={(e) => setNewVendor({ ...newVendor, address: e.target.value })}
                 required
@@ -192,44 +223,21 @@ export default function VendorForm() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Vendor Mobile No */}
-              <div>
-                <label
-                  htmlFor="vendor_no"
-                  className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300"
-                >
-                  Vendor Mobile No.
-                </label>
-                <input
-                  id="vendor_no"
-                  type="tel"
-                  pattern="[0-9]{10,15}"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  value={newVendor.vendor_no}
-                  onChange={(e) => setNewVendor({ ...newVendor, vendor_no: e.target.value })}
-                  required
-                  placeholder="Enter vendor mobile number"
-                />
-              </div>
-
-   </div>
-
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="w-full sm:w-auto bg-gray-600 dark:bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200"
+                className="w-full sm:w-auto bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200 text-sm sm:text-base"
               >
-                <span className="font-semibold">Cancel</span>
+                <span className="font-medium">Cancel</span>
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto bg-indigo-600 dark:bg-indigo-500 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span className="font-semibold">{isSubmitting ? 'Saving...' : 'Save Vendor'}</span>
+                <span className="font-medium">{isSubmitting ? 'Saving...' : 'Save Vendor'}</span>
               </button>
             </div>
           </form>

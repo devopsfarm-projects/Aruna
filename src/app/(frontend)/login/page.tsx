@@ -8,6 +8,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     // Check if dark mode is preferred by the user
@@ -23,6 +24,7 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setIsLoading(true)
 
     try {
       const res = await fetch('/api/users/login', {
@@ -36,13 +38,16 @@ export default function LoginForm() {
       if (res.ok && data.token) {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
-        window.open('/dashboard', '_blank')
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 2000)
       } else {
         setError(data.message || 'Login failed.')
       }
     } catch (err) {
       console.error(err)
       setError('An unexpected error occurred.')
+      setIsLoading(false)
     }
   }
 
@@ -53,14 +58,14 @@ export default function LoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-white to-pink-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
-      <div className="bg-white dark:bg-gray-800 shadow-xl dark:shadow-gray-900 rounded-2xl p-8 w-full max-w-md animate-fadeIn">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-white dark:bg-gray-800 shadow-xl dark:shadow-gray-900 rounded-2xl p-6 sm:p-8 w-full max-w-md animate-fadeIn">
+        <div className="flex justify-between items-center mb-6 sm:mb-8">
           <div className="flex-1">
-            <Image src="/image.png" alt="Payload Logo" width={100} height={100} className="" />
+            <Image src="/image.png" alt="Payload Logo" width={80} height={80} className="w-20 h-20 sm:w-24 sm:h-24" />
           </div>
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="p-2.5 sm:p-3 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <svg
               className="w-6 h-6 text-gray-600 dark:text-gray-400"
@@ -99,7 +104,7 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500"
+            className="w-full dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3.5 sm:p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 text-sm sm:text-base"
           />
 
           <input
@@ -108,7 +113,7 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full dark:bg-gray-700 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500"
+            className="w-full dark:bg-gray-700 p-3.5 sm:p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 text-sm sm:text-base"
           />
 
           {error && (
@@ -117,9 +122,16 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3 rounded-lg"
+            disabled={isLoading}
+            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3.5 sm:p-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
           >
-            Login
+            {isLoading ? (
+              <>
+                Loading...
+              </>
+            ) : (
+              'Login'
+            )}
           </button>
         </form>
       </div>

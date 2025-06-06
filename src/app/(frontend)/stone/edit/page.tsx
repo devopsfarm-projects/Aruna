@@ -118,7 +118,7 @@ export default function EditStone() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             Edit Stone
           </h1>
@@ -129,13 +129,12 @@ export default function EditStone() {
             ← Back to Stone List
           </Link>
         </div>
-  
+      
         <form
           onSubmit={handleSubmit}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-md"
+          className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-md"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-           
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Stone Type */}
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
@@ -148,7 +147,7 @@ export default function EditStone() {
                     prev && { ...prev, stoneType: e.target.value }
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="Khanda">Khanda</option>
                 <option value="Raskat">Raskat</option>
@@ -166,23 +165,28 @@ export default function EditStone() {
                 onChange={(e) =>
                   setStone((prev) => (prev ? { ...prev, date: e.target.value } : prev))
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
+
+            {/* Rate */}
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
                 Rate
               </label>
-              <input
-                type="number"
-                value={stone.rate}
-                onChange={(e) =>
-                  setStone((prev) => (prev ? { ...prev, rate: parseFloat(e.target.value) } : prev))
-                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  value={stone.rate}
+                  onChange={(e) =>
+                    setStone((prev) => (prev ? { ...prev, rate: parseFloat(e.target.value) } : prev))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
+              </div>
             </div>
-  
+
             {/* Total Quantity */}
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
@@ -198,36 +202,38 @@ export default function EditStone() {
                       : prev
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 min={0}
               />
             </div>
-  
-          
-            {/* Vehicle Cost */}
+
+            {/* Hydra Cost */}
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
                 Hydra Cost
               </label>
-              <input
-                type="number"
-                value={stone.vehicle_cost ?? ''}
-                onChange={(e) =>
-                  setStone((prev) =>
-                    prev ? { ...prev, vehicle_cost: parseInt(e.target.value) || 0 } : prev
-                  )
-                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                min={0}
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  value={stone.vehicle_cost ?? ''}
+                  onChange={(e) =>
+                    setStone((prev) =>
+                      prev ? { ...prev, vehicle_cost: parseInt(e.target.value) || 0 } : prev
+                    )
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                  min={0}
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
+              </div>
             </div>
           </div>
-  
+
           {/* Submit Button */}
-          <div className="mt-8 flex justify-end">
+          <div className="mt-6 flex justify-end">
             <button
               type="submit"
-              className="inline-flex justify-center py-3 px-8 border border-transparent shadow-sm text-lg font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-base font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             >
               Update Stone
             </button>
