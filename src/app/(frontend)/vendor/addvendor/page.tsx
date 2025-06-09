@@ -187,7 +187,7 @@ export default function VendorForm() {
                   htmlFor="vendor_no"
                   className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300"
                 >
-                  Vendor Mobile No.
+                   Mobile No.
                 </label>
                 <div className="relative">
                   <input
