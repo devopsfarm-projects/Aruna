@@ -200,7 +200,7 @@ export default function StoneList() {
                 type="text"
                 value={searchVendor}
                 onChange={(e) => setSearchVendor(e.target.value)}
-                placeholder="Vendor or Company No."
+                placeholder="Vendor"
                 className="mt-1 block w-full px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>

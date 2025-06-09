@@ -126,7 +126,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               type="text"
               value={searchVendor}
               onChange={(e) => setSearchVendor(e.target.value)}
-              placeholder="Vendor name or company number"
+              placeholder="Vendor name "
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
             />
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -149,7 +149,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
                 <th className="p-4">S.No</th>
                 <th className="p-4">Vendor</th>
                 <th className="p-4">Address</th>
-                <th className="p-4">Vendor No.</th>
+                <th className="p-4">Mobile No.</th>
                 <th className="p-4">Actions</th>
               </tr>
             </thead>
