@@ -60,9 +60,8 @@ export default function AddBlockPage() {
   })
 
   const calculateTotalCost = (block: Block) => {
-    if (block.total_todi_cost && block.block[0]?.addmeasures[0]?.black_area && block.todirate) {
-      const blackArea = block.block[0].addmeasures[0].black_area / 144
-      return (block.total_todi_cost * blackArea) / block.todirate
+    if (block.total_todi_cost && block.total_area && block.todirate) {
+      return (block.total_todi_cost * block.total_area) 
     }
     return 0
   }
@@ -718,15 +717,7 @@ export default function AddBlockPage() {
                     },
 
                     {
-                      label: 'Black Area (L*B*H)/144',
-                      value: (newBlock.block[0]?.addmeasures[0]?.black_area ?? 0) / 144,
-                    },
-                    {
-                      label: 'Black Cost (L*B*H)',
-                      value: newBlock.block[0]?.addmeasures[0]?.black_area ?? 0,
-                    },
-                    {
-                      label: 'Total Cost = (Total Todi Cost *Black area)/todi area',
+                      label: 'Total Cost = (Total Todi Cost * Total Area)',
                       value: calculateTotalCost(newBlock) || 0,
                     },
                   ].map((item, index) => (
