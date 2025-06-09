@@ -55,6 +55,7 @@ type Stone = {
   updatedAt: string
   vehicle_cost?: number
   rate: number
+  munim?: string
 }
 
 export default function EditStone() {
@@ -206,6 +207,23 @@ export default function EditStone() {
                 min={0}
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                Munim
+              </label>
+              <input
+                type="text"
+                value={stone.munim ?? ''}
+                onChange={(e) =>
+                  setStone((prev) => (prev ? { ...prev, munim: e.target.value } : prev))
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                min={0}
+              />
+            </div>
+
+
 
             {/* Hydra Cost */}
             <div>
