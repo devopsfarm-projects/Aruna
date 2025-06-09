@@ -104,10 +104,10 @@ export default function TodiSection({
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    black_cost (L*B*H)
+                    black_cost = Block Area *  Todi Rate
                     </label>
                     <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                      {(measure.black_area ?? 0) }
+                      {(measure.black_area ?? 0) * (measure.rate ?? 0)}
                     </div>
                   </div>
  

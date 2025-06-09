@@ -1,8 +1,8 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
-import payload from './lib/payload'
 import Link from 'next/link'
 import type { Block } from '../../../payload-types'
+import axios from 'axios'
 
 export default function BlockList() {
   const [blocks, setBlocks] = useState<Block[]>([])
@@ -21,7 +21,7 @@ export default function BlockList() {
     try {
       setLoading(true)
       setError(null)
-      const res = await payload.get<BlockResponse>('/Block')
+      const res = await axios.get<BlockResponse>('/api/Block')
       setBlocks(res.data.docs)
       setFilteredBlocks(res.data.docs)
     } catch (err) {
@@ -71,7 +71,7 @@ export default function BlockList() {
 
   const deleteBlock = async (id: string | number) => {
     if (id == null) return
-    await payload.delete(`/Block/${id}`)
+    await axios.delete(`/Block/${id}`)
     setBlocks((prev) => prev.filter((b) => b.id?.toString() !== id.toString()))
   }
 

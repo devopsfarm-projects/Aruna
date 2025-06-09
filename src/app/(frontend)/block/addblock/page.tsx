@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Vendor, Block, Measure } from './types'
-import BlockSection from './components/Blocksection'
 import axios from 'axios'
 
 export default function AddBlockPage() {
@@ -574,13 +573,143 @@ export default function AddBlockPage() {
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                   Block Details
                 </h2>
-                <BlockSection
+                {/* <BlockSection
                   blocks={newBlock.block}
                   onRemove={removeBlock}
                   onMeasureChange={handleMeasureChange}
                   onMeasureRemove={removeMeasure}
                   onAddNewBlock={addBlock}
-                />
+                /> */}
+
+<div className="space-y-6">
+      {newBlock.block?.map((block, blockIndex) => (
+        <div key={blockIndex} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+              block {blockIndex + 1}
+            </h3>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+            <div className="mt-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <span className="text-indigo-600 dark:text-indigo-400">Measurements</span>
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleMeasureChange(blockIndex, 0, 'add', 0);
+                  }}
+                  className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+                >
+                  <span className="font-medium">Add Measurement</span>
+                </button>
+              </div>
+
+              {block.addmeasures?.map((measure, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                >
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                      L
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      value={measure.l}
+                      onChange={(e) => handleMeasureChange(blockIndex, index, 'l', e.target.value)}
+                      min="1"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                      B
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      value={measure.b}
+                      onChange={(e) => handleMeasureChange(blockIndex, index, 'b', e.target.value)}
+                      min="1"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                      H
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      value={measure.h}
+                      onChange={(e) => handleMeasureChange(blockIndex, index, 'h', e.target.value)}
+                      min="1"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                      Block Area (L*B*H)/144
+                    </label>
+                    <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                      {(measure.l * measure.b * measure.h)/144 || 0}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                    black_cost = Block Area *  Todi Rate
+                    </label>
+                    <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                      {(measure.black_area ?? 0) * (newBlock.todirate ?? 0)}
+                    </div>
+                  </div>
+ 
+                  <div className="flex items-end justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        removeMeasure(blockIndex, index)
+                      }}
+                      className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+                      disabled={block.addmeasures.length === 1}
+                    >
+                      <span className="font-medium">Remove</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex mt-2 items-end justify-end">
+            <button
+              type="button"
+              onClick={() => removeBlock(blockIndex)}
+              className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+              disabled={block.addmeasures.length === 1}
+            >
+              Remove block
+            </button>
+          </div>
+        </div>
+      ))}
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={addBlock}
+          className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+        >
+          Add New Block
+        </button>
+      </div>
+    </div>
               </section>
 
               <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
