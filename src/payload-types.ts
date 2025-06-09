@@ -221,7 +221,7 @@ export interface Stone {
   total_quantity?: number | null;
   issued_quantity?: number | null;
   left_quantity?: number | null;
-  minum?: string | null;
+  munim?: string | null;
   hydra_cost?: number | null;
   total_amount?: number | null;
   createdBy?: (number | null) | User;
@@ -393,7 +393,7 @@ export interface StoneSelect<T extends boolean = true> {
   total_quantity?: T;
   issued_quantity?: T;
   left_quantity?: T;
-  minum?: T;
+  munim?: T;
   hydra_cost?: T;
   total_amount?: T;
   createdBy?: T;
