@@ -4,58 +4,12 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-type Measure = {
-  qty: number
-  l: number
-  b: number
-  h: number
-  rate: number
-  labour?: string
-  hydra?: string
-}
+import type { Stone } from '../../../../collections/Stone'
 
-type Stone = {
-  id: number | string
-  vender_id: {
-    id: number
-    vendor: string
-    vendor_no: string
-    address: string
-    mail_id: string
-    Company_no: string
-    Mines_name: {
-      id: number
-      Mines_name: string
-      address: string
-      phone: { number: string }[]
-      mail_id: string
-    }
-  }
-  labour_name?: string
-  stoneType: string
-  date: string
-  mines: {
-    id: number
-    Mines_name: string
-    address: string
-    phone: { number: string }[]
-    mail_id: string
-  }
-  vehicle_number?: string
-  addmeasures: Measure[]
-  total_quantity: number | null
-  issued_quantity: number | null
-  left_quantity: number | null
-  final_total: number
-  partyRemainingPayment: number
-  partyAdvancePayment: number | null
-  transportType: string | null
-  createdBy: { name: string } | null
-  createdAt: string
-  updatedAt: string
-  vehicle_cost?: number
-  rate: number
-  munim?: string
+
+interface FormError {
+  field: keyof Stone
+  message: string
 }
 
 export default function EditStone() {
@@ -63,6 +17,7 @@ export default function EditStone() {
   const searchParams = useSearchParams()
   const [stone, setStone] = useState<Stone | null>(null)
   const [loading, setLoading] = useState(true)
+  const [errors, setErrors] = useState<FormError[]>([])
   const id = searchParams.get('id')
 
   useEffect(() => {
@@ -77,11 +32,6 @@ export default function EditStone() {
       
     
 
-        // Ensure measurements array exists
-        if (!blockData.addmeasures) {
-          blockData.addmeasures = []
-        }
-
         setStone(blockData)
       } catch (error) {
         console.error('Error fetching stone:', error)
@@ -93,9 +43,36 @@ export default function EditStone() {
     fetchStone()
   }, [id])
 
+  const validateForm = () => {
+    const newErrors: FormError[] = []
+
+    if (!stone?.stoneType) {
+      newErrors.push({ field: 'stoneType', message: 'Stone type is required' })
+    }
+
+    if (!stone?.date) {
+      newErrors.push({ field: 'date', message: 'Date is required' })
+    }
+
+    if (stone?.rate !== undefined && stone.rate <= 0) {
+      newErrors.push({ field: 'rate', message: 'Rate must be greater than 0' })
+    }
+
+    if (stone?.total_quantity !== undefined && (stone.total_quantity === null || stone.total_quantity < 0)) {
+      newErrors.push({ field: 'total_quantity', message: 'Total quantity must be a positive number' })
+    }
+
+    setErrors(newErrors)
+    return newErrors.length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!stone || !id) return
+
+    if (!validateForm()) {
+      return
+    }
 
     try {
       await axios.patch(`/api/stone/${id}`, stone)
@@ -144,9 +121,9 @@ export default function EditStone() {
               <select
                 value={stone.stoneType}
                 onChange={(e) =>
-                  setStone((prev) =>
-                    prev && { ...prev, stoneType: e.target.value }
-                  )
+                   setStone((prev: Stone | null) =>
+                     prev && { ...prev, stoneType: e.target.value as 'Khanda' | 'Raskat' }
+                   )
                 }
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
@@ -164,7 +141,7 @@ export default function EditStone() {
                 type="date"
                 value={stone.date}
                 onChange={(e) =>
-                  setStone((prev) => (prev ? { ...prev, date: e.target.value } : prev))
+                  setStone((prev: Stone | null) => (prev ? { ...prev, date: e.target.value } : prev))
                 }
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -180,7 +157,7 @@ export default function EditStone() {
                   type="number"
                   value={stone.rate}
                   onChange={(e) =>
-                    setStone((prev) => (prev ? { ...prev, rate: parseFloat(e.target.value) } : prev))
+                    setStone((prev: Stone | null) => (prev ? { ...prev, rate: parseFloat(e.target.value) } : prev))
                   }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
                 />
@@ -197,7 +174,7 @@ export default function EditStone() {
                 type="number"
                 value={stone.total_quantity ?? ''}
                 onChange={(e) =>
-                  setStone((prev) =>
+                  setStone((prev: Stone | null) =>
                     prev
                       ? { ...prev, total_quantity: parseInt(e.target.value) || 0 }
                       : prev
@@ -210,17 +187,19 @@ export default function EditStone() {
 
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                Munim
+                minum
               </label>
-              <input
-                type="text"
-                value={stone.munim ?? ''}
-                onChange={(e) =>
-                  setStone((prev) => (prev ? { ...prev, munim: e.target.value } : prev))
-                }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                min={0}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={stone.minum}
+                  onChange={(e) =>
+                    setStone((prev: Stone | null) => (prev ? { ...prev, minum: e.target.value } : prev))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
+              </div>
             </div>
 
 
@@ -228,35 +207,46 @@ export default function EditStone() {
             {/* Hydra Cost */}
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                Hydra Cost
+               hydra cost
               </label>
               <div className="relative">
                 <input
                   type="number"
-                  value={stone.vehicle_cost ?? ''}
+                  value={stone.hydra_cost}
                   onChange={(e) =>
-                    setStone((prev) =>
-                      prev ? { ...prev, vehicle_cost: parseInt(e.target.value) || 0 } : prev
-                    )
+                    setStone((prev: Stone | null) => (prev ? { ...prev, hydra_cost: parseFloat(e.target.value) } : prev))
                   }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
-                  min={0}
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
               </div>
             </div>
           </div>
 
+         
+
           {/* Submit Button */}
           <div className="mt-6 flex justify-end">
             <button
               type="submit"
               className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-base font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              disabled={errors.length > 0}
             >
-              Update Stone
+              {errors.length > 0 ? 'Fix Errors' : 'Update Stone'}
             </button>
           </div>
         </form>
+
+        {/* Display Errors */}
+        {errors.length > 0 && (
+          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800">
+            <ul>
+              {errors.map((error, index) => (
+                <li key={index}>{error.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -108,71 +108,58 @@ export default function AddBlockPage() {
     })
   }
 
-  const handleMeasureChange = (
-    blockIndex: number,
-    measureIndex: number,
-    field: keyof Measure | 'add' | 'remove',
-    value: string | number,
-  ) => {
-    const newBlocks = [...newBlock.block]
+  type MeasureField = keyof Measure & string;
 
-    if (field === 'add') {
-      newBlocks[blockIndex].addmeasures = [
-        ...(newBlocks[blockIndex].addmeasures || []),
-        {
-          l: 0,
-          b: 0,
-          h: 0,
-          rate: 0,
-          black_area: 0,
-          black_cost: 0,
-        },
-      ]
-    } else if (field === 'remove') {
-      // Remove measure
-      newBlocks[blockIndex].addmeasures = newBlocks[blockIndex].addmeasures.filter(
-        (_, i) => i !== measureIndex,
-      )
-    } else {
-      // Update existing measure
-      const newMeasures = [...newBlocks[blockIndex].addmeasures]
-      const currentMeasure = newMeasures[measureIndex]
-      const updatedMeasure = { ...currentMeasure, [field]: Number(value) }
-
-      // Calculate black_area if L, B, or H changed
-      if (field === 'l' || field === 'b' || field === 'h') {
-        updatedMeasure.black_area = updatedMeasure.l * updatedMeasure.b * updatedMeasure.h
+  const handleAddMeasure = (blockIndex: number) => {
+    setNewBlock(prev => {
+      const newBlock = { ...prev };
+      const newMeasure: Measure = {
+        l: 0,
+        b: 0,
+        h: 0,
+        rate: 0,
+        black_area: 0,
+        black_cost: 0
+      };
+      
+      if (newBlock.block[blockIndex]?.addmeasures) {
+        newBlock.block[blockIndex].addmeasures = [...newBlock.block[blockIndex].addmeasures, newMeasure];
+      } else {
+        newBlock.block[blockIndex].addmeasures = [newMeasure];
       }
+      return newBlock;
+    });
+  };
 
-      newMeasures[measureIndex] = updatedMeasure
-      newBlocks[blockIndex].addmeasures = newMeasures
-    }
+  const handleMeasureChange = (blockIndex: number, measureIndex: number, field: MeasureField, value: string) => {
+    setNewBlock((prev) => {
+      const updatedBlock = { ...prev };
+      const updatedMeasures = [...updatedBlock.block[blockIndex].addmeasures];
+      const updatedMeasure = { ...updatedMeasures[measureIndex] };
 
-    // Calculate final total
-    const finalTotal = newBlocks.reduce((sum, block) => {
-      return (
-        sum +
-        block.addmeasures.reduce((tSum, m) => {
-          const l = m.l || 0
-          const b = m.b || 0
-          const h = m.h || 0
-          const blockcost = block.blockcost || 0
-          const qty = newBlock.qty || 0
-          return tSum + l * b * h * qty * blockcost
-        }, 0)
-      )
-    }, 0)
+      // Type-safe field assignment
+      if (field in updatedMeasure) {
+        // Safely update the measure field with the number value
+        const numValue = Number(value);
+        if (field === 'l' || field === 'b' || field === 'h' || field === 'rate' || field === 'black_area' || field === 'black_cost') {
+          updatedMeasure[field] = numValue;
+        }
+      }
+      updatedMeasures[measureIndex] = updatedMeasure;
+      updatedBlock.block[blockIndex].addmeasures = updatedMeasures;
 
-    // Calculate remaining payment
-    const remainingPayment = finalTotal - (Number(newBlock.partyAdvancePayment) || 0)
+      // Calculate black_area for all measures
+      updatedMeasures.forEach((measure) => {
+        measure.black_area = (measure.l * measure.b * measure.h) / 144;
+        // Calculate black_cost if todirate is available
+        if (updatedBlock.todirate) {
+          measure.black_cost = measure.black_area * Number(updatedBlock.todirate);
+        }
+      });
 
-    setNewBlock((prev) => ({
-      ...prev,
-      block: newBlocks,
-      final_total: finalTotal,
-      partyRemainingPayment: remainingPayment,
-    }))
-  }
+      return updatedBlock;
+    });
+  };
 
   const removeMeasure = (blockIndex: number, measureIndex: number) => {
     setNewBlock((prev) => {
@@ -598,9 +585,7 @@ export default function AddBlockPage() {
                 </h2>
                 <button
                   type="button"
-                  onClick={() => {
-                    handleMeasureChange(blockIndex, 0, 'add', 0);
-                  }}
+                  onClick={() => handleAddMeasure(blockIndex)}
                   className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
                 >
                   <span className="font-medium">Add Measurement</span>
@@ -663,7 +648,7 @@ export default function AddBlockPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    black_cost = Block Area *  Todi Rate
+                    Black Cost = Block Area * Todi Rate
                     </label>
                     <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
                       {(measure.black_area ?? 0) * (newBlock.todirate ?? 0)}

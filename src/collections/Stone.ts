@@ -1,5 +1,23 @@
 import type { CollectionConfig } from 'payload'
 
+export interface Stone {
+  id: string
+  stoneType: 'Khanda' | 'Raskat'
+  date: string
+  rate: number
+  total_quantity: number
+  issued_quantity: number
+  left_quantity: number
+  minum: string
+  hydra_cost: number
+  total_amount: number
+  createdBy: {
+    id: string
+    email: string
+    role: string
+  }
+}
+
 export const Stone: CollectionConfig = {
   slug: 'stone',
   admin: {

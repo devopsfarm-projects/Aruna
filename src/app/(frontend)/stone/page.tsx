@@ -15,6 +15,7 @@ type Measure = {
 }
 
 type Stone = {
+  rate: string
   minum: ReactNode
   id: number | string
   vender_id: {
@@ -46,6 +47,7 @@ type Stone = {
   issued_quantity: number | null
   left_quantity: number | null
   total_amount: number | null
+  hydra_cost: number | null
   final_total: number
   partyRemainingPayment: number
   partyAdvancePayment: number | null
@@ -291,8 +293,9 @@ export default function StoneList() {
                 <th className="p-3 text-left">Stone Type</th>
                 <th className="p-3 text-left">Minum</th>
                 <th className="p-3 text-left">Date</th>
+                <th className="p-3 text-left">Rate</th>
                 <th className="p-3 text-left">Qty</th>
-            
+                <th className="p-3 text-left">Hydra</th>                
                 <th className="p-3 text-left">Amount</th>
                 <th className="p-3 text-left">Actions</th>
               </tr>
@@ -318,7 +321,9 @@ export default function StoneList() {
                         minute: '2-digit',
                         hour12: true
                       }) : '-'}</td>
+                  <td className="p-3">{stone.rate || '-'}</td>
                   <td className="p-3">{stone.total_quantity || '-'}</td>
+                  <td className="p-3">{stone.hydra_cost || '-'}</td>
                   <td className="p-3">₹{stone.total_amount || '-'}</td>
                   <td className="p-3">
                     <div className="flex gap-4">
