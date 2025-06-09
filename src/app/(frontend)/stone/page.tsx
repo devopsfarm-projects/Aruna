@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 
@@ -15,6 +15,7 @@ type Measure = {
 }
 
 type Stone = {
+  minum: ReactNode
   id: number | string
   vender_id: {
     id: number
@@ -65,6 +66,9 @@ export default function StoneList() {
   const [selectedStones, setSelectedStones] = useState<Set<string>>(new Set())
   const [isSelectAll, setIsSelectAll] = useState(false)
 
+  const [stonesLoading, setStonesLoading] = useState(true)
+  const [stonesError, setStonesError] = useState<string | null>(null)
+
   useEffect(() => {
     fetchAllData()
   }, [])
@@ -83,12 +87,17 @@ export default function StoneList() {
 
   const fetchAllData = async () => {
     try {
+      setStonesLoading(true)
+      setStonesError(null)
       const res = await axios.get<{ docs: Stone[] }>('/api/stone')
       setStones(res.data.docs || [])
       setSelectedStones(new Set())
       setIsSelectAll(false)
     } catch (err) {
-      console.error('Error fetching data:', err)
+      setStonesError('Failed to fetch stones')
+      console.error('Error fetching stones:', err)
+    } finally {
+      setStonesLoading(false)
     }
   }
 
@@ -133,6 +142,63 @@ export default function StoneList() {
       alert('Error deleting stone')
     }
   }
+
+
+  if (stonesLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <svg
+            className="animate-spin h-8 w-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8H4z"
+            ></path>
+          </svg>
+          <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">
+            Loading data...
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (stonesError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <svg
+            className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4v2m0-6h2m-4 0h-2m-4 6h2m0 0h2m0 0h2m0-6h2m0 6h2"
+            />
+          </svg>
+          <p className="text-red-600 dark:text-red-400 text-lg font-medium">{stonesError}</p>
+        </div>
+      </div>
+    )
+  } 
 
   return (
     <div className="min-h-screen pt-24 px-4 md:px-8 bg-gray-50 dark:bg-gray-900">
@@ -223,6 +289,7 @@ export default function StoneList() {
                 </th>
                 <th className="p-3 text-left">S.No.</th>
                 <th className="p-3 text-left">Stone Type</th>
+                <th className="p-3 text-left">Minum</th>
                 <th className="p-3 text-left">Date</th>
                 <th className="p-3 text-left">Qty</th>
             
@@ -242,6 +309,7 @@ export default function StoneList() {
                   </td>
                   <td className="p-3 text-center">{index + 1}</td>
                   <td className="p-3">{stone.stoneType}</td>
+                  <td className="p-3">{stone.minum}</td>
                   <td className="p-3"> {stone.date ? new Date(stone.date).toLocaleString('en-IN', {
                         year: 'numeric',
                         month: 'long',

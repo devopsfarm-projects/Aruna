@@ -37,6 +37,78 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
     }
   }
 
+  const handleBulkDelete = async () => {
+    if (selectedVendor.size === 0) return
+    if (!confirm(`Are you sure you want to delete ${selectedVendor.size} vendor(s)?`)) return
+    try {
+      const res = await axios.delete('/api/vendor/bulk', {
+        params: { ids: Array.from(selectedVendor) },
+      })
+      if (res.status === 200) {
+        alert('Selected vendors deleted successfully!')
+        window.location.reload()
+      } else {
+        alert('Failed to delete vendors. Please try again.')
+      }
+    } catch (err) {
+      console.error('Error deleting vendors:', err)
+      alert('An error occurred while deleting the vendors. Please try again.')
+    }
+  }
+
+  const [selectedVendor, setSelectedVendor] = useState<Set<string>>(new Set())
+  const [isSelectAllVendor, setIsSelectAllVendor] = useState(false)
+
+  const handleSelectAllVendor = () => {
+    if (isSelectAllVendor) {
+      setSelectedVendor(new Set())
+    } else {
+      const newSelection = new Set(VendorItems.map((vendor) => vendor.id.toString()))
+      setSelectedVendor(newSelection)
+    }
+    setIsSelectAllVendor(!isSelectAllVendor)
+  }
+
+  const handleSelectVendor = (id: string) => {
+    const newSelection = new Set(selectedVendor)
+    if (newSelection.has(id)) newSelection.delete(id)
+    else newSelection.add(id)
+    setSelectedVendor(newSelection)
+    setIsSelectAllVendor(newSelection.size === VendorItems.length)
+  }
+
+  if (VendorItems.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <svg
+            className="animate-spin h-8 w-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8H4z"
+            ></path>
+          </svg>
+          <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">
+            Loading data...
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 px-4 py-24 sm:py-28">
       <div className="max-w-7xl mx-auto">
@@ -56,6 +128,15 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               onChange={(e) => setSearchVendor(e.target.value)}
               placeholder="Vendor name or company number"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+            />
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Select All
+            </label>
+            <input
+              type="checkbox"
+              checked={isSelectAllVendor}
+              onChange={handleSelectAllVendor}
+              className="rounded cursor-pointer h-4 w-4"
             />
           </div>
         </div>
@@ -119,12 +200,12 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {/* <input
+                  <input
                     type="checkbox"
                     checked={selectedVendor.has(item.id.toString())}
                     onChange={() => handleSelectVendor(item.id.toString())}
                     className="rounded cursor-pointer h-4 w-4"
-                  /> */}
+                  />
                   <button 
                     onClick={() => handleDelete(String(item.id))} 
                     className="p-1.5 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
@@ -173,7 +254,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
                      {/* Floating Action Buttons */}
       <div className="fixed bottom-20 right-4 z-50">
         <div className="flex flex-col items-end space-y-2">
-          {/* {selectedVendor.size > 0 && (
+          {selectedVendor.size > 0 && (
             <button
               onClick={handleBulkDelete}
               className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition-all flex items-center justify-center shadow-md"
@@ -183,7 +264,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </button>
-          )} */}
+          )}
           <Link href="/vendor/addvendor">
             <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

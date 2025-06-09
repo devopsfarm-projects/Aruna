@@ -71,10 +71,10 @@ type Stone = {
   rate: number
   block_amount: number
   total_amount: number
-  labour_name: string
+  minum: string
   transportType: string
   vehicle_number: string
-  vehicle_cost: number
+  hydra_cost: number
   createdBy: string
 }
 
@@ -95,10 +95,10 @@ export default function AddStonePage() {
     rate: 0,
     block_amount: 0,
     total_amount: 0,
-    labour_name: '',
+    minum: '',
     transportType: 'Hydra',
     vehicle_number: '',
-    vehicle_cost: 0,
+    hydra_cost: 0,
     createdBy: '',
   })
 
@@ -121,7 +121,7 @@ export default function AddStonePage() {
         rate: Number(newStone.rate),
         block_amount: Number(newStone.block_amount),
         total_amount: Number(newStone.total_amount),
-        vehicle_cost: Number(newStone.vehicle_cost),
+        hydra_cost: Number(newStone.hydra_cost),
       }
 
       console.log('Submitting data:', JSON.stringify(payload, null, 2))
@@ -230,7 +230,7 @@ export default function AddStonePage() {
                     onChange={(e) => {
                       const rate = Number(e.target.value)
                       setNewStone((prev) => {
-                        const totalAmount = ((prev.total_quantity || 0) * rate) * (prev.vehicle_cost || 0)
+                        const totalAmount = ((prev.total_quantity || 0) * rate) * (prev.hydra_cost || 0)
                         return {
                           ...prev,
                           rate: rate,
@@ -256,7 +256,7 @@ export default function AddStonePage() {
                   onChange={(e) => {
                     const quantity = Number(e.target.value) || 0;
                     setNewStone((prev) => {
-                      const totalAmount = (quantity * (prev.rate || 0)) * (prev.vehicle_cost || 0);
+                      const totalAmount = (quantity * (prev.rate || 0)) * (prev.hydra_cost || 0);
                       return {
                         ...prev,
                         total_quantity: quantity,
@@ -278,8 +278,8 @@ export default function AddStonePage() {
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.labour_name}
-                  onChange={(e) => setNewStone({ ...newStone, labour_name: e.target.value })}
+                  value={newStone.minum}
+                  onChange={(e) => setNewStone({ ...newStone, minum: e.target.value })}
                   required
                 />
               </div>
@@ -293,14 +293,14 @@ export default function AddStonePage() {
                   <input
                     type="number"
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
-                    value={newStone.vehicle_cost || ''}
+                    value={newStone.hydra_cost || ''}
                     onChange={(e) => {
                       const cost = Number(e.target.value) || 0;
                       setNewStone((prev) => {
                         const totalAmount = ((prev.total_quantity || 0) * (prev.rate || 0)) * cost;
                         return {
                           ...prev,
-                          vehicle_cost: cost,
+                          hydra_cost: cost,
                           total_amount: totalAmount,
                         };
                       });
@@ -343,7 +343,7 @@ export default function AddStonePage() {
                     Hydra Cost
                   </div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                    ₹{(newStone.vehicle_cost || 0).toFixed(2)}
+                    ₹{(newStone.hydra_cost || 0).toFixed(2)}
                   </div>
                 </div>
 
