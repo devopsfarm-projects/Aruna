@@ -111,22 +111,23 @@ export default function AddBlockPage() {
 
   const handleAddMeasure = (blockIndex: number) => {
     setNewBlock(prev => {
-      const newBlock = { ...prev };
-      const newMeasure: Measure = {
-        l: 0,
-        b: 0,
-        h: 0,
-        rate: 0,
-        black_area: 0,
-        black_cost: 0
+      const updatedBlock = {
+        ...prev,
+        block: prev.block?.map((b, i) => 
+          i === blockIndex ? {
+            ...b,
+            addmeasures: [...(b.addmeasures || []), {
+              l: 0,
+              b: 0,
+              h: 0,
+              rate: 0,
+              black_area: 0,
+              black_cost: 0
+            }]
+          } : b
+        ) || []
       };
-      
-      if (newBlock.block[blockIndex]?.addmeasures) {
-        newBlock.block[blockIndex].addmeasures = [...newBlock.block[blockIndex].addmeasures, newMeasure];
-      } else {
-        newBlock.block[blockIndex].addmeasures = [newMeasure];
-      }
-      return newBlock;
+      return updatedBlock;
     });
   };
 
@@ -292,7 +293,7 @@ export default function AddBlockPage() {
 
   return (
     <>
-      <div className="bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-12">
+      <div className="bg-gray-50 dark:bg-gray-900 py-8 px-4 pb-20 sm:px-6 lg:px-12">
         <div className="pt-20">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
             <header className="px-6 py-6 sm:px-8 border-b border-gray-200 dark:border-gray-700">
@@ -559,13 +560,7 @@ export default function AddBlockPage() {
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                   Block Details
                 </h2>
-                {/* <BlockSection
-                  blocks={newBlock.block}
-                  onRemove={removeBlock}
-                  onMeasureChange={handleMeasureChange}
-                  onMeasureRemove={removeMeasure}
-                  onAddNewBlock={addBlock}
-                /> */}
+              
 
 <div className="space-y-6">
       {newBlock.block?.map((block, blockIndex) => (
@@ -676,7 +671,7 @@ export default function AddBlockPage() {
               type="button"
               onClick={() => removeBlock(blockIndex)}
               className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
-              disabled={block.addmeasures.length === 1}
+              disabled={!block.addmeasures?.length}
             >
               Remove block
             </button>
