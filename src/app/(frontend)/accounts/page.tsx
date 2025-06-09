@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
-import payload from './lib/payload'
 
 type Measure = {
   qty: number
@@ -89,7 +88,7 @@ export default function StoneList() {
     try {
       setLoading(true)
       setError(null)
-      const res = await payload.get<{ docs: Block[] }>('/Block')
+      const res = await axios.get<{ docs: Block[] }>('/api/Block')
       setBlocks(res.data.docs)
     } catch (err) {
       setError('Failed to fetch blocks')
@@ -226,7 +225,7 @@ export default function StoneList() {
               return new Date(dateB).getTime() - new Date(dateA).getTime()
             })
             .map((item, index) => (
-              <div key={item.id} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 transition-all hover:shadow-md">
+              <div key={`${item.type}-${item.id}`} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 transition-all hover:shadow-md">
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex flex-col">
                     <span className="text-lg font-semibold text-gray-900 dark:text-white">
