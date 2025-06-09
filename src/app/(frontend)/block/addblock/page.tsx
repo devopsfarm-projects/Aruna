@@ -92,7 +92,7 @@ export default function AddBlockPage() {
         // Calculate total_todi_cost if todirate is available
         if (updatedBlock.todirate) {
           updatedBlock.total_todi_cost =
-            (updatedBlock.total_area * Number(updatedBlock.todirate)) / 144
+            (updatedBlock.total_area * Number(updatedBlock.todirate)) 
         }
       }
 
