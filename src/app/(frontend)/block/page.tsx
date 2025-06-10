@@ -221,13 +221,14 @@ export default function BlockList() {
               <th className="p-3">S.No.</th>
               <th className="p-3">Vendor</th>
               <th className="p-3">Block Type</th>
+              <th className="p-3">Cost</th>
               <th className="p-3">Date</th>
               <th className="p-3">Actions</th>
             </tr>
           </thead>
           <tbody className="text-gray-900 dark:text-white">
             {filteredBlocks.map((block, index) => (
-              <tr key={block.id} className="border-b border-gray-200 dark:border-gray-600">
+              <tr key={block.id} className="border-b text-center border-gray-200 dark:border-gray-600">
                 <td className="p-3">
                   <input
                     type="checkbox"
@@ -235,10 +236,11 @@ export default function BlockList() {
                     onChange={() => handleSelectBlock(block.id.toString())}
                   />
                 </td>
-                <td className="p-3 text-center">{index + 1}</td>
-                <td className="p-3">{typeof block.vender_id === 'object' && block.vender_id?.vendor ? block.vender_id.vendor : '-'}</td>
-                <td className="p-3">{block.BlockType}</td>
-                <td className="p-3">
+                <td className="p-2 text-center">{index + 1}</td>
+                <td className="p-2">{typeof block.vender_id === 'object' && block.vender_id?.vendor ? block.vender_id.vendor : '-'}</td>
+                <td className="p-2">{block.BlockType}</td>
+                <td className="p-2">₹{block.total_cost}</td>
+                <td className="p-2">
                 {block.date ? new Date(block.date).toLocaleString('en-IN', {
                         year: 'numeric',
                         month: 'long',

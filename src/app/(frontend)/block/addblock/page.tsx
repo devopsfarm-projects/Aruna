@@ -18,43 +18,43 @@ export default function AddBlockPage() {
     labour_name: '',
     block: [
       {
-        blockcost: 0,
+        blockcost: 1,
         addmeasures: [
           {
-            l: 0,
-            b: 0,
-            h: 0,
-            rate: 0,
-            black_area: 0,
-            black_cost: 0,
+            l: 1,
+            b: 1,
+            h: 1,
+            rate: 1,
+            black_area: 1,
+            black_cost: 1,
           },
         ],
       },
     ],
-    qty: 0,
+    qty: 1,
     vehicle_number: '',
-    hydra_cost: 0,
-    truck_cost: 0,
-    total_cost: 0,
-    total_area: 0,
-    total_todi_cost: 0,
-    todirate: 0, // Added todirate field
-    total_quantity: 0,
-    issued_quantity: 0,
-    left_quantity: 0,
-    final_total: 0,
-    partyRemainingPayment: 0,
-    partyAdvancePayment: 0,
+    hydra_cost: 1,
+    truck_cost: 1,
+    total_cost: 1,
+    total_area: 1,
+    total_todi_cost: 1,
+    todirate: 1, 
+    total_quantity: 1,
+    issued_quantity: 1,
+    left_quantity: 1,
+    final_total: 1,
+    partyRemainingPayment: 1,
+    partyAdvancePayment: 1,
     transportType: 'Hydra',
     createdBy: '',
     block_id: '',
-    front_l: 0,
-    front_b: 0,
-    front_h: 0,
-    back_l: 0,
-    back_b: 0,
-    back_h: 0,
-    transport_cost: 0,
+    front_l: 1,
+    front_b: 1,
+    front_h: 1,
+    back_l: 1,
+    back_b: 1,
+    back_h: 1,
+    transport_cost: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   })
@@ -395,7 +395,7 @@ export default function AddBlockPage() {
                         onChange={(e) => handleChange('todirate', e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
+                        min="1"
                         placeholder="Enter Todi Rate"
                       />
                     </div>
@@ -562,133 +562,133 @@ export default function AddBlockPage() {
                 </h2>
               
 
-<div className="space-y-6">
-      {newBlock.block?.map((block, blockIndex) => (
-        <div key={blockIndex} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              block {blockIndex + 1}
-            </h3>
-          </div>
+              <div className="space-y-6">
+                    {newBlock.block?.map((block, blockIndex) => (
+                      <div key={blockIndex} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                            block {blockIndex + 1}
+                          </h3>
+                        </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-            <div className="mt-8">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  <span className="text-indigo-600 dark:text-indigo-400">Measurements</span>
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => handleAddMeasure(blockIndex)}
-                  className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
-                >
-                  <span className="font-medium">Add Measurement</span>
-                </button>
-              </div>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+                          <div className="mt-8">
+                            <div className="flex justify-between items-center mb-6">
+                              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <span className="text-indigo-600 dark:text-indigo-400">Measurements</span>
+                              </h2>
+                              <button
+                                type="button"
+                                onClick={() => handleAddMeasure(blockIndex)}
+                                className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+                              >
+                                <span className="font-medium">Add Measurement</span>
+                              </button>
+                            </div>
 
-              {block.addmeasures?.map((measure, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
-                >
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      L
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={measure.l}
-                      onChange={(e) => handleMeasureChange(blockIndex, index, 'l', e.target.value)}
-                      min="1"
-                      required
-                    />
-                  </div>
+                            {block.addmeasures?.map((measure, index) => (
+                              <div
+                                key={index}
+                                className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                              >
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                    L
+                                  </label>
+                                  <input
+                                    type="number"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    value={measure.l}
+                                    onChange={(e) => handleMeasureChange(blockIndex, index, 'l', e.target.value)}
+                                    min="1"
+                                    required
+                                  />
+                                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      B
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={measure.b}
-                      onChange={(e) => handleMeasureChange(blockIndex, index, 'b', e.target.value)}
-                      min="1"
-                      required
-                    />
-                  </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                    B
+                                  </label>
+                                  <input
+                                    type="number"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    value={measure.b}
+                                    onChange={(e) => handleMeasureChange(blockIndex, index, 'b', e.target.value)}
+                                    min="1"
+                                    required
+                                  />
+                                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      H
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={measure.h}
-                      onChange={(e) => handleMeasureChange(blockIndex, index, 'h', e.target.value)}
-                      min="1"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      Block Area (L*B*H)/144
-                    </label>
-                    <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                      {(measure.l * measure.b * measure.h)/144 || 0}
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                    H
+                                  </label>
+                                  <input
+                                    type="number"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    value={measure.h}
+                                    onChange={(e) => handleMeasureChange(blockIndex, index, 'h', e.target.value)}
+                                    min="1"
+                                    required
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                    Block Area (L*B*H)/144
+                                  </label>
+                                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                    {(measure.l * measure.b * measure.h)/144 || 0}
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                  Black Cost = Block Area * Todi Rate
+                                  </label>
+                                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                    {(measure.black_area ?? 0) * (newBlock.todirate ?? 0)}
+                                  </div>
+                                </div>
+              
+                                <div className="flex items-end justify-end">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      removeMeasure(blockIndex, index)
+                                    }}
+                                    className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+                                    disabled={block.addmeasures.length === 1}
+                                  >
+                                    <span className="font-medium">Remove</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex mt-2 items-end justify-end">
+                          <button
+                            type="button"
+                            onClick={() => removeBlock(blockIndex)}
+                            className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+                            disabled={!block.addmeasures?.length}
+                          >
+                            Remove block
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={addBlock}
+                        className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+                      >
+                        Add New Block
+                      </button>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    Black Cost = Block Area * Todi Rate
-                    </label>
-                    <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                      {(measure.black_area ?? 0) * (newBlock.todirate ?? 0)}
-                    </div>
-                  </div>
- 
-                  <div className="flex items-end justify-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        removeMeasure(blockIndex, index)
-                      }}
-                      className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
-                      disabled={block.addmeasures.length === 1}
-                    >
-                      <span className="font-medium">Remove</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex mt-2 items-end justify-end">
-            <button
-              type="button"
-              onClick={() => removeBlock(blockIndex)}
-              className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
-              disabled={!block.addmeasures?.length}
-            >
-              Remove block
-            </button>
-          </div>
-        </div>
-      ))}
-
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={addBlock}
-          className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
-        >
-          Add New Block
-        </button>
-      </div>
-    </div>
               </section>
 
               <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
