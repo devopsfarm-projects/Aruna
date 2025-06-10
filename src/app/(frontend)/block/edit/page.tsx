@@ -459,26 +459,7 @@ export default function EditBlock() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Date
-              </label>
-              <input
-                type="date"
-                value={currentBlock.date || ''}
-                onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
-                    prev
-                      ? {
-                          ...prev,
-                          date: e.target.value,
-                        }
-                      : prev,
-                  )
-                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
+
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">

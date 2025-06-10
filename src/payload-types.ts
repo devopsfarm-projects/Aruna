@@ -166,6 +166,7 @@ export interface Block {
   total_cost?: number | null;
   hydra_cost?: number | null;
   truck_cost?: number | null;
+  todirate?: number | null;
   total_quantity?: number | null;
   issued_quantity?: number | null;
   left_quantity?: number | null;
@@ -340,6 +341,7 @@ export interface BlockSelect<T extends boolean = true> {
   total_cost?: T;
   hydra_cost?: T;
   truck_cost?: T;
+  todirate?: T;
   total_quantity?: T;
   issued_quantity?: T;
   left_quantity?: T;

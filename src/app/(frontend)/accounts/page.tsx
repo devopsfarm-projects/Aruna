@@ -14,6 +14,7 @@ type Measure = {
 }
 
 type Stone = {
+  total_cost: any
   type: 'stone'
   id: number | string
   munim: ReactNode
@@ -61,8 +62,10 @@ type Stone = {
 }
 
 type Block = {
+  total_cost: any
   type: 'block'
   id: number
+  munim: ReactNode
   BlockType: 'Brown' | 'White'
   date?: string
   vender_id?: number
@@ -349,7 +352,7 @@ export default function StoneList() {
               <tr>
                 <th className="px-4 py-3">S.No.</th>
                 <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Vendor / Munim Name</th>
+                <th className="px-4 py-3">Munim / Vendor Name</th>
                 <th className="px-4 py-3">Type</th>
                 <th className="px-4 py-3">Total Amount</th>
               </tr>
@@ -377,11 +380,11 @@ export default function StoneList() {
                         : '-'}
                     </td>
                     <td className="px-4 py-3">
+                      {item.type === 'stone' ? item.munim : item.munim || '-'}
+                       &nbsp; / &nbsp;
                       {typeof item.vender_id === 'object'
-                        ? item.vender_id.vendor || '-'
-                        : item.vender_id || '-'}{' '}
-                      /
-                     {item.type === 'stone' ? item.munim : '-'}
+                        ? item.vender_id.vendor || ''
+                        : item.vender_id || ''}
                     </td>
                     <td className="px-4 py-3">
                       {item.type === 'stone' ? item.stoneType : item.BlockType}
@@ -390,8 +393,11 @@ export default function StoneList() {
                     <td className="px-4 py-3">
                       ₹
                       {item.type === 'stone'
-                        ? item.total_amount?.toLocaleString('en-IN') || '0'
-                        : item.total_amount?.toLocaleString('en-IN') || '0'}
+                        ? item.total_amount?.toLocaleString('en-IN') || ''
+                        : item.total_amount?.toLocaleString('en-IN') || ''}
+                         {item.type === 'block'
+                        ? item.total_cost?.toLocaleString('en-IN') || ''
+                        : item.total_cost?.toLocaleString('en-IN') || ''}
                     </td>
                   </tr>
                 ))}
