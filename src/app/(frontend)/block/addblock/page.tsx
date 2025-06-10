@@ -18,43 +18,43 @@ export default function AddBlockPage() {
     labour_name: '',
     block: [
       {
-        blockcost: 0,
+        blockcost: 1,
         addmeasures: [
           {
-            l: 0,
-            b: 0,
-            h: 0,
-            rate: 0,
-            black_area: 0,
-            black_cost: 0,
+            l: 1,
+            b: 1,
+            h: 1,
+            rate: 1,
+            black_area: 1,
+            black_cost: 1,
           },
         ],
       },
     ],
-    qty: 0,
+    qty: 1,
     vehicle_number: '',
-    hydra_cost: 0,
-    truck_cost: 0,
-    total_cost: 0,
-    total_area: 0,
-    total_todi_cost: 0,
-    todirate: 0, // Added todirate field
-    total_quantity: 0,
-    issued_quantity: 0,
-    left_quantity: 0,
-    final_total: 0,
-    partyRemainingPayment: 0,
-    partyAdvancePayment: 0,
+    hydra_cost: 1,
+    truck_cost: 1,
+    total_cost: 1,
+    total_area: 1,
+    total_todi_cost: 1,
+    todirate: 1, 
+    total_quantity: 1,
+    issued_quantity: 1,
+    left_quantity: 1,
+    final_total: 1,
+    partyRemainingPayment: 1,
+    partyAdvancePayment: 1,
     transportType: 'Hydra',
     createdBy: '',
     block_id: '',
-    front_l: 0,
-    front_b: 0,
-    front_h: 0,
-    back_l: 0,
-    back_b: 0,
-    back_h: 0,
-    transport_cost: 0,
+    front_l: 1,
+    front_b: 1,
+    front_h: 1,
+    back_l: 1,
+    back_b: 1,
+    back_h: 1,
+    transport_cost: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   })
@@ -395,7 +395,7 @@ export default function AddBlockPage() {
                         onChange={(e) => handleChange('todirate', e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
+                        min="1"
                         placeholder="Enter Todi Rate"
                       />
                     </div>
