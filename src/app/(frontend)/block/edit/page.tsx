@@ -1,8 +1,21 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import axios from 'axios';
+
 import Link from 'next/link'
+
+// Type for error response
+interface ErrorResponse {
+  errors?: Array<{ message: string }>
+  message?: string
+}
+
+// Type guard function to check if an object is an ErrorResponse
+function isErrorResponse(obj: unknown): obj is ErrorResponse {
+  return typeof obj === 'object' && obj !== null &&
+    ('errors' in obj || 'message' in obj)
+}
 import { ApiResponse } from './types'
 import { useRouter, useSearchParams } from 'next/navigation'
 
@@ -22,6 +35,7 @@ interface Measure {
 type MeasureField = keyof Measure
 
 type BlockType = {
+  total_cost: any
   block: any
   total_area: number
   total_todi_cost: number
@@ -77,11 +91,20 @@ export default function EditBlock() {
   const searchParams = useSearchParams()
   const [currentBlock, setCurrentBlock] = useState<BlockType | null>(null)
   const [newBlock, setNewBlock] = useState<BlockType | null>(null)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  // Update currentBlock when newBlock changes
+  useEffect(() => {
+    if (newBlock) {
+      setCurrentBlock(newBlock)
+    }
+  }, [newBlock])
   const [loading, setLoading] = useState(true)
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [loadingData, setLoadingData] = useState(true)
-  const id = searchParams.get('id')
+  const id = searchParams.get('id') ?? null
   const [error, setError] = useState<string | null>(null)
+  const [, setIsSubmitting] = useState(false)
+
 
   // Function to remove a block
   const removeBlock = (index: number) => {
@@ -198,6 +221,7 @@ export default function EditBlock() {
     setNewBlock((prev) => {
       if (!prev) {
         return {
+          total_cost: 0,
           block: [
             {
               blockcost: 0,
@@ -377,19 +401,27 @@ export default function EditBlock() {
     })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newBlock || !id) return
-
-    try {
-      await axios.patch(`/api/Block/${id}`, newBlock)
-      alert('Block updated successfully')
-      router.push('/block')
-    } catch (error) {
-      console.error('Error updating block:', error)
-      alert('Error updating block')
-    }
-  }
+   const handleSubmit = async (e: React.FormEvent) => {
+     e.preventDefault()
+     if (!newBlock || !id) return
+ 
+ 
+     try {
+       setIsSubmitting(true)
+       await axios.patch(`/api/Block/${id}`, newBlock)
+       setShowSuccessModal(true)
+      
+     } catch (error) {
+       console.error('Error updating block:', error)
+       if (isErrorResponse(error)) {
+         setError(error.message ?? null)
+       } else {
+         setError('Error updating block')
+       }
+     } finally {
+       setIsSubmitting(false)
+     }
+   }
 
   if (loading || loadingData) {
     return (
@@ -424,6 +456,48 @@ export default function EditBlock() {
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
+         {/* Success Modal */}
+         {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md mx-4 z-50 relative">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Success
+              </h2>
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  router.push('/block')
+                }}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="mb-4">
+              <svg className="w-12 h-12 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-gray-700 dark:text-gray-300 text-center mb-6">
+              Block added successfully!
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  router.push('/block')
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
@@ -442,9 +516,9 @@ export default function EditBlock() {
                 Block Type
               </label>
               <select
-                value={currentBlock.blockType}
+                value={newBlock?.blockType || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev) => {
+                  setNewBlock((prev) => {
                     if (!prev) return null
                     return {
                       ...prev,
@@ -466,12 +540,12 @@ export default function EditBlock() {
                 Vendor Name
               </label>
               <select
-                value={currentBlock?.vender_id || ''}
+                value={newBlock?.vender_id || ''}
                 onChange={(e) => {
                   const selectedId = Number(e.target.value)
                   const selectedVendor = vendors.find((v) => v.id === selectedId)
                   if (selectedVendor) {
-                    setCurrentBlock((prev: BlockType | null) =>
+                    setNewBlock((prev: BlockType | null) =>
                       prev
                         ? {
                             ...prev,
@@ -482,7 +556,7 @@ export default function EditBlock() {
                         : prev,
                     )
                   } else {
-                    setCurrentBlock((prev: BlockType | null) =>
+                    setNewBlock((prev: BlockType | null) =>
                       prev
                         ? {
                             ...prev,
@@ -510,9 +584,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="text"
-                value={currentBlock.munim || ''}
+                value={newBlock?.munim || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -531,13 +605,13 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.todirate || ''}
+                value={newBlock?.todirate || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
-                          todirate: e.target.value,
+                          todirate: e.target.value.toString(),
                         }
                       : prev,
                   )
@@ -552,9 +626,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.hydra_cost || ''}
+                value={newBlock?.hydra_cost || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -573,9 +647,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.truck_cost || ''}
+                value={newBlock?.truck_cost || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -594,9 +668,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.total_quantity || ''}
+                value={newBlock?.total_quantity || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -617,9 +691,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.front_l || ''}
+                value={newBlock?.front_l || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -637,9 +711,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.front_b || ''}
+                value={newBlock?.front_b || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -658,9 +732,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.front_h || ''}
+                value={newBlock?.front_h || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -679,9 +753,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.back_l || ''}
+                value={newBlock?.back_l || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -700,9 +774,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.back_b || ''}
+                value={newBlock?.back_b || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) =>
+                  setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
@@ -721,9 +795,9 @@ export default function EditBlock() {
               </label>
               <input
                 type="number"
-                value={currentBlock.back_h || ''}
+                value={newBlock?.back_h || ''}
                 onChange={(e) =>
-                  setCurrentBlock((prev: BlockType | null) => {
+                  setNewBlock((prev: BlockType | null) => {
                     if (!prev) return null
                     return {
                       ...prev,

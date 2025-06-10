@@ -88,7 +88,7 @@ export default function StoneList() {
   const [blocks, setBlocks] = useState<Block[]>([])
   const [, setLoading] = useState(true)
   const [, setError] = useState<string | null>(null)
-  const [searchVendor, setSearchVendor] = useState('')
+  const [searchVendor,] = useState('')
   const [searchMine] = useState('')
   const [filteredStones, setFilteredStones] = useState<Stone[]>([])
 
@@ -195,7 +195,7 @@ export default function StoneList() {
       <div className="max-w-7xl mx-auto space-y-10">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full md:w-auto">
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Vendor
               </label>
@@ -206,7 +206,7 @@ export default function StoneList() {
                 placeholder="Vendor"
                 className="mt-1 block w-full px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
-            </div>
+            </div> */}
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white text-center md:text-right">
             <span className="text-indigo-600 dark:text-indigo-400">Accounts</span> Statement
@@ -271,7 +271,6 @@ export default function StoneList() {
                         : '-'}
                     </span>
                   </div>
-
                   <div className="flex items-center gap-2">
                     <svg
                       className="w-4 h-4 text-gray-400"
@@ -293,11 +292,15 @@ export default function StoneList() {
                       />
                     </svg>
                     <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {typeof item.vender_id === 'object'
-                        ? item.vender_id.vendor || '-'
-                        : item.vender_id || '-'}
+                    {item.type === 'stone' ? item.munim : item.munim || '-'}
+                       &nbsp; / &nbsp;
+                       {item.vender_id && typeof item.vender_id === 'object'
+                         ? item.vender_id.vendor
+                         : item.vender_id || ''}
                     </span>
                   </div>
+
+                 
 
                   {item.type === 'stone' && (
                     <div className="flex items-center gap-2">
@@ -382,9 +385,9 @@ export default function StoneList() {
                     <td className="px-4 py-3">
                       {item.type === 'stone' ? item.munim : item.munim || '-'}
                        &nbsp; / &nbsp;
-                      {typeof item.vender_id === 'object'
-                        ? item.vender_id.vendor || ''
-                        : item.vender_id || ''}
+                       {item.vender_id && typeof item.vender_id === 'object'
+                         ? item.vender_id.vendor
+                         : item.vender_id || ''}
                     </td>
                     <td className="px-4 py-3">
                       {item.type === 'stone' ? item.stoneType : item.BlockType}

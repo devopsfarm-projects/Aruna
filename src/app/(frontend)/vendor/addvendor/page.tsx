@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, ReactNode } from 'react'
+import React, { useState, ReactNode, useEffect } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -71,6 +71,7 @@ interface Vendor {
 export default function VendorForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [newVendor, setNewVendor] = useState<Vendor>({
     id: '',
     vendor: '',
@@ -104,8 +105,7 @@ export default function VendorForm() {
       })
 
       if (response.status === 201) {
-        alert('Vendor added successfully!')
-        router.push('/vendor')
+        setShowSuccessModal(true)
       }
     } catch (error: unknown) {
       if (isAxiosError(error)) {
@@ -147,7 +147,49 @@ export default function VendorForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 sm:pt-24">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 flex flex-col justify-center sm:py-12">
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md mx-4 z-50 relative">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Success
+              </h2>
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  router.push('/vendor')
+                }}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="mb-4">
+              <svg className="w-12 h-12 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-gray-700 dark:text-gray-300 text-center mb-6">
+              Vendor added successfully!
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  router.push('/vendor')
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
