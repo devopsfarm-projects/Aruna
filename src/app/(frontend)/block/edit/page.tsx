@@ -940,9 +940,7 @@ export default function EditBlock() {
               )}
             </div>
           </section>
-        </form>
-      </div>
-      <div className="mt-8">
+          <div className="mt-8">
         <button
           type="submit"
           className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
@@ -951,6 +949,10 @@ export default function EditBlock() {
           Save Changes
         </button>
       </div>
+        </form>
+     
+      </div>
+    
     </div>
   )
 }
