@@ -60,11 +60,10 @@ export default function Navbar() {
 
   // Fetch user data
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUser = () => {
       try {
-        const response = await fetch('/api/user')
-        if (response.ok) {
-          const userData = await response.text()
+        const userData = localStorage.getItem('user')
+        if (userData) {
           setUser(JSON.parse(userData))
         }
       } catch (err) {
@@ -161,74 +160,26 @@ export default function Navbar() {
 
 <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
     <div className="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
-        <button 
-          onClick={() => handleLinkClick('/dashboard')}
-          className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group relative">
-          {isLoading && activeLink === '/dashboard' ? (
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-          ) : (
-            <>
-              <FaHome />
-              <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Home</span>
-            </>
-          )}
-        </button>
-        <button 
-          onClick={() => handleLinkClick('/stone')}
-          className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group relative">
-          {isLoading && activeLink === '/stone' ? (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="loading loading-spinner w-5 h-5"></div>
-            </div>
-          ) : (
-            <>
-              <GiStonePile />
-              <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Stone</span>
-            </>
-          )}
-        </button>
-        <button 
-          onClick={() => handleLinkClick('/block')}
-          className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group relative">
-          {isLoading && activeLink === '/block' ? (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="loading loading-spinner w-5 h-5"></div>
-            </div>
-          ) : (
-            <>
-              <GiStoneBlock />
-              <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Block</span>
-            </>
-          )}
-        </button>
-        <button 
-          onClick={() => handleLinkClick('/vendor')}
-          className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group relative">
-          {isLoading && activeLink === '/vendor' ? (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="loading loading-spinner w-5 h-5"></div>
-            </div>
-          ) : (
-            <>
-              <GrUserManager />
-              <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Vendor</span>
-            </>
-          )}
-        </button>
-        <button 
-          onClick={() => handleLinkClick('/accounts')}
-          className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group relative">
-          {isLoading && activeLink === '/accounts' ? (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="loading loading-spinner w-5 h-5"></div>
-            </div>
-          ) : (
-            <>
-              <MdAccountCircle />
-              <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Accounts</span>
-            </>
-          )}
-        </button>
+        <Link  href="/dashboard" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <FaHome />
+            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Home</span>
+        </Link>
+        <Link  href="/stone" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <GiStonePile />
+            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Stone</span>
+        </Link>
+        <Link  href="/block" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <GiStoneBlock />
+            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Block</span>
+        </Link>
+        <Link  href="/vendor" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <GrUserManager />
+            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Vendor</span>
+        </Link>
+        <Link  href="/accounts" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+        <MdAccountCircle />
+            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Accounts</span>
+        </Link>
     </div>
 </div>
 
