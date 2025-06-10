@@ -47,8 +47,6 @@ const isErrorResponse = (obj: unknown): obj is ErrorResponse => {
   return ('errors' in data && Array.isArray(data.errors)) || 'message' in data
 }
 
-
-
 type Measure = {
   qty: number
   l: number
@@ -71,14 +69,12 @@ type Stone = {
   rate: number
   block_amount: number
   total_amount: number
-  minum: string
+  munim: string
   transportType: string
   vehicle_number: string
   hydra_cost: number
   createdBy: string
 }
-
-
 
 export default function AddStonePage() {
   const router = useRouter()
@@ -86,24 +82,21 @@ export default function AddStonePage() {
   const [newStone, setNewStone] = useState<Stone>({
     vender_id: '',
     stoneType: '',
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString(),
     mines: '',
     addmeasures: [],
-    total_quantity: 0,
-    issued_quantity: 0,
-    left_quantity: 0,
-    rate: 0,
-    block_amount: 0,
-    total_amount: 0,
-    minum: '',
+    total_quantity: 1,
+    issued_quantity: 1,
+    left_quantity: 1,
+    rate: 1,
+    block_amount: 1,
+    total_amount: 1,
+    munim: '',
     transportType: 'Hydra',
     vehicle_number: '',
-    hydra_cost: 0,
+    hydra_cost: 1,
     createdBy: '',
   })
-
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -203,19 +196,7 @@ export default function AddStonePage() {
                 </select>
               </div>
 
-              {/* Date */}
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.date}
-                  onChange={(e) => setNewStone({ ...newStone, date: e.target.value })}
-                  required
-                />
-              </div>
+           
 
               {/* Rate */}
               <div>
@@ -230,7 +211,8 @@ export default function AddStonePage() {
                     onChange={(e) => {
                       const rate = Number(e.target.value)
                       setNewStone((prev) => {
-                        const totalAmount = ((prev.total_quantity || 0) * rate) * (prev.hydra_cost || 0)
+                        const totalAmount =
+                          (prev.total_quantity || 0) * rate * (prev.hydra_cost || 0)
                         return {
                           ...prev,
                           rate: rate,
@@ -240,7 +222,9 @@ export default function AddStonePage() {
                     }}
                     required
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                    ₹
+                  </span>
                 </div>
               </div>
 
@@ -254,15 +238,15 @@ export default function AddStonePage() {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={newStone.total_quantity || ''}
                   onChange={(e) => {
-                    const quantity = Number(e.target.value) || 0;
+                    const quantity = Number(e.target.value) || 0
                     setNewStone((prev) => {
-                      const totalAmount = (quantity * (prev.rate || 0)) * (prev.hydra_cost || 0);
+                      const totalAmount = quantity * (prev.rate || 0) * (prev.hydra_cost || 0)
                       return {
                         ...prev,
                         total_quantity: quantity,
                         total_amount: totalAmount,
-                      };
-                    });
+                      }
+                    })
                   }}
                   min="0"
                   required
@@ -278,8 +262,8 @@ export default function AddStonePage() {
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  value={newStone.minum}
-                  onChange={(e) => setNewStone({ ...newStone, minum: e.target.value })}
+                  value={newStone.munim}
+                  onChange={(e) => setNewStone({ ...newStone, munim: e.target.value })}
                   required
                 />
               </div>
@@ -295,21 +279,23 @@ export default function AddStonePage() {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
                     value={newStone.hydra_cost || ''}
                     onChange={(e) => {
-                      const cost = Number(e.target.value) || 0;
+                      const cost = Number(e.target.value) || 0
                       setNewStone((prev) => {
-                        const totalAmount = ((prev.total_quantity || 0) * (prev.rate || 0)) * cost;
+                        const totalAmount = (prev.total_quantity || 0) * (prev.rate || 0) * cost
                         return {
                           ...prev,
                           hydra_cost: cost,
                           total_amount: totalAmount,
-                        };
-                      });
+                        }
+                      })
                     }}
                     min="0"
                     required
                     placeholder="Enter cost"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                    ₹
+                  </span>
                 </div>
               </div>
             </div>

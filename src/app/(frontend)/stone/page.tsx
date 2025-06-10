@@ -16,7 +16,7 @@ type Measure = {
 
 type Stone = {
   rate: string
-  minum: ReactNode
+  munim: ReactNode
   id: number | string
   vender_id: {
     id: number
@@ -291,7 +291,7 @@ export default function StoneList() {
                 </th>
                 <th className="p-3 text-left">S.No.</th>
                 <th className="p-3 text-left">Stone Type</th>
-                <th className="p-3 text-left">Minum</th>
+                <th className="p-3 text-left">munim</th>
                 <th className="p-3 text-left">Date</th>
                 <th className="p-3 text-left">Rate</th>
                 <th className="p-3 text-left">Qty</th>
@@ -312,7 +312,8 @@ export default function StoneList() {
                   </td>
                   <td className="p-3 text-center">{index + 1}</td>
                   <td className="p-3">{stone.stoneType}</td>
-                  <td className="p-3">{stone.minum}</td>
+                 
+                  <td className="p-3">{stone.munim}</td>
                   <td className="p-3"> {stone.date ? new Date(stone.date).toLocaleString('en-IN', {
                         year: 'numeric',
                         month: 'long',

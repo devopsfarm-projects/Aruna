@@ -13,7 +13,6 @@ export default function AddBlockPage() {
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [newBlock, setNewBlock] = useState<Block>({
     BlockType: '',
-    date: new Date().toISOString().split('T')[0],
     vender_id: '',
     labour_name: '',
     block: [
@@ -55,8 +54,9 @@ export default function AddBlockPage() {
     back_b: 1,
     back_h: 1,
     transport_cost: 1,
+    date: new Date().toISOString(),
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   })
 
   const calculateTotalCost = (block: Block) => {
@@ -333,7 +333,7 @@ export default function AddBlockPage() {
                       </select>
                     </div>
 
-                    <div>
+                    {/* <div>
                       <label
                         htmlFor="date"
                         className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
@@ -348,7 +348,7 @@ export default function AddBlockPage() {
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                         required
                       />
-                    </div>
+                    </div> */}
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">

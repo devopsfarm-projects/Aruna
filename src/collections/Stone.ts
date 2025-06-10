@@ -75,22 +75,22 @@ export const Stone: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ data }) => {
-        let blockAmount = 0;
-        let totalAmount = 0;
+        let blockAmount = 0
+        let totalAmount = 0
 
         // Calculate block amount based on total_quantity and rate
         if (data.total_quantity && data.rate) {
-          blockAmount = data.total_quantity * data.rate;
+          blockAmount = data.total_quantity * data.rate
         }
 
         // Calculate total amount
-        const hydraCost = data.hydra_cost || 0;
-        totalAmount = blockAmount * hydraCost;
+        const hydraCost = data.hydra_cost || 0
+        totalAmount = blockAmount * hydraCost
 
         return {
           ...data,
           total_amount: totalAmount,
-        };
+        }
       },
     ],
   },
