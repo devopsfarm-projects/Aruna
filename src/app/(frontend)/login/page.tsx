@@ -39,7 +39,7 @@ export default function LoginForm() {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
         setTimeout(() => {
-          window.location.href = '/dashboard'
+          window.location.href = '/'
         }, 2000)
       } else {
         setError(data.message || 'Login failed.')
@@ -123,7 +123,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3.5 sm:p-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

@@ -210,36 +210,15 @@ export default function StoneList() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               <span className="text-indigo-600 dark:text-indigo-400">Stone</span> Inventory
             </h1>
-          </div>
+          </div>  
         </div>
 
         <div className="space-y-4 md:hidden">
           {filteredStones.map((stone, index) => (
-            <div key={stone.id} className="p-4 rounded-xl bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg">
-              <div className="flex justify-between items-center mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">#{index + 1}</span>
-                  <span className="px-2 py-1 text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 rounded-full">
-                    {stone.stoneType}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedStones.has(stone.id.toString())}
-                    onChange={() => handleSelectStone(stone.id.toString())}
-                    className="rounded h-4 w-4"
-                  />
-                  <button 
-                    onClick={() => handleDelete(stone.id)} 
-                    className="p-1.5 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                    title="Delete"
-                  >
-                    <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
+            <div key={stone.id} className="p-4 rounded-xl bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700">
+              <div className="flex justify-between items-center mb-2">
+                <div className="text-sm text-gray-500 dark:text-gray-400">#{index + 1}</div>
+            
               </div>
               
               <div className="space-y-2">

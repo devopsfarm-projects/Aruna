@@ -14,24 +14,6 @@ export default function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const menu = document.getElementById('dropdown-user')
-      if (menu && !menu.contains(event.target as Node)) {
-        setIsUserMenuOpen(false)
-      }
-    }
-
-    if (isUserMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isUserMenuOpen])
-
   const handleLogout = () => {
     localStorage.clear()
     window.location.href = '/api/logout'
@@ -78,7 +60,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed pt-6 top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+      <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start rtl:justify-end">
@@ -109,7 +91,6 @@ export default function Navbar() {
                 <div
                   className={`absolute right-0 top-full mt-2 z-50 ${isUserMenuOpen ? 'block' : 'hidden'} w-48 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600`}
                   id="dropdown-user"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <div className="px-4 py-3" role="none">
                     <p className="text-sm text-gray-900 dark:text-white" role="none">
