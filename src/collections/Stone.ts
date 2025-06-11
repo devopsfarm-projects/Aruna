@@ -54,11 +54,7 @@ export const Stone: CollectionConfig = {
     { name: 'total_quantity', label: 'Total Quantity', type: 'number' },
     { name: 'issued_quantity', label: 'Issued Quantity', type: 'number' },
     { name: 'left_quantity', label: 'Left Quantity', type: 'number' },
-<<<<<<< HEAD
     { name: 'munim', label: 'munim', type: 'text' },
-=======
-    { name: 'munim', label: 'Munim', type: 'text' },
->>>>>>> 78bb74924f4b75d0a5d32464a577c434d6df9a0f
     { name: 'hydra_cost', label: 'Hydra Cost', type: 'number' },
     { name: 'total_amount', label: 'Total Amount', type: 'number' }, // total_amount = block_amount + vehicle_cost
 
