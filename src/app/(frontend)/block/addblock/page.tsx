@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Vendor, Block, Measure } from './types'
-import BlockSection from './components/Blocksection'
 import axios from 'axios'
 
 export default function AddBlockPage() {
@@ -12,58 +11,58 @@ export default function AddBlockPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [vendors, setVendors] = useState<Vendor[]>([])
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [newBlock, setNewBlock] = useState<Block>({
     BlockType: '',
-    date: new Date().toISOString().split('T')[0],
     vender_id: '',
     labour_name: '',
     block: [
       {
-        blockcost: 0,
+        blockcost: 1,
         addmeasures: [
           {
-            l: 0,
-            b: 0,
-            h: 0,
-            rate: 0,
-            black_area: 0,
-            black_cost: 0,
+            l: 1,
+            b: 1,
+            h: 1,
+            rate: 1,
+            black_area: 1,
+            black_cost: 1,
           },
         ],
       },
     ],
-    qty: 0,
+    qty: 1,
     vehicle_number: '',
-    hydra_cost: 0,
-    truck_cost: 0,
-    total_cost: 0,
-    total_area: 0,
-    total_todi_cost: 0,
-    todirate: 0, // Added todirate field
-    total_quantity: 0,
-    issued_quantity: 0,
-    left_quantity: 0,
-    final_total: 0,
-    partyRemainingPayment: 0,
-    partyAdvancePayment: 0,
+    hydra_cost: 1,
+    truck_cost: 1,
+    total_cost: 1,
+    total_area: 1,
+    total_todi_cost: 1,
+    todirate: 1, 
+    total_quantity: 1,
+    issued_quantity: 1,
+    left_quantity: 1,
+    final_total: 1,
+    partyRemainingPayment: 1,
+    partyAdvancePayment: 1,
     transportType: 'Hydra',
     createdBy: '',
     block_id: '',
-    front_l: 0,
-    front_b: 0,
-    front_h: 0,
-    back_l: 0,
-    back_b: 0,
-    back_h: 0,
-    transport_cost: 0,
+    front_l: 1,
+    front_b: 1,
+    front_h: 1,
+    back_l: 1,
+    back_b: 1,
+    back_h: 1,
+    transport_cost: 1,
+    date: new Date().toISOString(),
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   })
 
   const calculateTotalCost = (block: Block) => {
-    if (block.total_todi_cost && block.block[0]?.addmeasures[0]?.black_area && block.todirate) {
-      const blackArea = block.block[0].addmeasures[0].black_area / 144
-      return (block.total_todi_cost * blackArea) / block.todirate
+    if (block.total_todi_cost && block.total_area && block.todirate) {
+      return (block.total_todi_cost * block.total_area) 
     }
     return 0
   }
@@ -93,7 +92,7 @@ export default function AddBlockPage() {
         // Calculate total_todi_cost if todirate is available
         if (updatedBlock.todirate) {
           updatedBlock.total_todi_cost =
-            (updatedBlock.total_area * Number(updatedBlock.todirate)) / 144
+            (updatedBlock.total_area * Number(updatedBlock.todirate)) 
         }
       }
 
@@ -109,71 +108,59 @@ export default function AddBlockPage() {
     })
   }
 
-  const handleMeasureChange = (
-    blockIndex: number,
-    measureIndex: number,
-    field: keyof Measure | 'add' | 'remove',
-    value: string | number,
-  ) => {
-    const newBlocks = [...newBlock.block]
+  type MeasureField = keyof Measure & string;
 
-    if (field === 'add') {
-      newBlocks[blockIndex].addmeasures = [
-        ...(newBlocks[blockIndex].addmeasures || []),
-        {
-          l: 0,
-          b: 0,
-          h: 0,
-          rate: 0,
-          black_area: 0,
-          black_cost: 0,
-        },
-      ]
-    } else if (field === 'remove') {
-      // Remove measure
-      newBlocks[blockIndex].addmeasures = newBlocks[blockIndex].addmeasures.filter(
-        (_, i) => i !== measureIndex,
-      )
-    } else {
-      // Update existing measure
-      const newMeasures = [...newBlocks[blockIndex].addmeasures]
-      const currentMeasure = newMeasures[measureIndex]
-      const updatedMeasure = { ...currentMeasure, [field]: Number(value) }
+  const handleAddMeasure = (blockIndex: number) => {
+    setNewBlock(prev => {
+      const updatedBlock = {
+        ...prev,
+        block: prev.block?.map((b, i) => 
+          i === blockIndex ? {
+            ...b,
+            addmeasures: [...(b.addmeasures || []), {
+              l: 0,
+              b: 0,
+              h: 0,
+              rate: 0,
+              black_area: 0,
+              black_cost: 0
+            }]
+          } : b
+        ) || []
+      };
+      return updatedBlock;
+    });
+  };
 
-      // Calculate black_area if L, B, or H changed
-      if (field === 'l' || field === 'b' || field === 'h') {
-        updatedMeasure.black_area = updatedMeasure.l * updatedMeasure.b * updatedMeasure.h
+  const handleMeasureChange = (blockIndex: number, measureIndex: number, field: MeasureField, value: string) => {
+    setNewBlock((prev) => {
+      const updatedBlock = { ...prev };
+      const updatedMeasures = [...updatedBlock.block[blockIndex].addmeasures];
+      const updatedMeasure = { ...updatedMeasures[measureIndex] };
+
+      // Type-safe field assignment
+      if (field in updatedMeasure) {
+        // Safely update the measure field with the number value
+        const numValue = Number(value);
+        if (field === 'l' || field === 'b' || field === 'h' || field === 'rate' || field === 'black_area' || field === 'black_cost') {
+          updatedMeasure[field] = numValue;
+        }
       }
+      updatedMeasures[measureIndex] = updatedMeasure;
+      updatedBlock.block[blockIndex].addmeasures = updatedMeasures;
 
-      newMeasures[measureIndex] = updatedMeasure
-      newBlocks[blockIndex].addmeasures = newMeasures
-    }
+      // Calculate black_area for all measures
+      updatedMeasures.forEach((measure) => {
+        measure.black_area = (measure.l * measure.b * measure.h) / 144;
+        // Calculate black_cost if todirate is available
+        if (updatedBlock.todirate) {
+          measure.black_cost = measure.black_area * Number(updatedBlock.todirate);
+        }
+      });
 
-    // Calculate final total
-    const finalTotal = newBlocks.reduce((sum, block) => {
-      return (
-        sum +
-        block.addmeasures.reduce((tSum, m) => {
-          const l = m.l || 0
-          const b = m.b || 0
-          const h = m.h || 0
-          const blockcost = block.blockcost || 0
-          const qty = newBlock.qty || 0
-          return tSum + l * b * h * qty * blockcost
-        }, 0)
-      )
-    }, 0)
-
-    // Calculate remaining payment
-    const remainingPayment = finalTotal - (Number(newBlock.partyAdvancePayment) || 0)
-
-    setNewBlock((prev) => ({
-      ...prev,
-      block: newBlocks,
-      final_total: finalTotal,
-      partyRemainingPayment: remainingPayment,
-    }))
-  }
+      return updatedBlock;
+    });
+  };
 
   const removeMeasure = (blockIndex: number, measureIndex: number) => {
     setNewBlock((prev) => {
@@ -191,15 +178,15 @@ export default function AddBlockPage() {
       block: [
         ...prev.block,
         {
-          blockcost: 0,
+          blockcost: 1,
           addmeasures: [
             {
-              l: 0,
-              b: 0,
-              h: 0,
-              rate: 0,
-              black_area: 0,
-              black_cost: 0,
+              l: 1,
+              b: 1,
+              h: 1,
+              rate: 1,
+              black_area: 1,
+              black_cost: 1,
             },
           ],
         },
@@ -263,8 +250,8 @@ export default function AddBlockPage() {
       })
 
       if (response.status === 201) {
-        alert('Block added successfully!')
-        router.push('/block')
+        setShowSuccessModal(true)
+        
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -307,7 +294,49 @@ export default function AddBlockPage() {
 
   return (
     <>
-      <div className="bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-12">
+      <div className="bg-gray-50 dark:bg-gray-900 py-8 px-4 pb-20 sm:px-6 lg:px-12">
+         {/* Success Modal */}
+         {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md mx-4 z-50 relative">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Success
+              </h2>
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  router.push('/block')
+                }}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="mb-4">
+              <svg className="w-12 h-12 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-gray-700 dark:text-gray-300 text-center mb-6">
+              Block added successfully!
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  router.push('/block')
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
         <div className="pt-20">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
             <header className="px-6 py-6 sm:px-8 border-b border-gray-200 dark:border-gray-700">
@@ -347,22 +376,6 @@ export default function AddBlockPage() {
                       </select>
                     </div>
 
-                    <div>
-                      <label
-                        htmlFor="date"
-                        className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
-                      >
-                        Date
-                      </label>
-                      <input
-                        id="date"
-                        type="date"
-                        value={newBlock.date}
-                        onChange={(e) => handleChange('date', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        required
-                      />
-                    </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -409,7 +422,7 @@ export default function AddBlockPage() {
                         onChange={(e) => handleChange('todirate', e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        min="0"
+                        min="1"
                         placeholder="Enter Todi Rate"
                       />
                     </div>
@@ -574,13 +587,135 @@ export default function AddBlockPage() {
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                   Block Details
                 </h2>
-                <BlockSection
-                  blocks={newBlock.block}
-                  onRemove={removeBlock}
-                  onMeasureChange={handleMeasureChange}
-                  onMeasureRemove={removeMeasure}
-                  onAddNewBlock={addBlock}
-                />
+              
+
+              <div className="space-y-6">
+                    {newBlock.block?.map((block, blockIndex) => (
+                      <div key={blockIndex} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                            block {blockIndex + 1}
+                          </h3>
+                        </div>
+
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+                          <div className="mt-8">
+                            <div className="flex justify-between items-center mb-6">
+                              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <span className="text-indigo-600 dark:text-indigo-400">Measurements</span>
+                              </h2>
+                              <button
+                                type="button"
+                                onClick={() => handleAddMeasure(blockIndex)}
+                                className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+                              >
+                                <span className="font-medium">Add Measurement</span>
+                              </button>
+                            </div>
+
+                            {block.addmeasures?.map((measure, index) => (
+                              <div
+                                key={index}
+                                className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                              >
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                    L
+                                  </label>
+                                  <input
+                                    type="number"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    value={measure.l}
+                                    onChange={(e) => handleMeasureChange(blockIndex, index, 'l', e.target.value)}
+                                    min="1"
+                                    required
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                    B
+                                  </label>
+                                  <input
+                                    type="number"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    value={measure.b}
+                                    onChange={(e) => handleMeasureChange(blockIndex, index, 'b', e.target.value)}
+                                    min="1"
+                                    required
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                    H
+                                  </label>
+                                  <input
+                                    type="number"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    value={measure.h}
+                                    onChange={(e) => handleMeasureChange(blockIndex, index, 'h', e.target.value)}
+                                    min="1"
+                                    required
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                    Block Area (L*B*H)/144
+                                  </label>
+                                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                    {(measure.l * measure.b * measure.h)/144 || 0}
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                  Black Cost = Block Area * Todi Rate
+                                  </label>
+                                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                    {(measure.black_area ?? 0) * (newBlock.todirate ?? 0)}
+                                  </div>
+                                </div>
+              
+                                <div className="flex items-end justify-end">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      removeMeasure(blockIndex, index)
+                                    }}
+                                    className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+                                    disabled={block.addmeasures.length === 1}
+                                  >
+                                    <span className="font-medium">Remove</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex mt-2 items-end justify-end">
+                          <button
+                            type="button"
+                            onClick={() => removeBlock(blockIndex)}
+                            className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+                            disabled={!block.addmeasures?.length}
+                          >
+                            Remove block
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={addBlock}
+                        className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+                      >
+                        Add New Block
+                      </button>
+                    </div>
+                  </div>
               </section>
 
               <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
@@ -604,15 +739,7 @@ export default function AddBlockPage() {
                     },
 
                     {
-                      label: 'Black Area (L*B*H)/144',
-                      value: (newBlock.block[0]?.addmeasures[0]?.black_area ?? 0) / 144,
-                    },
-                    {
-                      label: 'Black Cost (L*B*H)',
-                      value: newBlock.block[0]?.addmeasures[0]?.black_area ?? 0,
-                    },
-                    {
-                      label: 'Total Cost = (Total Todi Cost *Black area)/todi area',
+                      label: 'Total Cost = (Total Todi Cost * Total Area)',
                       value: calculateTotalCost(newBlock) || 0,
                     },
                   ].map((item, index) => (

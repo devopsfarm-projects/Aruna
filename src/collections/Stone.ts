@@ -1,5 +1,23 @@
 import type { CollectionConfig } from 'payload'
 
+export interface Stone {
+  id: string
+  stoneType: 'Khanda' | 'Raskat'
+  date: string
+  rate: number
+  total_quantity: number
+  issued_quantity: number
+  left_quantity: number
+  minum: string
+  hydra_cost: number
+  total_amount: number
+  createdBy: {
+    id: string
+    email: string
+    role: string
+  }
+}
+
 export const Stone: CollectionConfig = {
   slug: 'stone',
   admin: {
@@ -36,7 +54,11 @@ export const Stone: CollectionConfig = {
     { name: 'total_quantity', label: 'Total Quantity', type: 'number' },
     { name: 'issued_quantity', label: 'Issued Quantity', type: 'number' },
     { name: 'left_quantity', label: 'Left Quantity', type: 'number' },
+<<<<<<< HEAD
     { name: 'munim', label: 'munim', type: 'text' },
+=======
+    { name: 'munim', label: 'Munim', type: 'text' },
+>>>>>>> 78bb74924f4b75d0a5d32464a577c434d6df9a0f
     { name: 'hydra_cost', label: 'Hydra Cost', type: 'number' },
     { name: 'total_amount', label: 'Total Amount', type: 'number' }, // total_amount = block_amount + vehicle_cost
 
@@ -57,22 +79,22 @@ export const Stone: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ data }) => {
-        let blockAmount = 0;
-        let totalAmount = 0;
+        let blockAmount = 0
+        let totalAmount = 0
 
         // Calculate block amount based on total_quantity and rate
         if (data.total_quantity && data.rate) {
-          blockAmount = data.total_quantity * data.rate;
+          blockAmount = data.total_quantity * data.rate
         }
 
         // Calculate total amount
-        const hydraCost = data.hydra_cost || 0;
-        totalAmount = blockAmount + hydraCost;
+        const hydraCost = data.hydra_cost || 0
+        totalAmount = blockAmount * hydraCost
 
         return {
           ...data,
           total_amount: totalAmount,
-        };
+        }
       },
     ],
   },
