@@ -8,6 +8,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     // Check if dark mode is preferred by the user
@@ -23,6 +24,7 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setIsLoading(true)
 
     try {
       const res = await fetch('/api/users/login', {
@@ -36,13 +38,16 @@ export default function LoginForm() {
       if (res.ok && data.token) {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
-        window.open('/dashboard', '_blank')
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 2000)
       } else {
         setError(data.message || 'Login failed.')
       }
     } catch (err) {
       console.error(err)
       setError('An unexpected error occurred.')
+      setIsLoading(false)
     }
   }
 
@@ -117,9 +122,16 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3 rounded-lg"
+            disabled={isLoading}
+            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Login
+            {isLoading ? (
+              <>
+                Loading...
+              </>
+            ) : (
+              'Login'
+            )}
           </button>
         </form>
       </div>

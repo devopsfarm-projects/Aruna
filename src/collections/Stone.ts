@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Stone: CollectionConfig = {
   slug: 'stone',
   admin: {
-    useAsTitle: 'minum',
+    useAsTitle: 'munim',
   },
   access: {
     create: ({ req: { user } }) => user?.role === 'owner' || user?.role === 'sites-visitor',
@@ -36,7 +36,7 @@ export const Stone: CollectionConfig = {
     { name: 'total_quantity', label: 'Total Quantity', type: 'number' },
     { name: 'issued_quantity', label: 'Issued Quantity', type: 'number' },
     { name: 'left_quantity', label: 'Left Quantity', type: 'number' },
-    { name: 'minum', label: 'Minum', type: 'text' },
+    { name: 'munim', label: 'munim', type: 'text' },
     { name: 'hydra_cost', label: 'Hydra Cost', type: 'number' },
     { name: 'total_amount', label: 'Total Amount', type: 'number' }, // total_amount = block_amount + vehicle_cost
 

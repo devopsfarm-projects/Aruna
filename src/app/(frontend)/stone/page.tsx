@@ -142,24 +142,7 @@ export default function StoneList() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               <span className="text-indigo-600 dark:text-indigo-400">Stone</span> Inventory
             </h1>
-            <div className="flex gap-3 flex-wrap">
-              {selectedStones.size > 0 && (
-                <button
-                  onClick={handleBulkDelete}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
-                >
-                  Delete {selectedStones.size}
-                </button>
-              )}
-              <Link href="/stone/addstone">
-                <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                  Add Stone
-                </button>
-              </Link>
-            </div>
-          </div>
-
-        
+          </div>  
         </div>
 
         {/* Mobile View */}
@@ -168,12 +151,7 @@ export default function StoneList() {
             <div key={stone.id} className="p-4 rounded-xl bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center mb-2">
                 <div className="text-sm text-gray-500 dark:text-gray-400">#{index + 1}</div>
-                <input
-                  type="checkbox"
-                  checked={selectedStones.has(stone.id.toString())}
-                  onChange={() => handleSelectStone(stone.id.toString())}
-                  className="rounded"
-                />
+            
               </div>
               <div className="text-gray-900 dark:text-white font-semibold">{stone.vender_id?.vendor || '-'}</div>
               <div className="text-sm mt-1">Type: {stone.stoneType}</div>

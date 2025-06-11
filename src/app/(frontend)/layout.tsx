@@ -4,7 +4,7 @@ import Navbar from './navbar/page'
 import { headers as getHeaders } from 'next/headers.js'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-
+import Login from './login/page'
 export const metadata = {
   description: '',
   title: 'ARUNA',
@@ -18,10 +18,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className="dark">
       <body className="bg-white dark:bg-gray-900 dark:text-white">
-        <div className="min-h-screen flex">
+        
           {user && <Navbar />}
-          <main className="flex-1">{children}</main>
-        </div>
+          {!user && <Login />}
+          {user && <main className="flex-1">{children}</main>}
+      
       </body>
     </html>
   )
