@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export interface Stone {
   id: string
-  stoneType: 'Khanda' | 'Raskat'
+  stoneType: 'Khanda' | 'Gudiya'
   date: string
   rate: number
   total_quantity: number
@@ -46,7 +46,7 @@ export const Stone: CollectionConfig = {
       label: 'Stone Type',
       type: 'select',
       required: true,
-      options: ['Khanda', 'Raskat'],
+      options: ['Khanda', 'Gudiya'],
     },
 
     { name: 'date', label: 'Date', type: 'date' },

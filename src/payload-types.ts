@@ -69,9 +69,11 @@ export interface Config {
   collections: {
     users: User;
     accounts: Account;
-    Block: Block;
     vendor: Vendor;
     stone: Stone;
+    Todi: Todi;
+    TodiRaskat: TodiRaskat;
+    Gala: Gala;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -80,9 +82,11 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     accounts: AccountsSelect<false> | AccountsSelect<true>;
-    Block: BlockSelect<false> | BlockSelect<true>;
     vendor: VendorSelect<false> | VendorSelect<true>;
     stone: StoneSelect<false> | StoneSelect<true>;
+    Todi: TodiSelect<false> | TodiSelect<true>;
+    TodiRaskat: TodiRaskatSelect<false> | TodiRaskatSelect<true>;
+    Gala: GalaSelect<false> | GalaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -155,51 +159,6 @@ export interface Account {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Block".
- */
-export interface Block {
-  id: number;
-  BlockType: 'Brown' | 'White';
-  date?: string | null;
-  vender_id?: (number | null) | Vendor;
-  munim?: string | null;
-  total_cost?: number | null;
-  hydra_cost?: number | null;
-  truck_cost?: number | null;
-  todirate?: number | null;
-  total_quantity?: number | null;
-  issued_quantity?: number | null;
-  left_quantity?: number | null;
-  final_total?: number | null;
-  front_l: number;
-  front_b?: number | null;
-  front_h?: number | null;
-  back_l?: number | null;
-  back_b?: number | null;
-  back_h?: number | null;
-  total_area?: number | null;
-  total_todi_cost?: number | null;
-  block?:
-    | {
-        addmeasures?:
-          | {
-              l?: number | null;
-              b?: number | null;
-              h?: number | null;
-              black_area?: number | null;
-              black_cost?: number | null;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  createdBy?: (number | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "vendor".
  */
 export interface Vendor {
@@ -216,7 +175,7 @@ export interface Vendor {
  */
 export interface Stone {
   id: number;
-  stoneType: 'Khanda' | 'Raskat';
+  stoneType: 'Khanda' | 'Gudiya';
   date?: string | null;
   rate?: number | null;
   total_quantity?: number | null;
@@ -225,6 +184,163 @@ export interface Stone {
   munim?: string | null;
   hydra_cost?: number | null;
   total_amount?: number | null;
+  createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Todi".
+ */
+export interface Todi {
+  id: number;
+  BlockType: 'Brown' | 'White';
+  date?: string | null;
+  vender_id?: (number | null) | Vendor;
+  munim?: string | null;
+  l: number;
+  b?: number | null;
+  h?: number | null;
+  todi_cost?: number | null;
+  hydra_cost?: number | null;
+  truck_cost?: number | null;
+  total_todi_area?: number | null;
+  total_todi_cost?: number | null;
+  estimate_cost?: number | null;
+  depreciation?: number | null;
+  final_cost?: number | null;
+  group?:
+    | {
+        date?: string | null;
+        g_hydra_cost?: number | null;
+        g_truck_cost?: number | null;
+        total_block_area?: number | null;
+        total_block_cost?: number | null;
+        remaining_amount?: number | null;
+        block?:
+          | {
+              addmeasures?:
+                | {
+                    l?: number | null;
+                    b?: number | null;
+                    h?: number | null;
+                    block_area?: number | null;
+                    block_cost?: number | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TodiRaskat".
+ */
+export interface TodiRaskat {
+  id: number;
+  BlockType: 'Brown' | 'White';
+  date?: string | null;
+  vender_id?: (number | null) | Vendor;
+  munim?: string | null;
+  l: number;
+  b?: number | null;
+  h?: number | null;
+  todiraskat_cost?: number | null;
+  hydra_cost?: number | null;
+  truck_cost?: number | null;
+  total_todiraskat_area?: number | null;
+  total_todiraskat_cost?: number | null;
+  estimate_cost?: number | null;
+  depreciation?: number | null;
+  final_cost?: number | null;
+  group?:
+    | {
+        date?: string | null;
+        hydra_cost?: number | null;
+        truck_cost?: number | null;
+        total_block_area?: number | null;
+        total_block_cost?: number | null;
+        remaining_amount?: number | null;
+        block?:
+          | {
+              addmeasures?:
+                | {
+                    l?: number | null;
+                    b?: number | null;
+                    h?: number | null;
+                    block_area?: number | null;
+                    block_cost?: number | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Gala".
+ */
+export interface Gala {
+  id: number;
+  GalaType: 'Brown' | 'White';
+  date?: string | null;
+  vender_id?: (number | null) | Vendor;
+  munim?: string | null;
+  l: number;
+  front_b?: number | null;
+  back_b?: number | null;
+  total_b?: number | null;
+  h?: number | null;
+  gala_cost?: number | null;
+  hydra_cost?: number | null;
+  truck_cost?: number | null;
+  total_gala_area?: number | null;
+  total_gala_cost?: number | null;
+  estimate_cost?: number | null;
+  depreciation?: number | null;
+  final_cost?: number | null;
+  group?:
+    | {
+        date?: string | null;
+        hydra_cost?: number | null;
+        truck_cost?: number | null;
+        total_block_area?: number | null;
+        total_block_cost?: number | null;
+        remaining_amount?: number | null;
+        block?:
+          | {
+              addmeasures?:
+                | {
+                    l?: number | null;
+                    b?: number | null;
+                    h?: number | null;
+                    block_area?: number | null;
+                    block_cost?: number | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  total_block_area?: number | null;
+  total_block_cost?: number | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -245,16 +361,24 @@ export interface PayloadLockedDocument {
         value: number | Account;
       } | null)
     | ({
-        relationTo: 'Block';
-        value: number | Block;
-      } | null)
-    | ({
         relationTo: 'vendor';
         value: number | Vendor;
       } | null)
     | ({
         relationTo: 'stone';
         value: number | Stone;
+      } | null)
+    | ({
+        relationTo: 'Todi';
+        value: number | Todi;
+      } | null)
+    | ({
+        relationTo: 'TodiRaskat';
+        value: number | TodiRaskat;
+      } | null)
+    | ({
+        relationTo: 'Gala';
+        value: number | Gala;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -331,50 +455,6 @@ export interface AccountsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Block_select".
- */
-export interface BlockSelect<T extends boolean = true> {
-  BlockType?: T;
-  date?: T;
-  vender_id?: T;
-  munim?: T;
-  total_cost?: T;
-  hydra_cost?: T;
-  truck_cost?: T;
-  todirate?: T;
-  total_quantity?: T;
-  issued_quantity?: T;
-  left_quantity?: T;
-  final_total?: T;
-  front_l?: T;
-  front_b?: T;
-  front_h?: T;
-  back_l?: T;
-  back_b?: T;
-  back_h?: T;
-  total_area?: T;
-  total_todi_cost?: T;
-  block?:
-    | T
-    | {
-        addmeasures?:
-          | T
-          | {
-              l?: T;
-              b?: T;
-              h?: T;
-              black_area?: T;
-              black_cost?: T;
-              id?: T;
-            };
-        id?: T;
-      };
-  createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "vendor_select".
  */
 export interface VendorSelect<T extends boolean = true> {
@@ -398,6 +478,160 @@ export interface StoneSelect<T extends boolean = true> {
   munim?: T;
   hydra_cost?: T;
   total_amount?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Todi_select".
+ */
+export interface TodiSelect<T extends boolean = true> {
+  BlockType?: T;
+  date?: T;
+  vender_id?: T;
+  munim?: T;
+  l?: T;
+  b?: T;
+  h?: T;
+  todi_cost?: T;
+  hydra_cost?: T;
+  truck_cost?: T;
+  total_todi_area?: T;
+  total_todi_cost?: T;
+  estimate_cost?: T;
+  depreciation?: T;
+  final_cost?: T;
+  group?:
+    | T
+    | {
+        date?: T;
+        g_hydra_cost?: T;
+        g_truck_cost?: T;
+        total_block_area?: T;
+        total_block_cost?: T;
+        remaining_amount?: T;
+        block?:
+          | T
+          | {
+              addmeasures?:
+                | T
+                | {
+                    l?: T;
+                    b?: T;
+                    h?: T;
+                    block_area?: T;
+                    block_cost?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TodiRaskat_select".
+ */
+export interface TodiRaskatSelect<T extends boolean = true> {
+  BlockType?: T;
+  date?: T;
+  vender_id?: T;
+  munim?: T;
+  l?: T;
+  b?: T;
+  h?: T;
+  todiraskat_cost?: T;
+  hydra_cost?: T;
+  truck_cost?: T;
+  total_todiraskat_area?: T;
+  total_todiraskat_cost?: T;
+  estimate_cost?: T;
+  depreciation?: T;
+  final_cost?: T;
+  group?:
+    | T
+    | {
+        date?: T;
+        hydra_cost?: T;
+        truck_cost?: T;
+        total_block_area?: T;
+        total_block_cost?: T;
+        remaining_amount?: T;
+        block?:
+          | T
+          | {
+              addmeasures?:
+                | T
+                | {
+                    l?: T;
+                    b?: T;
+                    h?: T;
+                    block_area?: T;
+                    block_cost?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Gala_select".
+ */
+export interface GalaSelect<T extends boolean = true> {
+  GalaType?: T;
+  date?: T;
+  vender_id?: T;
+  munim?: T;
+  l?: T;
+  front_b?: T;
+  back_b?: T;
+  total_b?: T;
+  h?: T;
+  gala_cost?: T;
+  hydra_cost?: T;
+  truck_cost?: T;
+  total_gala_area?: T;
+  total_gala_cost?: T;
+  estimate_cost?: T;
+  depreciation?: T;
+  final_cost?: T;
+  group?:
+    | T
+    | {
+        date?: T;
+        hydra_cost?: T;
+        truck_cost?: T;
+        total_block_area?: T;
+        total_block_cost?: T;
+        remaining_amount?: T;
+        block?:
+          | T
+          | {
+              addmeasures?:
+                | T
+                | {
+                    l?: T;
+                    b?: T;
+                    h?: T;
+                    block_area?: T;
+                    block_cost?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  total_block_area?: T;
+  total_block_cost?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;

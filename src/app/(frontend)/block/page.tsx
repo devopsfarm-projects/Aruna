@@ -1,27 +1,27 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import type { Block } from '../../../payload-types'
+import type { Todi } from '../../../payload-types'
 import axios from 'axios'
 
 export default function BlockList() {
-  const [blocks, setBlocks] = useState<Block[]>([])
-  const [filteredBlocks, setFilteredBlocks] = useState<Block[]>([])
+  const [blocks, setBlocks] = useState<Todi[]>([])
+  const [filteredBlocks, setFilteredBlocks] = useState<Todi[]>([])
   const [searchVendor, setSearchVendor] = useState('')
   const [selectedBlocks, setSelectedBlocks] = useState<Set<string>>(new Set())
   const [isSelectAll, setIsSelectAll] = useState(false)
-  const [, setLoading] = useState(true)
-  const [, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   type BlockResponse = {
-    docs: Block[]
+    docs: Todi[]
   }
 
   const fetchBlocks = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
-      const res = await axios.get<BlockResponse>('/api/Block')
+      const res = await axios.get<BlockResponse>('/api/Todi')
       setBlocks(res.data.docs)
       setFilteredBlocks(res.data.docs)
     } catch (err) {
@@ -81,7 +81,7 @@ export default function BlockList() {
     }
 
     try {
-      await axios.delete(`/api/Block/${id}`)
+      await axios.delete(`/api/Todi/${id}`)
       setBlocks((prev) => prev.filter((b) => b.id?.toString() !== id.toString()))
       alert('Block deleted successfully')
       fetchBlocks() // Refresh the list after deletion
@@ -97,7 +97,7 @@ export default function BlockList() {
     setSelectedBlocks(new Set())
   }
 
-  if (blocks.length === 0) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
@@ -115,13 +115,43 @@ export default function BlockList() {
               stroke="currentColor"
               strokeWidth="4"
             ></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8H4z"
+            ></path>
           </svg>
-          <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">Loading data...</p>
+          <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">
+            Loading data...
+          </p>
         </div>
       </div>
     )
   }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <svg
+            className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4v2m0-6h2m-4 0h-2m-4 6h2m0 0h2m0 0h2m0-6h2m0 6h2"
+            />
+          </svg>
+          <p className="text-red-600 dark:text-red-400 text-lg font-medium">{error}</p>
+        </div>
+      </div>
+    )
+  } 
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto px-4 py-24 bg-gray-50 dark:bg-gray-900">

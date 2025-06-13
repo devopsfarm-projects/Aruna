@@ -234,7 +234,7 @@ export default function AddStonePage() {
                 >
                   <option value="">Select Type</option>
                   <option value="Khanda">Khanda</option>
-                  <option value="Raskat">Raskat</option>
+                  <option value="Gudiya">Gudiya</option>
                 </select>
               </div>
 
