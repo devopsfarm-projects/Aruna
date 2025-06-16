@@ -102,6 +102,18 @@ export default function AddBlockPage() {
         updatedBlock.hydra_cost = hydraCost;
         updatedBlock.truck_cost = truckCost;
         updatedBlock.todi_cost = todiCost;
+
+            // Calculate total block area for all blocks
+        const totalBlockArea = (updatedBlock.block || []).reduce((sum, block) => {
+          return sum + (block.addmeasures?.reduce((blockSum, measure) => {
+            return blockSum + ((measure.l * measure.b * measure.h) / 144);
+          }, 0) || 0);
+        }, 0);
+
+        updatedBlock.total_block_area = totalBlockArea;
+
+
+
       }
 
       // Calculate estimate cost if todi_cost or dimensions change
@@ -549,16 +561,10 @@ export default function AddBlockPage() {
                         ₹{Number(newBlock.finalCost).toFixed(2) || 0}
                       </div>
                     </div>
-               
-               
-               
-               
-               
-               
                   </div>
 
 
-<section className="px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+      <section className="px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-gray-800 rounded-lg shadow">
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                   Group Details
                 </h2>
@@ -573,7 +579,7 @@ export default function AddBlockPage() {
                     <div className="space-y-6 grid grid-cols-1 md:grid-cols-3 gap-20">
                           <div>
                             <label className='block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300'>Date</label>
-                          <input type="date" value={newBlock.date} onChange={(e) => handleChange('date', e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value={newBlock.date} onChange={(e) => setNewBlock({ ...newBlock, date: e.target.value })} />
+                          <input type="date" value={newBlock.date} onChange={(e) => handleChange('date', e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                           </div>
                           <div>
                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Hydra Cost</label>
@@ -621,7 +627,7 @@ export default function AddBlockPage() {
                                 key={index}
                                 className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
                               >
-                              
+                               
                                 <div>
                                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                     L
@@ -691,45 +697,32 @@ export default function AddBlockPage() {
                                     <span className="font-medium">Remove</span>
                                   </button>
                                 </div>
-                             
+                              
               
                               </div>
                             ))}
+                            {/* Add block total area and cost */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                  Total Area for Block {blockIndex + 1}
+                                </label>
+                                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                  {block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0}
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                  Total Cost for Block {blockIndex + 1}
+                                </label>
+                                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                  ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div className='flex items-end justify-end grid grid-cols-3 gap-4'>
-                        <div>
-                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                   Total Block Area
-                                  </label>
-                                  <div
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                               
-                                  >
-                                    {newBlock.total_block_area}
-                                  </div>
-                                </div>  
-                                <div>
-                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                   Total Block Cost
-                                  </label>
-                                  <div
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                  >
-                                    {newBlock.total_block_cost}
-                                  </div>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                  Remaining Amount
-                                  </label>
-                                  <div
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                  >
-                                    {newBlock.remaining_amount}
-                                  </div>
-                                </div>
-                                </div>
+                 
                         <div className="flex mt-2 items-end justify-end">
                           <button
                             type="button"
@@ -771,16 +764,9 @@ export default function AddBlockPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[
                     { label: 'Todi Cost', value: newBlock.todi_cost || 0 },
-                    { label: 'Todi Area', value: newBlock.hydra_cost || 0 },
-                    { label: 'Total Block Area', value: newBlock.truck_cost || 0 },
-                    {
-                      label: 'Total Block Cost',
-                      value: newBlock.total_area || 0,
-                    },
-                    {
-                      label: 'Remaining Amount',
-                      value: newBlock.total_todi_cost || 0,
-                    },
+                    { label: 'Total Block Area', value: newBlock.total_block_area || 0 },
+                    { label: 'Total Block Cost', value: newBlock.total_block_cost || 0 },
+                    { label: 'Remaining Amount', value: newBlock.remaining_amount || 0 },
 
                     
                   ].map((item, index) => (

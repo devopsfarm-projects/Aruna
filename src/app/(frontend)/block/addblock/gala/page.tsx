@@ -12,7 +12,6 @@ export default function AddBlockPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [showSuccessModal, setShowSuccessModal] = useState(false)
-  const [showGala, setshowGala] = useState(false);
   const [newBlock, setNewBlock] = useState<Block>({
     BlockType: '',
     vender_id: '',
@@ -33,7 +32,7 @@ export default function AddBlockPage() {
       },
     ],
     qty: 1,
-    vehicle_text: '',
+    vehicle_number: '',
     hydra_cost: 1,
     truck_cost: 1,
     total_cost: 1,
@@ -50,15 +49,31 @@ export default function AddBlockPage() {
     createdBy: '',
     block_id: '',
     front_l: 1,
+    g_hydra_cost: '',
+    g_truck_cost: '',
+    todi_cost: undefined,
+    l: 1,
+    b: 1,
+    h: 1,
+    estimateCost: 1,
+    depreciation: () => undefined,
+    finalCost: 1,
+    Todi_cost: '',
+    estimate_cost: 1,
+    final_cost: 1,
+    total_block_area: null,
+    total_block_cost: null,
+    remaining_amount: null,
+    total_todi_area: 1,
     front_b: 1,
     front_h: 1,
     back_l: 1,
     back_b: 1,
     back_h: 1,
     transport_cost: 1,
-    date: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date()
+    date: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   });
   const [showTodi, setshowTodi] = useState(false);
 
@@ -86,21 +101,21 @@ export default function AddBlockPage() {
         field === 'back_h'
       ) {
         const frontVolume =
-          text(updatedBlock.front_l) * text(updatedBlock.front_b) * text(updatedBlock.front_h)
+          Number(updatedBlock.front_l) * Number(updatedBlock.front_b) * Number(updatedBlock.front_h)
         const backVolume =
-          text(updatedBlock.back_l) * text(updatedBlock.back_b) * text(updatedBlock.back_h)
+          Number(updatedBlock.back_l) * Number(updatedBlock.back_b) * Number(updatedBlock.back_h)
         updatedBlock.total_area = (frontVolume + backVolume) / 144
 
         // Calculate total_todi_cost if todirate is available
         if (updatedBlock.todirate) {
           updatedBlock.total_todi_cost =
-            (updatedBlock.total_area * text(updatedBlock.todirate)) 
+            (updatedBlock.total_area * Number(updatedBlock.todirate)) 
         }
       }
 
       // Calculate total_todi_cost if todirate changes
       if (field === 'todirate' && updatedBlock.total_area) {
-        updatedBlock.total_todi_cost = updatedBlock.total_area * text(updatedBlock.todirate)
+        updatedBlock.total_todi_cost = updatedBlock.total_area * Number(updatedBlock.todirate)
       }
 
       // Always recalculate total_cost whenever any relevant field changes
@@ -112,7 +127,7 @@ export default function AddBlockPage() {
 
   type MeasureField = keyof Measure & string;
 
-  const handleAddMeasure = (blockIndex: text) => {
+  const handleAddMeasure = (blockIndex: number) => {
     setNewBlock(prev => {
       const updatedBlock = {
         ...prev,
@@ -134,7 +149,7 @@ export default function AddBlockPage() {
     });
   };
 
-  const handleMeasureChange = (blockIndex: text, measureIndex: text, field: MeasureField, value: string) => {
+  const handleMeasureChange = (blockIndex: number, measureIndex: number, field: MeasureField, value: string) => {
     setNewBlock((prev) => {
       const updatedBlock = { ...prev };
       const updatedMeasures = [...updatedBlock.block[blockIndex].addmeasures];
@@ -143,7 +158,7 @@ export default function AddBlockPage() {
       // Type-safe field assignment
       if (field in updatedMeasure) {
         // Safely update the measure field with the text value
-        const numValue = text(value);
+        const numValue = Number(value);
         if (field === 'l' || field === 'b' || field === 'h' || field === 'rate' || field === 'black_area' || field === 'black_cost') {
           updatedMeasure[field] = numValue;
         }
@@ -156,7 +171,7 @@ export default function AddBlockPage() {
         measure.black_area = (measure.l * measure.b * measure.h) / 144;
         // Calculate black_cost if todirate is available
         if (updatedBlock.todirate) {
-          measure.black_cost = measure.black_area * text(updatedBlock.todirate);
+          measure.black_cost = measure.black_area * Number(updatedBlock.todirate);
         }
       });
 
@@ -164,7 +179,7 @@ export default function AddBlockPage() {
     });
   };
 
-  const removeMeasure = (blockIndex: text, measureIndex: text) => {
+  const removeMeasure = (blockIndex: number, measureIndex: number) => {
     setNewBlock((prev) => {
       const newBlocks = [...prev.block]
       const newMeasures = [...newBlocks[blockIndex].addmeasures]
@@ -196,7 +211,7 @@ export default function AddBlockPage() {
     }))
   }
 
-  const removeBlock = (index: text) => {
+  const removeBlock = (index: number) => {
     setNewBlock((prev) => ({
       ...prev,
       block: prev.block?.filter((_, i) => i !== index) || [],
@@ -210,21 +225,21 @@ export default function AddBlockPage() {
     try {
       const blockToSubmit = {
         ...newBlock,
-        vender_id: text(newBlock.vender_id),
+        vender_id: Number(newBlock.vender_id),
         block:
           newBlock.block?.map((b) => ({
-            blockcost: text(b.blockcost),
+            blockcost: Number(b.blockcost),
             addmeasures:
               b.addmeasures?.map((m) => ({
-                l: text(m.l),
-                b: text(m.b),
-                h: text(m.h),
-                rate: text(m.rate),
-                black_area: text(m.black_area),
-                black_cost: text(m.black_cost),
+                l: Number(m.l),
+                b: Number(m.b),
+                h: Number(m.h),
+                rate: Number(m.rate),
+                black_area: Number(m.black_area),
+                black_cost: Number(m.black_cost),
               })) || [],
           })) || [],
-        qty: text(newBlock.qty),
+        qty: Number(newBlock.qty),
         total_quantity: newBlock.total_quantity,
         issued_quantity: newBlock.issued_quantity,
         left_quantity: newBlock.left_quantity,
