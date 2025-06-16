@@ -10,6 +10,7 @@ export type Measure = {
 }
 
 export interface Block {
+  total_b: ReactNode
   g_hydra_cost: string | number | readonly string[] | undefined
   g_truck_cost: string | number | readonly string[] | undefined
   todi_cost: number | undefined

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Vendor, Block, Measure } from '../types'
 import axios from 'axios'
+import { block } from 'sharp'
 
 export default function AddBlockPage() {
   const router = useRouter()
@@ -38,31 +39,25 @@ export default function AddBlockPage() {
     total_cost: 1,
     total_area: 1,
     total_todi_cost: 1,
-    todirate: 1, 
-    total_quantity: 1,
-    issued_quantity: 1,
-    left_quantity: 1,
+    todi_cost: 1, 
     final_total: 1,
     partyRemainingPayment: 1,
     partyAdvancePayment: 1,
     transportType: 'Hydra',
     createdBy: '',
     block_id: '',
-    front_l: 1,
-    front_b: 1,
-    front_h: 1,
-    back_l: 1,
-    back_b: 1,
-    back_h: 1,
+    l: 1,
+    b: 1,
+    h: 1,
     transport_cost: 1,
-    date: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date()
+    date: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   });
   const [showTodi, setshowTodi] = useState(false);
 
   const calculateTotalCost = (block: Block) => {
-    if (block.total_todi_cost && block.total_area && block.todirate) {
+    if (block.total_todi_cost && block.total_area && block.todi_cost) {
       return (block.total_todi_cost * block.total_area) 
     }
     return 0
@@ -77,30 +72,69 @@ export default function AddBlockPage() {
 
       // Calculate total_area if any of the dimensions changed
       if (
-        field === 'front_l' ||
-        field === 'front_b' ||
-        field === 'front_h' ||
-        field === 'back_l' ||
-        field === 'back_b' ||
-        field === 'back_h'
+        field === 'l' ||
+        field === 'b' ||
+        field === 'h' 
       ) {
-        const frontVolume =
-          text(updatedBlock.front_l) * text(updatedBlock.front_b) * text(updatedBlock.front_h)
-        const backVolume =
-          text(updatedBlock.back_l) * text(updatedBlock.back_b) * text(updatedBlock.back_h)
-        updatedBlock.total_area = (frontVolume + backVolume) / 144
-
-        // Calculate total_todi_cost if todirate is available
-        if (updatedBlock.todirate) {
-          updatedBlock.total_todi_cost =
-            (updatedBlock.total_area * text(updatedBlock.todirate)) 
-        }
+        const Volume =
+          Number(updatedBlock.l) * Number(updatedBlock.b) * Number(updatedBlock.h)
+        updatedBlock.total_todi_area = (Volume)
       }
 
-      // Calculate total_todi_cost if todirate changes
-      if (field === 'todirate' && updatedBlock.total_area) {
-        updatedBlock.total_todi_cost = updatedBlock.total_area * text(updatedBlock.todirate)
+      // Calculate total_todi_cost whenever any cost-related field changes
+      if (
+        field === 'hydra_cost' || 
+        field === 'truck_cost' || 
+        field === 'todi_cost' ||
+        field === 'l' ||
+        field === 'b' ||
+        field === 'h'
+      ) {
+        // Convert to numbers and ensure they're valid
+        const hydraCost = Number(updatedBlock.hydra_cost) || 0;
+        const truckCost = Number(updatedBlock.truck_cost) || 0;
+        const todiCost = Number(updatedBlock.todi_cost) || 0;
+        
+        // Calculate total cost
+        const total_todi_cost = hydraCost + truckCost + todiCost;
+        
+        // Update all values
+        updatedBlock.total_todi_cost = total_todi_cost;
+        updatedBlock.hydra_cost = hydraCost;
+        updatedBlock.truck_cost = truckCost;
+        updatedBlock.todi_cost = todiCost;
+
+            // Calculate total block area for all blocks
+        const totalBlockArea = (updatedBlock.block || []).reduce((sum, block) => {
+          return sum + (block.addmeasures?.reduce((blockSum, measure) => {
+            return blockSum + ((measure.l * measure.b * measure.h) / 144);
+          }, 0) || 0);
+        }, 0);
+
+        updatedBlock.total_block_area = totalBlockArea;
+
+
+
       }
+
+      // Calculate estimate cost if todi_cost or dimensions change
+      const area = Number(updatedBlock.total_todi_area) || 0;
+      const cost = Number(updatedBlock.total_todi_cost) || 0;
+      const depreciation = Number(updatedBlock.depreciation) || 0;
+      
+      // Calculate estimate cost
+      const estimateCost = area * cost;
+      
+      // Handle NaN values
+      const validEstimateCost = !isNaN(estimateCost) ? estimateCost : 0;
+      
+      // Update block state
+      updatedBlock.estimateCost = validEstimateCost;
+      
+      // Calculate final cost with depreciation
+      const finalCost = validEstimateCost - (validEstimateCost * (depreciation / 100));
+      const formattedFinalCost = !isNaN(finalCost) ? finalCost : 0;
+      updatedBlock.finalCost = formattedFinalCost;
 
       // Always recalculate total_cost whenever any relevant field changes
       updatedBlock.total_cost = calculateTotalCost(updatedBlock)
@@ -111,7 +145,7 @@ export default function AddBlockPage() {
 
   type MeasureField = keyof Measure & string;
 
-  const handleAddMeasure = (blockIndex: text) => {
+  const handleAddMeasure = (blockIndex: number) => {
     setNewBlock(prev => {
       const updatedBlock = {
         ...prev,
@@ -133,7 +167,7 @@ export default function AddBlockPage() {
     });
   };
 
-  const handleMeasureChange = (blockIndex: text, measureIndex: text, field: MeasureField, value: string) => {
+  const handleMeasureChange = (blockIndex: number, measureIndex: number, field: MeasureField, value: string) => {
     setNewBlock((prev) => {
       const updatedBlock = { ...prev };
       const updatedMeasures = [...updatedBlock.block[blockIndex].addmeasures];
@@ -142,7 +176,7 @@ export default function AddBlockPage() {
       // Type-safe field assignment
       if (field in updatedMeasure) {
         // Safely update the measure field with the text value
-        const numValue = text(value);
+        const numValue = Number(value);
         if (field === 'l' || field === 'b' || field === 'h' || field === 'rate' || field === 'black_area' || field === 'black_cost') {
           updatedMeasure[field] = numValue;
         }
@@ -153,9 +187,9 @@ export default function AddBlockPage() {
       // Calculate black_area for all measures
       updatedMeasures.forEach((measure) => {
         measure.black_area = (measure.l * measure.b * measure.h) / 144;
-        // Calculate black_cost if todirate is available
-        if (updatedBlock.todirate) {
-          measure.black_cost = measure.black_area * text(updatedBlock.todirate);
+        // Calculate black_cost if todi_cost is available
+        if (updatedBlock.todi_cost) {
+          measure.black_cost = measure.black_area *   Number(updatedBlock.todi_cost);
         }
       });
 
@@ -163,7 +197,7 @@ export default function AddBlockPage() {
     });
   };
 
-  const removeMeasure = (blockIndex: text, measureIndex: text) => {
+  const removeMeasure = (blockIndex: number, measureIndex: number) => {
     setNewBlock((prev) => {
       const newBlocks = [...prev.block]
       const newMeasures = [...newBlocks[blockIndex].addmeasures]
@@ -195,7 +229,7 @@ export default function AddBlockPage() {
     }))
   }
 
-  const removeBlock = (index: text) => {
+  const removeBlock = (index: number) => {
     setNewBlock((prev) => ({
       ...prev,
       block: prev.block?.filter((_, i) => i !== index) || [],
@@ -209,21 +243,21 @@ export default function AddBlockPage() {
     try {
       const blockToSubmit = {
         ...newBlock,
-        vender_id: text(newBlock.vender_id),
+        vender_id: Number(newBlock.vender_id),
         block:
           newBlock.block?.map((b) => ({
-            blockcost: text(b.blockcost),
+            blockcost: Number(b.blockcost),
             addmeasures:
               b.addmeasures?.map((m) => ({
-                l: text(m.l),
-                b: text(m.b),
-                h: text(m.h),
-                rate: text(m.rate),
-                black_area: text(m.black_area),
-                black_cost: text(m.black_cost),
+                l: Number(m.l),
+                b: Number(m.b),
+                h: Number(m.h),
+                rate: Number(m.rate),
+                black_area: Number(m.black_area),
+                black_cost: Number(m.black_cost),
               })) || [],
           })) || [],
-        qty: text(newBlock.qty),
+        qty: Number(newBlock.qty),
         total_quantity: newBlock.total_quantity,
         issued_quantity: newBlock.issued_quantity,
         left_quantity: newBlock.left_quantity,
@@ -244,7 +278,7 @@ export default function AddBlockPage() {
         transportType: newBlock.transportType || 'Hydra',
       }
 
-      const response = await axios.post('/api/Block', blockToSubmit, {
+      const response = await axios.post('/api/Todi', blockToSubmit, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -345,7 +379,7 @@ export default function AddBlockPage() {
                 Add New Todi(Raskat)
               </h1>
               <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-prose">
-                Enter Todi(Raskat) details and measurements
+                Enter Todi details and measurements
               </p>
             </header>
             <form onSubmit={handleSubmit} className="space-y-8">
@@ -361,7 +395,7 @@ export default function AddBlockPage() {
                         htmlFor="blockType"
                         className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
                       >
-                        Block Type
+                        Todi Type
                       </label>
                       <select
                         id="blockType"
@@ -415,13 +449,7 @@ export default function AddBlockPage() {
                     </div>
 
 
-                 
-
-
-
-
-            
-
+              
 
                 </div>
                   
@@ -434,12 +462,12 @@ export default function AddBlockPage() {
                       </label>
                       <input
                         type="text"
-                        value={newBlock.front_l}
-                        onChange={(e) => handleChange('front_l', e.target.value)}
+                        value={newBlock.l}
+                        onChange={(e) => handleChange('l', Number(e.target.value))}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                         min="0"
-                        placeholder="Enter front length"
+                        placeholder="Enter length"
                       />
                     </div>
 
@@ -449,12 +477,12 @@ export default function AddBlockPage() {
                       </label>
                       <input
                         type="text"
-                        value={newBlock.front_b}
-                        onChange={(e) => handleChange('front_b', e.target.value)}
+                        value={newBlock.b}
+                        onChange={(e) => handleChange('b', Number(e.target.value))}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                         min="0"
-                        placeholder="Enter front breadth"
+                        placeholder="Enter breadth"
                       />
                     </div>
 
@@ -464,53 +492,52 @@ export default function AddBlockPage() {
                       </label>
                       <input
                         type="text"
-                        value={newBlock.front_h}
-                        onChange={(e) => handleChange('front_h', e.target.value)}
+                        value={newBlock.h}
+                        onChange={(e) => handleChange('h', Number(e.target.value))}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                         min="0"
-                        placeholder="Enter front height"
+                        placeholder="Enter height"
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                       Todi(Raskat) Cost    
+                       Todi Cost    
                       </label>
-                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                        {newBlock.total_area || 0}
-                      </div>
+                      <input type="text" value={newBlock.todi_cost} onChange={(e) => handleChange('todi_cost', e.target.value)} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"/>
+                      
+                  
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Hydra Cost
                       </label>
-                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                        {newBlock.total_todi_cost || 0}
-                      </div>
+                      <input type="text" value={newBlock.hydra_cost} onChange={(e) => handleChange('hydra_cost', e.target.value)} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"/>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Truck Cost
                       </label>
+                      <input type="text" value={newBlock.truck_cost} onChange={(e) => handleChange('truck_cost', e.target.value)} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"/>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Total Todi Area
+                      </label>
                       <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                        {newBlock.truck_cost || 0}
+                        {newBlock.total_todi_area || 0}
                       </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Total Area
+                       Total Todi Cost 
                       </label>
                       <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                        {newBlock.total_area || 0}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                       Total Todi(Raskat) Cost ( H + T )
-                      </label>
-                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                        {newBlock.total_todi_cost || 0}
+                        <div className="mb-2 font-medium">
+                          ₹ {Number(newBlock.total_todi_cost).toFixed(2) || 0}
+                        </div>
+                       
                       </div>
                     </div>
                     <div>
@@ -518,35 +545,27 @@ export default function AddBlockPage() {
                         Estimate Cost
                       </label>
                       <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                        {newBlock.total_cost || 0}
+                        ₹{Number(newBlock.estimateCost).toFixed(2) || 0}
                       </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Depreciation %
                       </label>
-                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                        {newBlock.total_cost || 0}
-                      </div>
+                      <input type="text" value={newBlock.depreciation} onChange={(e) => handleChange('depreciation', e.target.value)} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"/>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                         Final Cost
                       </label>
                       <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                        {newBlock.total_cost || 0}
+                        ₹{Number(newBlock.finalCost).toFixed(2) || 0}
                       </div>
                     </div>
-               
-               
-               
-               
-               
-               
                   </div>
 
 
-<section className="px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+      <section className="px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-gray-800 rounded-lg shadow">
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                   Group Details
                 </h2>
@@ -561,16 +580,16 @@ export default function AddBlockPage() {
                     <div className="space-y-6 grid grid-cols-1 md:grid-cols-3 gap-20">
                           <div>
                             <label className='block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300'>Date</label>
-                          <input type="date" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value={newBlock.date} onChange={(e) => setNewBlock({ ...newBlock, date: e.target.value })} />
+                          <input type="date" value={newBlock.date} onChange={(e) => handleChange('date', e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                           </div>
                           <div>
                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Hydra Cost</label>
-                            <input type="text" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value={newBlock.date} onChange={(e) => setNewBlock({ ...newBlock, date: e.target.value })} />
+                            <input type="text" value={newBlock.g_hydra_cost} onChange={(e) => handleChange('g_hydra_cost', e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                           </div>
                           <div>
                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Truck Cost</label>
-                            <input type="text" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value={newBlock.date} onChange={(e) => setNewBlock({ ...newBlock, date: e.target.value })} />
-                          </div>
+                              <input type="text" value={newBlock.g_truck_cost} onChange={(e) => handleChange('g_truck_cost', e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                            </div>
                           
                   </div>
 
@@ -609,7 +628,7 @@ export default function AddBlockPage() {
                                 key={index}
                                 className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
                               >
-                              
+                               
                                 <div>
                                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                     L
@@ -664,7 +683,7 @@ export default function AddBlockPage() {
                                   Block Cost 
                                   </label>
                                   <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                                    {(measure.black_area ?? 0) * (newBlock.todirate ?? 0)}
+                                    {  ((measure.l * measure.b * measure.h)/144 || 0) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))}
                                   </div>
                                 </div>
                                 <div className="flex items-end justify-end">
@@ -679,51 +698,32 @@ export default function AddBlockPage() {
                                     <span className="font-medium">Remove</span>
                                   </button>
                                 </div>
-                             
+                              
               
                               </div>
                             ))}
+                            {/* Add block total area and cost */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                  Total Area for Block {blockIndex + 1}
+                                </label>
+                                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                  {block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0}
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                  Total Cost for Block {blockIndex + 1}
+                                </label>
+                                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                  ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div className='flex items-end justify-end grid grid-cols-3 gap-4'>
-                        <div>
-                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                   Total Block Area
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                   
-                                    min="1"
-                                    required
-                                  />
-                                </div>  
-                                <div>
-                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                   Total Block Cost
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                  
-                                    min="1"
-                                    required
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                  Remaining Amount
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                  
-                                    
-                                    min="1"
-                                    required
-                                  />
-                                </div>
-                                </div>
+                 
                         <div className="flex mt-2 items-end justify-end">
                           <button
                             type="button"
@@ -752,29 +752,10 @@ export default function AddBlockPage() {
 
                </div>
                
-               
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 </div>
               </section>
 
            
-
               <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center sm:text-left">
                   <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-3 py-1 rounded-full inline-block">
@@ -783,19 +764,7 @@ export default function AddBlockPage() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[
-                    { label: 'Todi(Raskat) Cost', value: newBlock.todirate || 0 },
-                    { label: 'Todi(Raskat) Area', value: newBlock.hydra_cost || 0 },
-                    { label: 'Total Block Area', value: newBlock.truck_cost || 0 },
-                    {
-                      label: 'Total Block Cost',
-                      value: newBlock.total_area || 0,
-                    },
-                    {
-                      label: 'Remaining Amount',
-                      value: newBlock.total_todi_cost || 0,
-                    },
-
-                    
+                    { label: 'Todi Cost', value: newBlock.todi_cost || 0 },
                   ].map((item, index) => (
                     <div
                       key={index}
@@ -810,6 +779,112 @@ export default function AddBlockPage() {
                     </div>
                   ))}
                 </div>
+                
+                {/* Add individual block areas */}
+                <div className="mt-8">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* {newBlock.block?.map((block, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                      >
+                        <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                          Block {index + 1} Area
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                          {block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0}
+                        </div>
+                      </div>
+                    ))} */}
+                    <div
+                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Total Block Area
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {newBlock.block?.reduce((total, block) => 
+                          total + (block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0),
+                          0
+                        ) || 0}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+                <div className="mt-8">
+              
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* {newBlock.block?.map((block, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                      >
+                        <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                          Block {index + 1} Cost
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
+                        </div>
+                      </div>
+                    ))} */}
+                    <div
+                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Total Block Cost
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        ₹ {newBlock.block?.reduce((total, block) => 
+                          total + (block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0),
+                          0
+                        ) || 0}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+
+
+                <div className="mt-8">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* {newBlock.block?.map((block, index) => (
+                  <div
+                    key={index}
+                    className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                  >
+                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                      Block {index + 1} Cost
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
+                    </div>
+                  </div>
+                ))} */}
+                <div
+                  className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                >
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    Remaining Amount
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+₹ {(Number(newBlock.finalCost || 0) - newBlock.block?.reduce((total, block) => 
+                      total + (block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0),
+                      0
+                    ) || 0).toFixed(2)} 
+                  </div>
+                </div>
+              </div>
+            </div>
               </section>
 
               {/* Form Actions */}

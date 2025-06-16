@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Vendor, Block, Measure } from '../types'
 import axios from 'axios'
+import { block } from 'sharp'
 
 export default function AddBlockPage() {
   const router = useRouter()
@@ -764,11 +765,6 @@ export default function AddBlockPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[
                     { label: 'Todi Cost', value: newBlock.todi_cost || 0 },
-                    { label: 'Total Block Area', value: newBlock.total_block_area || 0 },
-                    { label: 'Total Block Cost', value: newBlock.total_block_cost || 0 },
-                    { label: 'Remaining Amount', value: newBlock.remaining_amount || 0 },
-
-                    
                   ].map((item, index) => (
                     <div
                       key={index}
@@ -783,6 +779,112 @@ export default function AddBlockPage() {
                     </div>
                   ))}
                 </div>
+                
+                {/* Add individual block areas */}
+                <div className="mt-8">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* {newBlock.block?.map((block, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                      >
+                        <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                          Block {index + 1} Area
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                          {block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0}
+                        </div>
+                      </div>
+                    ))} */}
+                    <div
+                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Total Block Area
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {newBlock.block?.reduce((total, block) => 
+                          total + (block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0),
+                          0
+                        ) || 0}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+                <div className="mt-8">
+              
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* {newBlock.block?.map((block, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                      >
+                        <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                          Block {index + 1} Cost
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
+                        </div>
+                      </div>
+                    ))} */}
+                    <div
+                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Total Block Cost
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        ₹ {newBlock.block?.reduce((total, block) => 
+                          total + (block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0),
+                          0
+                        ) || 0}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+
+
+                <div className="mt-8">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* {newBlock.block?.map((block, index) => (
+                  <div
+                    key={index}
+                    className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                  >
+                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                      Block {index + 1} Cost
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
+                    </div>
+                  </div>
+                ))} */}
+                <div
+                  className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                >
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    Remaining Amount
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+₹ {(Number(newBlock.finalCost || 0) - newBlock.block?.reduce((total, block) => 
+                      total + (block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0),
+                      0
+                    ) || 0).toFixed(2)} 
+                  </div>
+                </div>
+              </div>
+            </div>
               </section>
 
               {/* Form Actions */}
