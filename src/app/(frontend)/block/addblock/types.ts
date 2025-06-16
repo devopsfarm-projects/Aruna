@@ -1,4 +1,6 @@
-export type Measure = {
+import { ReactNode } from 'react'
+
+export interface Measure {
   l: number
   b: number
   h: number
@@ -10,62 +12,56 @@ export type Measure = {
 }
 
 export interface Block {
-  total_b: ReactNode
-  g_hydra_cost: string | number | readonly string[] | undefined
-  g_truck_cost: string | number | readonly string[] | undefined
-  todi_cost: number | undefined
-  l: number
-  b: number
-  h: number
-  estimateCost: number
-  depreciation(depreciation: any): unknown
-  finalCost: number
-  Todi_cost: string | number | readonly string[] | undefined
-  estimate_cost: number
-  final_cost: number
-  total_block_area: ReactNode
-  total_block_cost: ReactNode
-  remaining_amount: ReactNode
-  total_todi_area: number
-  _id?: string
-  block_id: string
   BlockType: string
   vender_id: string
   labour_name: string
-  front_l: number
-  front_b: number
-  front_h: number
-  back_l: number
-  back_b: number
-  back_h: number
-  total_quantity: number
-  issued_quantity: number
-  left_quantity: number
-  transport_cost: number
-  hydra_cost: number
-  truck_cost: number
   block: {
     blockcost: number
     addmeasures: Measure[]
   }[]
-  final_total: number
-  partyRemainingPayment: number
-  partyAdvancePayment: number
-  transportType: string
-  date: string
   qty: number
-  vehicle_number: string
-  createdBy: string
-  createdAt: string
-  updatedAt: string
+  vehicle_text: string
+  hydra_cost: number
+  truck_cost: number
   total_cost?: number
   total_area?: number
   total_todi_cost?: number
-  todirate?: number
-  rate?: number
-  block_amount?: number
-  total_amount?: number
+  todi_cost?: number
+  final_total?: number
+  estimateCost?: number
+  finalCost?: number
+  partyRemainingPayment?: number
+  partyAdvancePayment?: number
+  transportType?: string
+  createdBy?: string
+  block_id?: string
+  l: number
+  b: number
+  h: number
+  front_l?: number
+  front_b?: number
+  front_h?: number
+  back_l?: number
+  back_b?: number
+  back_h?: number
+  total_quantity?: number
+  issued_quantity?: number
+  left_quantity?: number
+  transport_cost?: number
+  depreciation?: number
+  total_block_area?: number
+  total_todi_area?: number
+  total_b?: ReactNode
+  remaining_amount?: ReactNode
+  total_block_cost?: ReactNode
+  Todi_cost?: string | number | readonly string[] | undefined
+  g_hydra_cost?: string | number | readonly string[] | undefined
+  g_truck_cost?: string | number | readonly string[] | undefined
+  date?: string
   munim?: string
+  _id?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export type Vendor = {

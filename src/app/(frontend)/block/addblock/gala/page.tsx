@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Vendor, Block, Measure } from '../types'
 import axios from 'axios'
-import { block } from 'sharp'
+
 
 export default function AddBlockPage() {
   const router = useRouter()
@@ -32,17 +32,21 @@ export default function AddBlockPage() {
         ],
       },
     ],
+    g_truck_cost: '',
+    Todi_cost: '',
+    estimateCost: 0,
+    finalCost: 0,
+    total_area: 1,
+    total_cost: 1,
+    partyRemainingPayment: 1,
     qty: 1,
     vehicle_text: '',
     hydra_cost: 1,
     truck_cost: 1,
-    total_cost: 1,
-    total_area: 1,
     total_todi_cost: 1,
     total_todi_area: 0,
     todi_cost: 1, 
     final_total: 1,
-    partyRemainingPayment: 1,
     partyAdvancePayment: 1,
     transportType: 'Hydra',
     createdBy: '',
@@ -53,7 +57,19 @@ export default function AddBlockPage() {
     transport_cost: 1,
     date: new Date().toISOString(),
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),    front_l: 0,
+    front_b: 0,
+    front_h: 0,
+    back_l: 0,
+    back_b: 0,
+    back_h: 0,
+    depreciation: 0,
+    finalCost: 0,
+    _id: '',
+    block_amount: 0,
+    total_quantity: 0,
+    issued_quantity: 0,
+    left_quantity: 0,
   });
   const [showTodi, setshowTodi] = useState(false);
 

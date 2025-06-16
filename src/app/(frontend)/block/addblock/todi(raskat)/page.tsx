@@ -55,6 +55,57 @@ export default function AddBlockPage() {
     updatedAt: new Date().toISOString()
   });
   const [showTodi, setshowTodi] = useState(false);
+  const [groups, setGroups] = useState<Block[]>([]);
+
+  const addGroup = () => {
+    const newGroup: Block = {
+      BlockType: '',
+      vender_id: '',
+      labour_name: '',
+      block: [
+        {
+          blockcost: 1,
+          addmeasures: [
+            {
+              l: 1,
+              b: 1,
+              h: 1,
+              rate: 1,
+              black_area: 1,
+              black_cost: 1,
+            },
+          ],
+        },
+      ],
+      qty: 1,
+      vehicle_text: '',
+      hydra_cost: 1,
+      truck_cost: 1,
+      total_cost: 1,
+      total_area: 1,
+      total_todi_cost: 1,
+      todi_cost: 1,
+      final_total: 1,
+      partyRemainingPayment: 1,
+      partyAdvancePayment: 1,
+      transportType: 'Hydra',
+      createdBy: '',
+      block_id: '',
+      l: 1,
+      b: 1,
+      h: 1,
+    };
+
+    setGroups(prevGroups => [...prevGroups, newGroup]);
+  };
+
+  const removeGroup = (index: number) => {
+    setGroups(prevGroups => {
+      const newGroups = [...prevGroups];
+      newGroups.splice(index, 1);
+      return newGroups;
+    });
+  };
 
   const calculateTotalCost = (block: Block) => {
     if (block.total_todi_cost && block.total_area && block.todi_cost) {
@@ -145,11 +196,12 @@ export default function AddBlockPage() {
 
   type MeasureField = keyof Measure & string;
 
-  const handleAddMeasure = (blockIndex: number) => {
-    setNewBlock(prev => {
-      const updatedBlock = {
-        ...prev,
-        block: prev.block?.map((b, i) => 
+  const handleAddMeasure = (groupIndex: number, blockIndex: number) => {
+    setGroups(prevGroups => {
+      const newGroups = [...prevGroups];
+      const updatedGroup = {
+        ...newGroups[groupIndex],
+        block: newGroups[groupIndex].block?.map((b, i) => 
           i === blockIndex ? {
             ...b,
             addmeasures: [...(b.addmeasures || []), {
@@ -163,14 +215,16 @@ export default function AddBlockPage() {
           } : b
         ) || []
       };
-      return updatedBlock;
+      newGroups[groupIndex] = updatedGroup;
+      return newGroups;
     });
   };
 
-  const handleMeasureChange = (blockIndex: number, measureIndex: number, field: MeasureField, value: string) => {
-    setNewBlock((prev) => {
-      const updatedBlock = { ...prev };
-      const updatedMeasures = [...updatedBlock.block[blockIndex].addmeasures];
+  const handleMeasureChange = (groupIndex: number, blockIndex: number, measureIndex: number, field: MeasureField, value: string) => {
+    setGroups(prevGroups => {
+      const newGroups = [...prevGroups];
+      const updatedGroup = { ...newGroups[groupIndex] };
+      const updatedMeasures = [...updatedGroup.block[blockIndex].addmeasures];
       const updatedMeasure = { ...updatedMeasures[measureIndex] };
 
       // Type-safe field assignment
@@ -182,36 +236,40 @@ export default function AddBlockPage() {
         }
       }
       updatedMeasures[measureIndex] = updatedMeasure;
-      updatedBlock.block[blockIndex].addmeasures = updatedMeasures;
+      updatedGroup.block[blockIndex].addmeasures = updatedMeasures;
 
       // Calculate black_area for all measures
       updatedMeasures.forEach((measure) => {
         measure.black_area = (measure.l * measure.b * measure.h) / 144;
         // Calculate black_cost if todi_cost is available
-        if (updatedBlock.todi_cost) {
-          measure.black_cost = measure.black_area *   Number(updatedBlock.todi_cost);
+        if (updatedGroup.todi_cost) {
+          measure.black_cost = measure.black_area *   Number(updatedGroup.todi_cost);
         }
       });
 
-      return updatedBlock;
+      newGroups[groupIndex] = updatedGroup;
+      return newGroups;
     });
   };
 
-  const removeMeasure = (blockIndex: number, measureIndex: number) => {
-    setNewBlock((prev) => {
-      const newBlocks = [...prev.block]
-      const newMeasures = [...newBlocks[blockIndex].addmeasures]
-      newMeasures.splice(measureIndex, 1)
-      newBlocks[blockIndex].addmeasures = newMeasures
-      return { ...prev, block: newBlocks }
-    })
+  const removeMeasure = (groupIndex: number, blockIndex: number, measureIndex: number) => {
+    setGroups(prevGroups => {
+      const newGroups = [...prevGroups];
+      const updatedGroup = { ...newGroups[groupIndex] };
+      const newMeasures = [...updatedGroup.block[blockIndex].addmeasures];
+      newMeasures.splice(measureIndex, 1);
+      updatedGroup.block[blockIndex].addmeasures = newMeasures;
+      newGroups[groupIndex] = updatedGroup;
+      return newGroups;
+    });
   }
 
-  const addBlock = () => {
-    setNewBlock((prev) => ({
-      ...prev,
-      block: [
-        ...prev.block,
+  const addBlock = (groupIndex: number) => {
+    setGroups(prevGroups => {
+      const newGroups = [...prevGroups];
+      const updatedGroup = { ...newGroups[groupIndex] };
+      updatedGroup.block = [
+        ...(updatedGroup.block || []),
         {
           blockcost: 1,
           addmeasures: [
@@ -225,15 +283,20 @@ export default function AddBlockPage() {
             },
           ],
         },
-      ],
-    }))
+      ];
+      newGroups[groupIndex] = updatedGroup;
+      return newGroups;
+    });
   }
 
-  const removeBlock = (index: number) => {
-    setNewBlock((prev) => ({
-      ...prev,
-      block: prev.block?.filter((_, i) => i !== index) || [],
-    }))
+  const removeBlock = (groupIndex: number, blockIndex: number) => {
+    setGroups(prevGroups => {
+      const newGroups = [...prevGroups];
+      const updatedGroup = { ...newGroups[groupIndex] };
+      updatedGroup.block = updatedGroup.block?.filter((_, i) => i !== blockIndex) || [];
+      newGroups[groupIndex] = updatedGroup;
+      return newGroups;
+    });
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -564,18 +627,248 @@ export default function AddBlockPage() {
                     </div>
                   </div>
 
-
+ {/* Block Group Section */}
       <section className="px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-gray-800 rounded-lg shadow">
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                   Group Details
                 </h2>
-                <button type="button" onClick={() => setshowTodi(!showTodi)} className="bg-blue-500 mx-2 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
-                  Add Group (array)
-                </button>
+                <div className="space-y-4">
+                  {groups.map((group, groupIndex) => (
+                    <div key={groupIndex} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                          Group {groupIndex + 1}
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => removeGroup(groupIndex)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          Remove Group
+                        </button>
+                      </div>
+                      
+                      {/* Group-specific form fields */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                            Group Date
+                          </label>
+                          <input
+                            type="date"
+                            value={group.date}
+                            onChange={(e) => {
+                              const newGroups = [...groups];
+                              newGroups[groupIndex] = {
+                                ...group,
+                                date: e.target.value
+                              };
+                              setGroups(newGroups);
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                            Group Hydra Cost
+                          </label>
+                          <input
+                            type="text"
+                            value={group.g_hydra_cost}
+                            onChange={(e) => {
+                              const newGroups = [...groups];
+                              newGroups[groupIndex] = {
+                                ...group,
+                                g_hydra_cost: e.target.value
+                              };
+                              setGroups(newGroups);
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                            Group Truck Cost
+                          </label>
+                          <input
+                            type="text"
+                            value={group.g_truck_cost}
+                            onChange={(e) => {
+                              const newGroups = [...groups];
+                              newGroups[groupIndex] = {
+                                ...group,
+                                g_truck_cost: e.target.value
+                              };
+                              setGroups(newGroups);
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                      </div>
 
-         
+                      {/* Block Details Section for this group */}
+                      <div className="space-y-6 mt-6">
+                        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+                          Block Details
+                        </h2>
+                        
+                        <div className="space-y-6">
+                          {group.block?.map((block, blockIndex) => (
+                            <div key={blockIndex} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                              <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                                  Block {blockIndex + 1}
+                                </h3>
+                              </div>
 
-   {/* Block Details Section */}
+                              <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+                                <div className="mt-8">
+                                  <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                      <span className="text-indigo-600 dark:text-indigo-400">Measurements</span>
+                                    </h2>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAddMeasure(groupIndex, blockIndex)}
+                                      className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+                                    >
+                                      <span className="font-medium">Add Measurement</span>
+                                    </button>
+                                  </div>
+
+                                  {block.addmeasures?.map((measure, index) => (
+                                    <div
+                                      key={index}
+                                      className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                                    >
+                                      <div>
+                                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                          L
+                                        </label>
+                                        <input
+                                          type="text"
+                                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                          value={measure.l}
+                                          onChange={(e) => handleMeasureChange(groupIndex, blockIndex, index, 'l', e.target.value)}
+                                          min="1"
+                                          required
+                                        />
+                                      </div>
+
+                                      <div>
+                                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                          B
+                                        </label>
+                                        <input
+                                          type="text"
+                                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                          value={measure.b}
+                                          onChange={(e) => handleMeasureChange(groupIndex, blockIndex, index, 'b', e.target.value)}
+                                          min="1"
+                                          required
+                                        />
+                                      </div>
+
+                                      <div>
+                                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                          H
+                                        </label>
+                                        <input
+                                          type="text"
+                                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                          value={measure.h}
+                                          onChange={(e) => handleMeasureChange(groupIndex, blockIndex, index, 'h', e.target.value)}
+                                          min="1"
+                                          required
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                          Block Area
+                                        </label>
+                                        <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                          {(measure.l * measure.b * measure.h)/144 || 0}
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                          Block Cost 
+                                        </label>
+                                        <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                          {  ((measure.l * measure.b * measure.h)/144 || 0) * (Number(group.todi_cost ?? 0) + Number(group.g_hydra_cost ?? 0) + Number(group.g_truck_cost ?? 0))}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-end justify-end">
+                                        <button
+                                          type="button"
+                                          onClick={() => removeMeasure(groupIndex, blockIndex, index)}
+                                          className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+                                          disabled={block.addmeasures.length === 1}
+                                        >
+                                          <span className="font-medium">Remove</span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  
+                                  {/* Add block total area and cost */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+                                    <div>
+                                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                        Total Area for Block {blockIndex + 1}
+                                      </label>
+                                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                        {block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                        Total Cost for Block {blockIndex + 1}
+                                      </label>
+                                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+                                        ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(group.todi_cost ?? 0) + Number(group.g_hydra_cost ?? 0) + Number(group.g_truck_cost ?? 0))), 0) || 0}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                             
+                              <div className="flex mt-2 items-end justify-end">
+                                <button
+                                  type="button"
+                                  onClick={() => removeBlock(groupIndex, blockIndex)}
+                                  className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200"
+                                  disabled={!block.addmeasures?.length}
+                                >
+                                  Remove block
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+
+                          <div className="flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => addBlock(groupIndex)}
+                              className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
+                            >
+                              Add New Block
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addGroup}
+                    className="bg-blue-500 mx-2 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                  >
+                    Add Group
+                  </button>
+                </div>
+
+ {/* Block Details Section */}
    <section className="px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-gray-800 rounded-lg shadow">
                     <div className="space-y-6 grid grid-cols-1 md:grid-cols-3 gap-20">
                           <div>
@@ -748,7 +1041,13 @@ export default function AddBlockPage() {
                     </div>
                   </div>
               </section>
+
+
+              
               </section>
+
+
+
 
                </div>
                
@@ -762,44 +1061,71 @@ export default function AddBlockPage() {
                     Summary
                   </span>
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[
-                    { label: 'Todi Cost', value: newBlock.todi_cost || 0 },
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                    >
-                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                        {item.label}
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {item.value}
+
+                {/* Basic Costs */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                      Todi Cost
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                      ₹{Number(newBlock.todi_cost || 0).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                      Hydra Cost
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                      ₹{Number(newBlock.g_hydra_cost || 0).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                      Truck Cost
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                      ₹{Number(newBlock.g_truck_cost || 0).toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Individual Block Details */}
+                <div className="space-y-6">
+                  {newBlock.block?.map((block, index) => (
+                    <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                      <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                        Block {index + 1} Details
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                            Block Area
+                          </div>
+                          <div className="text-xl font-bold text-gray-900 dark:text-white">
+                            {block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0}
+                          </div>
+                        </div>
+                        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                            Block Cost
+                          </div>
+                          <div className="text-xl font-bold text-gray-900 dark:text-white">
+                            ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
-                
-                {/* Add individual block areas */}
+
+                {/* Total Summary */}
                 <div className="mt-8">
-                  
+                  <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Total Summary
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* {newBlock.block?.map((block, index) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                      >
-                        <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                          Block {index + 1} Area
-                        </div>
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                          {block.addmeasures?.reduce((sum, m) => sum + ((m.l * m.b * m.h) / 144), 0) || 0}
-                        </div>
-                      </div>
-                    ))} */}
-                    <div
-                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                    >
+                    <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         Total Block Area
                       </div>
@@ -810,81 +1136,30 @@ export default function AddBlockPage() {
                         ) || 0}
                       </div>
                     </div>
-                  </div>
-                </div>
-
-
-
-
-                <div className="mt-8">
-              
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* {newBlock.block?.map((block, index) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                      >
-                        <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                          Block {index + 1} Cost
-                        </div>
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                        ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
-                        </div>
-                      </div>
-                    ))} */}
-                    <div
-                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                    >
+                    <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         Total Block Cost
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                        ₹ {newBlock.block?.reduce((total, block) => 
+                        ₹{newBlock.block?.reduce((total, block) => 
                           total + (block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0),
                           0
                         ) || 0}
                       </div>
                     </div>
-                  </div>
-                </div>
-
-
-
-
-
-
-
-                <div className="mt-8">
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* {newBlock.block?.map((block, index) => (
-                  <div
-                    key={index}
-                    className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                  >
-                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                      Block {index + 1} Cost
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    ₹{block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0}
+                    <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Remaining Amount
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        ₹{(Number(newBlock.finalCost || 0) - newBlock.block?.reduce((total, block) => 
+                          total + (block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0),
+                          0
+                        ) || 0).toFixed(2)}
+                      </div>
                     </div>
                   </div>
-                ))} */}
-                <div
-                  className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                >
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                    Remaining Amount
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
-₹ {(Number(newBlock.finalCost || 0) - newBlock.block?.reduce((total, block) => 
-                      total + (block.addmeasures?.reduce((sum, m) => sum + (((m.l * m.b * m.h) / 144) * (Number(newBlock.todi_cost ?? 0) + Number(newBlock.g_hydra_cost ?? 0) + Number(newBlock.g_truck_cost ?? 0))), 0) || 0),
-                      0
-                    ) || 0).toFixed(2)} 
-                  </div>
                 </div>
-              </div>
-            </div>
               </section>
 
               {/* Form Actions */}
