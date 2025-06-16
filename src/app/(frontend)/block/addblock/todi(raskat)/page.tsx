@@ -909,7 +909,7 @@ export default function AddBlockPage() {
                               </h2>
                               <button
                                 type="button"
-                                onClick={() => handleAddMeasure(groupIndex, blockIndex)}
+                                onClick={() => handleAddMeasure(blockIndex)}
                                 className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200"
                               >
                                 <span className="font-medium">Add Measurement</span>
