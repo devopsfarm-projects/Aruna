@@ -187,11 +187,42 @@ export default function AddTodiPage() {
     const updated = [...todi.group]
 
     if (blockIdx === undefined) {
+      // Group level change (hydra cost, truck cost)
       updated[groupIdx][name] = value
+      // Recalculate block cost for all measures in this group
+      updated[groupIdx].block.forEach((block, bIdx) => {
+        block.addmeasures.forEach((measure, mIdx) => {
+          const blockArea = parseFloat(measure.block_area) || 0;
+          const truckCost = parseFloat(updated[groupIdx].g_truck_cost) || 0;
+          const hydraCost = parseFloat(updated[groupIdx].g_hydra_cost) || 0;
+          const todiCost = parseFloat(todi.todi_cost) || 0;
+          const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+          measure.block_cost = blockCost.toFixed(2);
+        });
+      });
     } else if (measureIdx === undefined) {
+      // Block level change
       updated[groupIdx].block[blockIdx][name] = value
     } else {
-      updated[groupIdx].block[blockIdx].addmeasures[measureIdx][name] = value
+      // Measure level change
+      const measure = updated[groupIdx].block[blockIdx].addmeasures[measureIdx]
+      measure[name] = value
+
+      // Recalculate block area if L, B, or H changed
+      if (name === 'l' || name === 'b' || name === 'h') {
+        const l = parseFloat(measure.l) || 0;
+        const b = parseFloat(measure.b) || 0;
+        const h = parseFloat(measure.h) || 0;
+        const blockArea = l * b * h;
+        measure.block_area = blockArea.toFixed(2);
+
+        // Recalculate block cost with new area
+        const truckCost = parseFloat(updated[groupIdx].g_truck_cost) || 0;
+        const hydraCost = parseFloat(updated[groupIdx].g_hydra_cost) || 0;
+        const todiCost = parseFloat(todi.todi_cost) || 0;
+        const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+        measure.block_cost = blockCost.toFixed(2);
+      }
     }
 
     setTodi(prev => ({ ...prev, group: updated }))
@@ -490,9 +521,9 @@ export default function AddTodiPage() {
                           // Calculate block area when height changes
                           const l = parseFloat(m.l) || 0;
                           const b = parseFloat(m.b) || 0;
-                          const height = parseFloat(e.target.value) || 0;
+                          const h = parseFloat(e.target.value) || 0;
                           const blockArea = l * b * h;
-                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
                         className="w-full border p-2 rounded"
                       />
@@ -540,6 +571,92 @@ export default function AddTodiPage() {
           + Add Group
         </button>
       </div>
+
+
+      <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center sm:text-left">
+                  <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-3 py-1 rounded-full inline-block">
+                    Summary
+                  </span>
+                </h3>
+      
+                
+                {/* Add individual block areas */}
+                <div className="mt-8">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 
+                    <div
+                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Total Block Area
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {todi.group.reduce((total, group) => {
+                          return total + group.block.reduce((groupTotal, block) => {
+                            return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+                              return measureTotal + parseFloat(measure.block_area || '0');
+                            }, 0);
+                          }, 0);
+                        }, 0).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+                <div className="mt-8">
+              
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               
+                    <div
+                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    >
+                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                        Total Block Cost
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {todi.group.reduce((total, group) => {
+                          return total + group.block.reduce((groupTotal, block) => {
+                            return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+                              return measureTotal + parseFloat(measure.block_cost || '0');
+                            }, 0);
+                          }, 0);
+                        }, 0).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="mt-8">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+                <div
+                  className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                >
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    Remaining Amount
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {parseFloat(todi.final_cost || '0') - 
+                     todi.group.reduce((total, group) => {
+                       return total + group.block.reduce((groupTotal, block) => {
+                         return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+                           return measureTotal + parseFloat(measure.block_cost || '0');
+                         }, 0);
+                       }, 0);
+                     }, 0)
+                    .toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            </div>
+              </section>
 
       <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded mt-6">Submit</button>
     </form>
