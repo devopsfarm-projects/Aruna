@@ -4,7 +4,14 @@ import { useState } from 'react'
 
 interface Block {
   id: string;
-  addmeasures: any[]; 
+  addmeasures: {
+    id: string;
+    l: string;
+    b: string;
+    h: string;
+    block_area: string;
+    block_cost: string;
+  }[];
 }
 
 interface Group {
@@ -13,14 +20,14 @@ interface Group {
   total_block_area: string;
   total_block_cost: string;
   remaining_amount: string;
-  g_date: string;
+  date: string;
   block: Block[];
 }
 
 interface TodiState {
   munim: string;
   BlockType: string;
-  date: string;
+  date: Date | string;
   l: string;
   b: string;
   h: string;
@@ -39,7 +46,7 @@ export default function AddTodiPage() {
   const [todi, setTodi] = useState<TodiState>({
     munim: '',
     BlockType: '',
-    date: '',
+    date: new Date().toISOString(),
     l: '',
     b: '',
     h: '',
@@ -51,7 +58,17 @@ export default function AddTodiPage() {
     estimate_cost: '',
     depreciation: '',
     final_cost: '',
-    group: []
+    group: [
+      {
+        g_hydra_cost: '',
+        g_truck_cost: '',
+        total_block_area: '',
+        total_block_cost: '',
+        remaining_amount: '',
+        date: new Date().toISOString(),
+        block: []
+      }
+    ]
   })
 
   const calculateTotalTodiArea = (l: string, b: string, h: string): string => {
@@ -136,6 +153,7 @@ export default function AddTodiPage() {
           total_block_area: '',
           total_block_cost: '',
           remaining_amount: '',
+          date: new Date().toISOString(),
           block: []
         }
       ]
@@ -155,11 +173,11 @@ export default function AddTodiPage() {
     const updatedGroups = [...todi.group]
     updatedGroups[groupIndex].block[blockIndex].addmeasures.push({
       id: '',
-      l: '',
-      b: '',
-      h: '',
-      block_area: '',
-      block_cost: ''
+      length: '',
+      breadth: '',
+      height: '',
+      blockArea: '',
+      blockCost: ''
     })
     setTodi({ ...todi, group: updatedGroups })
   }
@@ -181,10 +199,18 @@ export default function AddTodiPage() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
+    
+    // Create a copy of the form data to modify dates
+    const formData = { ...todi };
+    
+    // Format the main date field
+    formData.date = formData.date || new Date().toISOString();
+    
+
     const res = await fetch('/api/Todi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(todi),
+      body: JSON.stringify(formData),
     })
 
     if (res.ok) {
@@ -343,17 +369,6 @@ export default function AddTodiPage() {
         <h2 className="text-lg font-semibold">Groups</h2>
         {todi.group.map((group, gIdx) => (
           <div key={gIdx} className="border p-4 rounded space-y-2">
-            <div className="space-y-2">
-              <label htmlFor="g_date" className="block font-medium capitalize">date</label>
-              <input
-                type="date"
-                id="g_date"
-                name="g_date"
-                value={group.g_date}
-                onChange={(e) => handleNestedChange(e, gIdx)}
-                className="w-full border p-2 rounded"
-              />
-            </div>
 
             <div className="space-y-2">
               <label htmlFor="g_hydra_cost" className="block font-medium capitalize">Hydra Cost:</label>
@@ -365,6 +380,18 @@ export default function AddTodiPage() {
                 onChange={(e) => handleNestedChange(e, gIdx)}
                 className="w-full border p-2 rounded"
               />
+
+              <div className="space-y-2">
+                <label htmlFor="date" className="block font-medium capitalize">Date:</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={group.date}
+                  onChange={(e) => handleNestedChange(e, gIdx)}
+                  className="w-full border p-2 rounded"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <label htmlFor="g_truck_cost" className="block font-medium capitalize">Truck Cost:</label>
@@ -400,16 +427,16 @@ export default function AddTodiPage() {
                       <input
                         type="text"
                         id="length"
-                        name="length"
-                        value={m.length}
+                        name="l"
+                        value={m.l}
                         onChange={(e) => {
                           handleNestedChange(e, gIdx, bIdx, mIdx);
                           // Calculate block area when length changes
-                          const length = parseFloat(e.target.value) || 0;
-                          const breadth = parseFloat(m.breadth) || 0;
-                          const height = parseFloat(m.height) || 0;
-                          const blockArea = length * breadth * height;
-                          handleNestedChange({ target: { name: 'blockArea', value: blockArea } }, gIdx, bIdx, mIdx);
+                          const l = parseFloat(e.target.value) || 0;
+                          const b = parseFloat(m.b) || 0;
+                          const h = parseFloat(m.h) || 0;
+                          const blockArea = l * b * h;
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
                         className="w-full border p-2 rounded"
                       />
@@ -419,16 +446,16 @@ export default function AddTodiPage() {
                       <input
                         type="text"
                         id="breadth"
-                        name="breadth"
-                        value={m.breadth}
+                        name="b"
+                        value={m.b}
                         onChange={(e) => {
                           handleNestedChange(e, gIdx, bIdx, mIdx);
                           // Calculate block area when breadth changes
-                          const length = parseFloat(m.length) || 0;
-                          const breadth = parseFloat(e.target.value) || 0;
-                          const height = parseFloat(m.height) || 0;
-                          const blockArea = length * breadth * height;
-                          handleNestedChange({ target: { name: 'blockArea', value: blockArea } }, gIdx, bIdx, mIdx);
+                          const l = parseFloat(m.l) || 0;
+                          const b = parseFloat(e.target.value) || 0;
+                          const h = parseFloat(m.h) || 0;
+                          const blockArea = l * b * h;
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
                         className="w-full border p-2 rounded"
                       />
@@ -438,16 +465,16 @@ export default function AddTodiPage() {
                       <input
                         type="text"
                         id="height"
-                        name="height"
-                        value={m.height}
+                        name="h"
+                        value={m.h}
                         onChange={(e) => {
                           handleNestedChange(e, gIdx, bIdx, mIdx);
                           // Calculate block area when height changes
-                          const length = parseFloat(m.length) || 0;
-                          const breadth = parseFloat(m.breadth) || 0;
+                          const l = parseFloat(m.l) || 0;
+                          const b = parseFloat(m.b) || 0;
                           const height = parseFloat(e.target.value) || 0;
-                          const blockArea = length * breadth * height;
-                          handleNestedChange({ target: { name: 'blockArea', value: blockArea } }, gIdx, bIdx, mIdx);
+                          const blockArea = l * b * h;
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
                         className="w-full border p-2 rounded"
                       />
@@ -457,8 +484,8 @@ export default function AddTodiPage() {
                       <input
                         type="text"
                         id="blockArea"
-                        name="blockArea"
-                        value={m.blockArea}
+                        name="block_area"
+                        value={m.block_area}
                         onChange={(e) => handleNestedChange(e, gIdx, bIdx, mIdx)}
                         className="w-full border p-2 rounded"
                         disabled // Block area is calculated automatically
@@ -469,26 +496,12 @@ export default function AddTodiPage() {
                       <input
                         type="text"
                         id="blockCost"
-                        name="blockCost"
-                        value={m.blockCost}
+                        name="block_cost"
+                        value={m.block_cost}
                         onChange={(e) => handleNestedChange(e, gIdx, bIdx, mIdx)}
                         className="w-full border p-2 rounded"
                       />
                     </div>
-
-
-                    {/* {[ 'l', 'b', 'h', 'block_area', 'block_cost'].map(name => (
-                      <div key={name}>
-                        <label>{name}:</label>
-                        <input
-                          type="text"
-                          name={name}
-                          value={(m as any)[name]}
-                          onChange={(e) => handleNestedChange(e, gIdx, bIdx, mIdx)}
-                          className="w-full border p-1 rounded"
-                        />
-                      </div>
-                    ))} */}
                   </div>
                 ))}
               </div>
