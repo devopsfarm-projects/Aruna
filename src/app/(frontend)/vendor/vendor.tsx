@@ -129,7 +129,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               d="M12 9v2m0 4v2m0-6h2m-4 0h-2m-4 6h2m0 0h2m0 0h2m0-6h2m0 6h2"
             />
           </svg>
-          <p className="text-red-600 dark:text-red-400 text-lg font-medium">{stonesError}</p>
+          <p className="text-red-600 dark:text-red-400 text-lg font-medium">{vendorError}</p>
         </div>
       </div>
     )

@@ -22,6 +22,7 @@ export default function BlockList() {
       setLoading(true)
       setError(null)
       const res = await axios.get<BlockResponse>('/api/Todi')
+      console.log("res", res)
       setBlocks(res.data.docs)
       setFilteredBlocks(res.data.docs)
     } catch (err) {

@@ -39,6 +39,14 @@ export default function DashboardPage() {
       description: 'Add new block',
       stats: '250+ Stones',
     },
+    {
+      title: 'Raskat',
+      color: 'bg-green-500 dark:bg-green-600',
+      icon: <GiStonePile size={28} className="text-white" />,
+      link: '/block/addblock/raskat',
+      description: 'Add new block',
+      stats: '250+ Stones',
+    },
 
   ]
 

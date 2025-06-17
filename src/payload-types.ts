@@ -193,6 +193,9 @@ export interface Stone {
  * via the `definition` "Todi".
  */
 export interface Todi {
+  total_cost: string;
+  issued_quantity: string;
+  total_quantity: string;
   id: number;
   BlockType: 'Brown' | 'White';
   date?: string | null;
