@@ -6,6 +6,8 @@ import type { Vendor as PayloadVendor } from '../../../payload-types'
 export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }) {
   const [searchVendor, setSearchVendor] = useState('')
   const [filteredVendor, setFilteredVendor] = useState<PayloadVendor[]>([])
+  const [vendorLoading, setVendorLoading] = useState(false)
+  const [vendorError, setVendorError] = useState<string | null>(null)
 
   useEffect(() => {
     const filtered = VendorItems.filter((vendor) => {
@@ -76,7 +78,8 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
     setIsSelectAllVendor(newSelection.size === VendorItems.length)
   }
 
-  if (VendorItems.length === 0) {
+ 
+  if (vendorLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
@@ -94,13 +97,43 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               stroke="currentColor"
               strokeWidth="4"
             ></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8H4z"
+            ></path>
           </svg>
-          <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">Loading data...</p>
+          <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">
+            Loading data...
+          </p>
         </div>
       </div>
     )
   }
+
+  if (vendorError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <svg
+            className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4v2m0-6h2m-4 0h-2m-4 6h2m0 0h2m0 0h2m0-6h2m0 6h2"
+            />
+          </svg>
+          <p className="text-red-600 dark:text-red-400 text-lg font-medium">{vendorError}</p>
+        </div>
+      </div>
+    )
+  } 
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 px-4 py-24 sm:py-28">

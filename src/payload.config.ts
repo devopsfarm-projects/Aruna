@@ -10,7 +10,9 @@ import { Users } from './collections/Users'
 import { Accounts } from './collections/Accounts'
 import { Vendor } from './collections/Vendor'
 import { Stone } from './collections/Stone'
-import { Block } from './collections/Block'
+import { Todi } from './collections/Todi'
+import { TodiRaskat } from './collections/TodiRaskat'
+import { Gala } from './collections/Gala'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -24,9 +26,11 @@ export default buildConfig({
   collections: [
     Users,
     Accounts,
-    Block,
     Vendor,
     Stone,
+    Todi,
+    TodiRaskat,
+    Gala,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

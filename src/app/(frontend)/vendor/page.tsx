@@ -1,6 +1,3 @@
-
-
-
 //mine/page.tsx
 import React from "react";
 import { getPayload } from "payload";
