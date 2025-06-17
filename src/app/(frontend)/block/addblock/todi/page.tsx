@@ -377,7 +377,16 @@ export default function AddTodiPage() {
                 id="g_hydra_cost"
                 name="g_hydra_cost"
                 value={group.g_hydra_cost}
-                onChange={(e) => handleNestedChange(e, gIdx)}
+                onChange={(e) => {
+                  handleNestedChange(e, gIdx);
+                  // Calculate block cost when hydra cost changes
+                  const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
+                  const truckCost = parseFloat(group.g_truck_cost) || 0;
+                  const hydraCost = parseFloat(e.target.value) || 0;
+                  const todiCost = parseFloat(todi.todi_cost) || 0;
+                  const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
+                }}
                 className="w-full border p-2 rounded"
               />
 
@@ -400,7 +409,16 @@ export default function AddTodiPage() {
                 id="g_truck_cost"
                 name="g_truck_cost"
                 value={group.g_truck_cost}
-                onChange={(e) => handleNestedChange(e, gIdx)}
+                onChange={(e) => {
+                  handleNestedChange(e, gIdx);
+                  // Calculate block cost when truck cost changes
+                  const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
+                  const truckCost = parseFloat(e.target.value) || 0;
+                  const hydraCost = parseFloat(group.g_hydra_cost) || 0;
+                  const todiCost = parseFloat(todi.todi_cost) || 0;
+                  const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
+                }}
                 className="w-full border p-2 rounded"
               />
             </div>
@@ -486,20 +504,29 @@ export default function AddTodiPage() {
                         id="blockArea"
                         name="block_area"
                         value={m.block_area}
-                        onChange={(e) => handleNestedChange(e, gIdx, bIdx, mIdx)}
+                        onChange={(e) => {
+                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          // Calculate block cost when block area changes
+                          const blockArea = parseFloat(e.target.value) || 0;
+                          const truckCost = parseFloat(group.g_truck_cost) || 0;
+                          const hydraCost = parseFloat(group.g_hydra_cost) || 0;
+                          const todiCost = parseFloat(todi.todi_cost) || 0;
+                          const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+                          handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
+                        }}
                         className="w-full border p-2 rounded"
-                        disabled // Block area is calculated automatically
+                        disabled
                       />
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="block_cost" className="block font-medium capitalize">Block Cost:</label>
                       <input
                         type="text"
-                        id="blockCost"
+                        id="block_cost"
                         name="block_cost"
                         value={m.block_cost}
-                        onChange={(e) => handleNestedChange(e, gIdx, bIdx, mIdx)}
                         className="w-full border p-2 rounded"
+                        disabled
                       />
                     </div>
                   </div>
