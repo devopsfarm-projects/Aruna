@@ -27,10 +27,12 @@ interface Group {
 
 interface TodiState {
   munim: string;
-  BlockType: string;
+  GalaType: string;
   date: Date | string;
   l: string;
-  b: string;
+  front_b: string;
+  back_b: string;
+  total_b: string;
   h: string;
   total_todi_area: string;
   todi_cost: string;
@@ -46,10 +48,12 @@ interface TodiState {
 export default function AddTodiPage() {
   const [todi, setTodi] = useState<TodiState>({
     munim: '',
-    BlockType: '',
+    GalaType: '',
     date: new Date().toISOString(),
     l: '',
-    b: '',
+    front_b: '',
+    back_b: '',
+    total_b: '',
     h: '',
     total_todi_area: '',
     todi_cost: '',
@@ -106,10 +110,10 @@ export default function AddTodiPage() {
       const updatedTodi = { ...prev, [name]: value };
       
       // If any dimension changes, recalculate total_todi_area
-      if (name === 'l' || name === 'b' || name === 'h') {
+      if (name === 'l' || name === 'total_b' || name === 'h') {
         updatedTodi.total_todi_area = calculateTotalTodiArea(
           updatedTodi.l || '0',
-          updatedTodi.b || '0',
+          updatedTodi.total_b || '0',
           updatedTodi.h || '0'
         );
       }
@@ -265,11 +269,11 @@ export default function AddTodiPage() {
       {/* Basic Fields */}
       {/* Block Type Select */}
       <div className="space-y-2">
-        <label htmlFor="BlockType" className="block font-medium capitalize">Block Type:</label>
+        <label htmlFor="GalaType" className="block font-medium capitalize">Gala Type:</label>
         <select
-          id="BlockType"
-          name="BlockType"
-          value={todi.BlockType}
+          id="GalaType"
+          name="GalaType"
+          value={todi.GalaType}
           onChange={handleInput}
           className="w-full border p-2 rounded"
         >
@@ -301,14 +305,53 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:</label>
+        <label htmlFor="front_b" className="block font-medium capitalize">Front B (चौड़ाई) - Breadth:</label>
         <input
           type="text"
-          id="b"
-          name="b"
-          value={todi.b}
+          id="front_b"
+          name="front_b"
+          value={todi.front_b}
+          onChange={(e) => {
+            const { value } = e.target;
+            handleInput(e);
+            // Calculate total_b when front_b changes
+            const frontB = parseFloat(value || '0');
+            const backB = parseFloat(todi.back_b || '0');
+            const totalB = (frontB + backB)/2;
+            handleInput({ target: { name: 'total_b', value: totalB.toFixed(2) } });
+          }}
+          className="w-full border dark:bg-gray-600 p-2 rounded"
+        />
+      </div>
+      <div className="space-y-2"> 
+        <label htmlFor="back_b" className="block font-medium capitalize">Back B (चौड़ाई) - Breadth:</label>
+        <input
+          type="text"
+          id="back_b"
+          name="back_b"
+          value={todi.back_b}
+          onChange={(e) => {
+            const { value } = e.target;
+            handleInput(e);
+            // Calculate total_b when back_b changes
+            const frontB = parseFloat(todi.front_b || '0');
+            const backB = parseFloat(value || '0');
+            const totalB = (frontB + backB)/2;
+            handleInput({ target: { name: 'total_b', value: totalB.toFixed(2) } });
+          }}
+          className="w-full border dark:bg-gray-600 p-2 rounded"
+        />
+      </div>
+      <div className="space-y-2"> 
+        <label htmlFor="total_b" className="block font-medium capitalize">Total B (चौड़ाई) - Breadth:</label>
+        <input
+          type="text"
+          id="total_b"
+          name="total_b"
+          value={todi.total_b}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-600 p-2 rounded"
+          disabled
         />
       </div>
       <div className="space-y-2"> 
