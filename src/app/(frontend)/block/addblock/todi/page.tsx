@@ -490,7 +490,7 @@ export default function AddTodiPage() {
                           const l = parseFloat(e.target.value) || 0;
                           const b = parseFloat(m.b) || 0;
                           const h = parseFloat(m.h) || 0;
-                          const blockArea = l * b * h;
+                          const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
                         className="w-full border dark:bg-gray-600 p-2 rounded"
@@ -509,7 +509,7 @@ export default function AddTodiPage() {
                           const l = parseFloat(m.l) || 0;
                           const b = parseFloat(e.target.value) || 0;
                           const h = parseFloat(m.h) || 0;
-                          const blockArea = l * b * h;
+                          const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
                         className="w-full border dark:bg-gray-600 p-2 rounded"
@@ -528,7 +528,7 @@ export default function AddTodiPage() {
                           const l = parseFloat(m.l) || 0;
                           const b = parseFloat(m.b) || 0;
                           const h = parseFloat(e.target.value) || 0;
-                          const blockArea = l * b * h;
+                          const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
                         className="w-full border dark:bg-gray-600 p-2 rounded"
