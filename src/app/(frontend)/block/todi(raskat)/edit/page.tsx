@@ -20,16 +20,24 @@ function isErrorResponse(obj: unknown): obj is ErrorResponse {
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Measure {
-  qty: number
-  l: number
-  b: number
-  h: number
-  rate: number
-  labour?: string
-  hydra?: string
+  l: string
+  b: string
+  h: string
+  block_area: string
+  block_cost: string
   id?: string | number
-  black_area?: number
-  black_cost?: number
+}
+
+interface Block {
+  addmeasures: Measure[]
+  block_cost: string
+}
+
+interface Group {
+  g_hydra_cost: string
+  g_truck_cost: string
+  date: string
+  block: Block[]
 }
 
 
@@ -68,6 +76,7 @@ type BlockType = {
   updatedAt: string
   vehicle_cost: number | null
   vehicle_number: string | null
+  group: Group[]
 }
 
 
@@ -125,7 +134,71 @@ export default function EditBlock() {
     fetchAllData()
   }, [id])
 
+  // Handle nested changes in groups, blocks, and measures
+  const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, gIdx: number, bIdx?: number, mIdx?: number) => {
+    if (!newBlock) return
 
+    const updatedBlock = { ...newBlock }
+    
+    // Update group level fields
+    if (bIdx === undefined) {
+      updatedBlock.group[gIdx][e.target.name] = e.target.value
+    }
+    // Update block level fields
+    else if (mIdx === undefined) {
+      updatedBlock.group[gIdx].block[bIdx][e.target.name] = e.target.value
+    }
+    // Update measure level fields
+    else {
+      updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx][e.target.name] = e.target.value
+    }
+
+    setNewBlock(updatedBlock)
+  }
+
+  // Add group
+  const addGroup = () => {
+    if (!newBlock) return
+
+    const updatedBlock = { ...newBlock }
+    updatedBlock.group.push({
+      g_hydra_cost: '',
+      g_truck_cost: '',
+      date: new Date().toISOString().split('T')[0],
+      block: []
+    })
+
+    setNewBlock(updatedBlock)
+  }
+
+  // Add block
+  const addBlock = (gIdx: number) => {
+    if (!newBlock) return
+
+    const updatedBlock = { ...newBlock }
+    updatedBlock.group[gIdx].block.push({
+      addmeasures: [],
+      block_cost: ''
+    })
+
+    setNewBlock(updatedBlock)
+  }
+
+  // Add measure
+  const addMeasure = (gIdx: number, bIdx: number) => {
+    if (!newBlock) return
+
+    const updatedBlock = { ...newBlock }
+    updatedBlock.group[gIdx].block[bIdx].addmeasures.push({
+      l: '',
+      b: '',
+      h: '',
+      block_area: '',
+      block_cost: ''
+    })
+
+    setNewBlock(updatedBlock)
+  }
 
    const handleSubmit = async (e: React.FormEvent) => {
      e.preventDefault()
@@ -436,9 +509,184 @@ export default function EditBlock() {
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
+                    </div>
+
+   {/* Groups */}
+   <div className="space-y-4">
+        <h2 className="text-lg font-semibold">Groups</h2>
+        {currentBlock?.group?.map((group, gIdx) => (
+          <div key={gIdx} className="border p-4 rounded space-y-2">
+
+            <div className="space-y-2">
+              <label htmlFor="g_hydra_cost" className="block font-medium capitalize">Hydra Cost:</label>
+              <input
+                type="text"
+                id="g_hydra_cost"
+                name="g_hydra_cost"
+                value={group.g_hydra_cost}
+                onChange={(e) => {
+                  handleNestedChange(e, gIdx);
+                  // Calculate block cost when hydra cost changes
+                  const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
+                  const truckCost = parseFloat(group.g_truck_cost) || 0;
+                  const hydraCost = parseFloat(e.target.value) || 0;
+                  const todiCost = parseFloat(todi.todi_cost) || 0;
+                  const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
+                }}
+                className="w-full border dark:bg-gray-600 p-2 rounded"
+              />
+
+              <div className="space-y-2">
+                <label htmlFor="date" className="block font-medium capitalize">Date:</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={group.date}
+                  onChange={(e) => handleNestedChange(e, gIdx)}
+                  className="w-full border dark:bg-gray-600 p-2 rounded"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="g_truck_cost" className="block font-medium capitalize">Truck Cost:</label>
+              <input
+                type="text"
+                id="g_truck_cost"
+                name="g_truck_cost"
+                value={group.g_truck_cost}
+                onChange={(e) => {
+                  handleNestedChange(e, gIdx);
+                  // Calculate block cost when truck cost changes
+                  const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
+                  const truckCost = parseFloat(e.target.value) || 0;
+                  const hydraCost = parseFloat(group.g_hydra_cost) || 0;
+                  const todiCost = parseFloat(todi.todi_cost) || 0;
+                  const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
+                }}
+                className="w-full border dark:bg-gray-600 p-2 rounded"
+              />
+            </div>
+
+
+
+            <button type="button" onClick={() => addBlock(gIdx)} className="text-sm text-blue-600">+ Add Block</button>
+
+            {/* Blocks */}
+            {group.block.map((block, bIdx) => (
+              <div key={bIdx} className="ml-4 mt-2 border p-3 rounded">
+              
+             
+
+                <button type="button" onClick={() => addMeasure(gIdx, bIdx)} className="text-sm text-green-600 mt-2">
+                  + Add Measure
+                </button>
+
+                {/* Add Measures */}
+                {block.addmeasures.map((m, mIdx) => (
+                  <div key={mIdx} className="ml-4 mt-2 border p-2 rounded bg-gray-50">
+                    <div className="space-y-2">
+                      <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:</label>
+                      <input
+                        type="text"
+                        id="length"
+                        name="l"
+                        value={m.l}
+                        onChange={(e) => {
+                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          // Calculate block area when length changes
+                          const l = parseFloat(e.target.value) || 0;
+                          const b = parseFloat(m.b) || 0;
+                          const h = parseFloat(m.h) || 0;
+                          const blockArea = l * b * h;
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
+                        }}
+                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:</label>
+                      <input
+                        type="text"
+                        id="breadth"
+                        name="b"
+                        value={m.b}
+                        onChange={(e) => {
+                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          // Calculate block area when breadth changes
+                          const l = parseFloat(m.l) || 0;
+                          const b = parseFloat(e.target.value) || 0;
+                          const h = parseFloat(m.h) || 0;
+                          const blockArea = l * b * h;
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
+                        }}
+                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:</label>
+                      <input
+                        type="text"
+                        id="height"
+                        name="h"
+                        value={m.h}
+                        onChange={(e) => {
+                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          // Calculate block area when height changes
+                          const l = parseFloat(m.l) || 0;
+                          const b = parseFloat(m.b) || 0;
+                          const h = parseFloat(e.target.value) || 0;
+                          const blockArea = l * b * h;
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
+                        }}
+                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="block_area" className="block font-medium capitalize">Block Area:</label>
+                      <input
+                        type="text"
+                        id="blockArea"
+                        name="block_area"
+                        value={m.block_area}
+                        onChange={(e) => {
+                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          // Calculate block cost when block area changes
+                          const blockArea = parseFloat(e.target.value) || 0;
+                          const truckCost = parseFloat(group.g_truck_cost) || 0;
+                          const hydraCost = parseFloat(group.g_hydra_cost) || 0;
+                          const todiCost = parseFloat(todi.todi_cost) || 0;
+                          const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+                          handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
+                        }}
+                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        disabled
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="block_cost" className="block font-medium capitalize">Block Cost:</label>
+                      <input
+                        type="text"
+                        id="block_cost"
+                        name="block_cost"
+                        value={m.block_cost}
+                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
           </div>
+        ))}
 
-
+        <button type="button" onClick={addGroup} className="bg-blue-500 text-white px-3 py-2 rounded">
+          + Add Group
+        </button>
+      </div>
 
           <div className="mt-8">
         <button
