@@ -1,7 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { GroupField } from '../types'
+import axios from 'axios'
+
+interface Vendor {
+  id: number
+  vendor: string
+  vendor_no: string
+  address: string
+  mail_id: string
+  Company_no: string
+  phone: Array<{
+    number: string
+    type?: string
+  }>
+  createdAt: string
+  updatedAt: string
+}
 
 interface Block {
   id: string;
@@ -26,6 +42,7 @@ interface Group {
 }
 
 interface TodiState {
+  vender_id: string | number | readonly string[] | undefined;
   munim: string;
   BlockType: string;
   date: Date | string;
@@ -44,10 +61,14 @@ interface TodiState {
 }
 
 export default function AddTodiPage() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [vendors, setVendors] = useState<Vendor[]>([])
   const [todi, setTodi] = useState<TodiState>({
     munim: '',
     BlockType: '',
     date: new Date().toISOString(),
+    vender_id: 0,
     l: '',
     b: '',
     h: '',
@@ -100,7 +121,6 @@ export default function AddTodiPage() {
 
   const handleInput = (e: any) => {
     const { name, value } = e.target;
-    
     // Update the state with the new value
     setTodi(prev => {
       const updatedTodi = { ...prev, [name]: value };
@@ -234,12 +254,13 @@ export default function AddTodiPage() {
     setTodi(prev => ({ ...prev, group: updated }))
   }
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
     // Create a copy of the form data to modify dates
     const formData = { ...todi };
     
+    formData.vender_id = Number(todi.vender_id);
     // Format the main date field
     formData.date = formData.date || new Date().toISOString();
     
@@ -257,6 +278,31 @@ export default function AddTodiPage() {
       alert('Error: ' + err.message)
     }
   }
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const [vendorsRes] = await Promise.all([axios.get<{ docs: Vendor[] }>('/api/vendor')])
+        setVendors(vendorsRes.data.docs || [])
+      } catch (error) {
+        setError('Failed to load data. Please try again later.')
+        console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [setVendors, setIsLoading, setError])
+
+
+
+
+
 
   return (
     <form onSubmit={handleSubmit} className="p-6 py-28 space-y-6">
@@ -278,6 +324,32 @@ export default function AddTodiPage() {
           <option value="Brown">Brown</option>
         </select>
       </div>
+
+      <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Vendor
+                      </label>
+                      <select
+                        value={todi.vender_id}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          handleInput({...e, target: { ...e.target, name: 'vender_id', value }})
+                        }}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        required
+                      >
+                        <option value="">Select vendor</option>
+                        {vendors.map((vendor) => (
+                          <option key={vendor.id} value={vendor.id}>
+                            {vendor.vendor}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+
+      {/* Basic Fields */}
       <div className="space-y-2">
         <label htmlFor="munim" className="block font-medium capitalize">Munim:</label>
         <input

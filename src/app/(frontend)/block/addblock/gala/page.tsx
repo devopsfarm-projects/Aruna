@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import type { GroupField } from '../types'
+import { useEffect, useState } from 'react'
+import type { GroupField, Vendor } from '../types'
+import axios from 'axios'
 
 interface Block {
   id: string;
@@ -29,6 +30,7 @@ interface TodiState {
   munim: string;
   GalaType: string;
   date: Date | string;
+  vender_id: string | number | readonly string[] | undefined;
   l: string;
   front_b: string;
   back_b: string;
@@ -46,10 +48,14 @@ interface TodiState {
 }
 
 export default function AddTodiPage() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [vendors, setVendors] = useState<Vendor[]>([])
   const [todi, setTodi] = useState<TodiState>({
     munim: '',
     GalaType: '',
     date: new Date().toISOString(),
+    vender_id: 0,
     l: '',
     front_b: '',
     back_b: '',
@@ -244,6 +250,8 @@ export default function AddTodiPage() {
     // Create a copy of the form data to modify dates
     const formData = { ...todi };
     
+
+    formData.vender_id = Number(todi.vender_id);
     // Format the main date field
     formData.date = formData.date || new Date().toISOString();
     
@@ -262,9 +270,38 @@ export default function AddTodiPage() {
     }
   }
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const [vendorsRes] = await Promise.all([axios.get<{ docs: Vendor[] }>('/api/vendor')])
+        setVendors(vendorsRes.data.docs || [])
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.')
+        console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [setVendors, setIsLoading, setError])
+
   return (
     <form onSubmit={handleSubmit} className="p-6 py-28 space-y-6">
       <h1 className="text-xl font-bold">Add Todi</h1>
+      {error && (
+        <div className="text-red-500 mb-4">
+          {error}
+        </div>
+      )}
+      {isLoading && (
+        <div className="text-gray-600 mb-4">
+          Loading vendors...
+        </div>
+      )}
 
       {/* Basic Fields */}
       {/* Block Type Select */}
@@ -282,6 +319,26 @@ export default function AddTodiPage() {
           <option value="Brown">Brown</option>
         </select>
       </div>
+
+      {/* Vendor Select */}
+      <div className="space-y-2">
+        <label htmlFor="vender_id" className="block font-medium capitalize">Vendor:</label>
+        <select
+          id="vender_id"
+          name="vender_id"
+          value={todi.vender_id}
+          onChange={handleInput}
+          className="w-full border p-2 rounded"
+        >
+          <option value="">Select Vendor</option>
+          {vendors.map((vendor) => (
+            <option key={vendor.id} value={vendor.id}>
+              {vendor.vendor}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="space-y-2">
         <label htmlFor="munim" className="block font-medium capitalize">Munim:</label>
         <input
