@@ -34,11 +34,16 @@ interface Block {
 }
 
 interface Group {
-  g_hydra_cost: string
-  g_truck_cost: string
-  date: string
-  block: Block[]
+  g_hydra_cost: string;
+  g_truck_cost: string;
+  date: string;
+  block: Block[];
+  [key: string]: string | Block[];
 }
+
+// Define valid field names for each level
+type GroupField = keyof Group
+
 
 
 type BlockType = {
@@ -47,12 +52,13 @@ type BlockType = {
   total_area: number
   munim: string
   todirate: string
-  front_l: string
-  front_b: string
-  front_h: string
-  back_l: string
-  back_b: string
-  back_h: string
+  total_todi_area: string
+  estimate_cost: string
+  depreciation: string
+  final_cost: string
+  l: string
+  b: string
+  h: string
   todi_cost: string
   hydra_cost: string
   truck_cost: string
@@ -135,22 +141,44 @@ export default function EditBlock() {
   }, [id])
 
   // Handle nested changes in groups, blocks, and measures
-  const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, gIdx: number, bIdx?: number, mIdx?: number) => {
+  const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, field: string, gIdx: number, bIdx?: number, mIdx?: number) => {
     if (!newBlock) return
 
     const updatedBlock = { ...newBlock }
+    const fieldName = e.target.name;
     
     // Update group level fields
     if (bIdx === undefined) {
-      updatedBlock.group[gIdx][e.target.name] = e.target.value
+      // Update group level fields
+      if (fieldName in updatedBlock.group[gIdx]) {
+        updatedBlock.group[gIdx][fieldName] = e.target.value;
+      }
     }
     // Update block level fields
     else if (mIdx === undefined) {
-      updatedBlock.group[gIdx].block[bIdx][e.target.name] = e.target.value
+      // Get the current block object
+      const currentBlock = updatedBlock.group[gIdx].block[bIdx];
+      // Update group level fields
+      if (fieldName in updatedBlock.group[gIdx]) {
+        updatedBlock.group[gIdx] = {
+          ...updatedBlock.group[gIdx],
+          [fieldName]: e.target.value
+        };
+      }
+    }
+    // Update block level fields
+    else if (field in updatedBlock.group[gIdx].block[bIdx]) {
+      updatedBlock.group[gIdx].block[bIdx] = {
+        ...updatedBlock.group[gIdx].block[bIdx],
+        [field]: e.target.value
+      };
     }
     // Update measure level fields
-    else {
-      updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx][e.target.name] = e.target.value
+    else if (bIdx !== undefined && mIdx !== undefined) {
+      updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx] = {
+        ...updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx],
+        [field]: e.target.value
+      };
     }
 
     setNewBlock(updatedBlock)
@@ -207,7 +235,7 @@ export default function EditBlock() {
  
      try {
        setIsSubmitting(true)
-       await axios.patch(`/api/Gala/${id}`, newBlock)
+       await axios.patch(`/api/Todi/${id}`, newBlock)
        setShowSuccessModal(true)
       
      } catch (error) {
@@ -525,14 +553,14 @@ export default function EditBlock() {
                 name="g_hydra_cost"
                 value={group.g_hydra_cost}
                 onChange={(e) => {
-                  handleNestedChange(e, gIdx);
+                  handleNestedChange(e, 'g_hydra_cost', gIdx, undefined, undefined);
                   // Calculate block cost when hydra cost changes
                   const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
                   const truckCost = parseFloat(group.g_truck_cost) || 0;
                   const hydraCost = parseFloat(e.target.value) || 0;
-                  const todiCost = parseFloat(todi.todi_cost) || 0;
+                  const todiCost = parseFloat(newBlock?.todi_cost || '0') || 0;
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
-                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
+                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, 0, 0);
                 }}
                 className="w-full border dark:bg-gray-600 p-2 rounded"
               />
@@ -544,7 +572,7 @@ export default function EditBlock() {
                   id="date"
                   name="date"
                   value={group.date}
-                  onChange={(e) => handleNestedChange(e, gIdx)}
+                  onChange={(e) => handleNestedChange(e, 'date', gIdx)}
                   className="w-full border dark:bg-gray-600 p-2 rounded"
                 />
               </div>
@@ -557,14 +585,14 @@ export default function EditBlock() {
                 name="g_truck_cost"
                 value={group.g_truck_cost}
                 onChange={(e) => {
-                  handleNestedChange(e, gIdx);
+                  handleNestedChange(e, 'g_truck_cost', gIdx, undefined, undefined);
                   // Calculate block cost when truck cost changes
                   const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
                   const truckCost = parseFloat(e.target.value) || 0;
                   const hydraCost = parseFloat(group.g_hydra_cost) || 0;
-                  const todiCost = parseFloat(todi.todi_cost) || 0;
+                  const todiCost = parseFloat(newBlock?.todi_cost || '0') || 0;
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
-                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
+                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, 0, 0);
                 }}
                 className="w-full border dark:bg-gray-600 p-2 rounded"
               />
@@ -595,13 +623,13 @@ export default function EditBlock() {
                         name="l"
                         value={m.l}
                         onChange={(e) => {
-                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          handleNestedChange(e, 'l', gIdx, bIdx, mIdx);
                           // Calculate block area when length changes
                           const l = parseFloat(e.target.value) || 0;
                           const b = parseFloat(m.b) || 0;
                           const h = parseFloat(m.h) || 0;
                           const blockArea = l * b * h;
-                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea.toString() } } as React.ChangeEvent<HTMLInputElement>, 'block_area', gIdx, bIdx, mIdx);
                         }}
                         className="w-full border dark:bg-gray-600 p-2 rounded"
                       />
@@ -614,13 +642,13 @@ export default function EditBlock() {
                         name="b"
                         value={m.b}
                         onChange={(e) => {
-                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          handleNestedChange(e, 'b', gIdx, bIdx, mIdx);
                           // Calculate block area when breadth changes
                           const l = parseFloat(m.l) || 0;
                           const b = parseFloat(e.target.value) || 0;
                           const h = parseFloat(m.h) || 0;
                           const blockArea = l * b * h;
-                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea.toString() } } as React.ChangeEvent<HTMLInputElement>, 'block_area', gIdx, bIdx, mIdx);
                         }}
                         className="w-full border dark:bg-gray-600 p-2 rounded"
                       />
@@ -633,13 +661,13 @@ export default function EditBlock() {
                         name="h"
                         value={m.h}
                         onChange={(e) => {
-                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          handleNestedChange(e, 'h', gIdx, bIdx, mIdx);
                           // Calculate block area when height changes
                           const l = parseFloat(m.l) || 0;
                           const b = parseFloat(m.b) || 0;
                           const h = parseFloat(e.target.value) || 0;
                           const blockArea = l * b * h;
-                          handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
+                          handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_area', gIdx, bIdx, mIdx);
                         }}
                         className="w-full border dark:bg-gray-600 p-2 rounded"
                       />
@@ -652,14 +680,15 @@ export default function EditBlock() {
                         name="block_area"
                         value={m.block_area}
                         onChange={(e) => {
-                          handleNestedChange(e, gIdx, bIdx, mIdx);
+                          handleNestedChange(e, 'block_area', gIdx, bIdx, mIdx);
                           // Calculate block cost when block area changes
                           const blockArea = parseFloat(e.target.value) || 0;
                           const truckCost = parseFloat(group.g_truck_cost) || 0;
                           const hydraCost = parseFloat(group.g_hydra_cost) || 0;
-                          const todiCost = parseFloat(todi.todi_cost) || 0;
+                          const todiCost = parseFloat(newBlock?.todi_cost || '0') || 0;
                           const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
-                          handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
+                          handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, bIdx, mIdx);
+                          handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, bIdx, mIdx);
                         }}
                         className="w-full border dark:bg-gray-600 p-2 rounded"
                         disabled
