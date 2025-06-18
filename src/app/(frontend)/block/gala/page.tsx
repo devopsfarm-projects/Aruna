@@ -4,11 +4,12 @@ import { Todi, TodiSelect } from '@/payload-types'
 
 
 import config from '@payload-config'
+import router from 'next/router'
 import Link from 'next/link'
 async function getData() {
     const payload = await getPayload({ config })
   const { docs: todis } = await payload.find({
-    collection: 'Todi',
+    collection: 'Gala',
     limit: 100,
   });
   return todis;
@@ -19,9 +20,9 @@ export default async function Page() {
   console.log(todis);
 
   return (
-    <div className="max-w-7xl py-24 mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-        Todi List
+        Gala List
       </h1>
       <div className="mt-6">
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
@@ -83,7 +84,7 @@ export default async function Page() {
                       {todi.id}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {todi.BlockType}
+                      {todi.GalaType}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {todi.date ? new Date(todi.date).toLocaleDateString() : 'N/A'}
@@ -95,13 +96,13 @@ export default async function Page() {
                       {todi.munim || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {todi.l} x {todi.b} x {todi.h}
+                      {todi.l} x {todi.total_b} x {todi.h}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {todi.total_todi_area}
+                      {todi.total_gala_area}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      ₹{todi.todi_cost}
+                      ₹{todi.gala_cost}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       ₹{todi.hydra_cost}
@@ -110,7 +111,7 @@ export default async function Page() {
                       ₹{todi.truck_cost}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      ₹{todi.total_todi_cost}
+                      ₹{todi.total_gala_cost}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       ₹{todi.estimate_cost}
@@ -122,20 +123,12 @@ export default async function Page() {
                       ₹{todi.final_cost}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    <Link
-                href={`/block/todi/edit?id=${todi.id}`}
-                className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-800"
-              >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                  />
-                </svg>
-                Edit
-              </Link>
+                      <Link
+                        href={`/block/gala/edit?id=${todi.id}`}
+                        className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+                      >
+                        Edit
+                      </Link>
                     </td>
                   </tr>
                 ))}
@@ -144,23 +137,24 @@ export default async function Page() {
           </div>
         </div>
       </div>
-            <div className="fixed bottom-20 right-4 z-50">
-              <div className="flex flex-col items-end space-y-2">
-                <Link href="/block/addblock/todi">
-                  <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      />
-                    </svg>
-                  </button>
-                </Link>
-              </div>
-            </div>
+       <div className="fixed bottom-20 right-4 z-50">
+                    <div className="flex flex-col items-end space-y-2">
+                      <Link href="/block/addblock/gala">
+                        <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                            />
+                          </svg>
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
     </div>
   )
 }
+            
       
