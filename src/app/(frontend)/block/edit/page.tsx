@@ -16,7 +16,7 @@ function isErrorResponse(obj: unknown): obj is ErrorResponse {
   return typeof obj === 'object' && obj !== null &&
     ('errors' in obj || 'message' in obj)
 }
-import { ApiResponse } from './types'
+import { ApiResponse } from '../todi(raskat)/edit/types'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Measure {
@@ -75,15 +75,6 @@ type Vendor = {
   vendor: string
   vendor_no: string
   address: string
-  mail_id: string
-  Company_no: string
-  Mines_name: {
-    id: number
-    Mines_name: string
-    address: string
-    phone: { number: string }[]
-    mail_id: string
-  }
 }
 
 export default function EditBlock() {

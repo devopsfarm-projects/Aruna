@@ -1,8 +1,23 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { GroupField, Vendor } from '../types'
+import type { GroupField } from '../../addblock/types'
 import axios from 'axios'
+
+interface Vendor {
+  id: number
+  vendor: string
+  vendor_no: string
+  address: string
+  mail_id: string
+  Company_no: string
+  phone: Array<{
+    number: string
+    type?: string
+  }>
+  createdAt: string
+  updatedAt: string
+}
 
 interface Block {
   id: string;
@@ -27,14 +42,12 @@ interface Group {
 }
 
 interface TodiState {
-  munim: string;
-  GalaType: string;
-  date: Date | string;
   vender_id: string | number | readonly string[] | undefined;
+  munim: string;
+  BlockType: string;
+  date: Date | string;
   l: string;
-  front_b: string;
-  back_b: string;
-  total_b: string;
+  b: string;
   h: string;
   total_todi_area: string;
   todi_cost: string;
@@ -53,13 +66,11 @@ export default function AddTodiPage() {
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [todi, setTodi] = useState<TodiState>({
     munim: '',
-    GalaType: '',
+    BlockType: '',
     date: new Date().toISOString(),
     vender_id: 0,
     l: '',
-    front_b: '',
-    back_b: '',
-    total_b: '',
+    b: '',
     h: '',
     total_todi_area: '',
     todi_cost: '',
@@ -110,16 +121,15 @@ export default function AddTodiPage() {
 
   const handleInput = (e: any) => {
     const { name, value } = e.target;
-    
     // Update the state with the new value
     setTodi(prev => {
       const updatedTodi = { ...prev, [name]: value };
       
       // If any dimension changes, recalculate total_todi_area
-      if (name === 'l' || name === 'total_b' || name === 'h') {
+      if (name === 'l' || name === 'b' || name === 'h') {
         updatedTodi.total_todi_area = calculateTotalTodiArea(
           updatedTodi.l || '0',
-          updatedTodi.total_b || '0',
+          updatedTodi.b || '0',
           updatedTodi.h || '0'
         );
       }
@@ -244,31 +254,31 @@ export default function AddTodiPage() {
     setTodi(prev => ({ ...prev, group: updated }))
   }
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
     // Create a copy of the form data to modify dates
     const formData = { ...todi };
     
-
     formData.vender_id = Number(todi.vender_id);
     // Format the main date field
     formData.date = formData.date || new Date().toISOString();
     
 
-    const res = await fetch('/api/Gala', {
+    const res = await fetch('/api/TodiRaskat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     })
 
     if (res.ok) {
-      alert('Gala created!')
+      alert('Todi Raskat created!')
     } else {
       const err = await res.json()
       alert('Error: ' + err.message)
     }
   }
+
 
 
   useEffect(() => {
@@ -279,7 +289,7 @@ export default function AddTodiPage() {
         const [vendorsRes] = await Promise.all([axios.get<{ docs: Vendor[] }>('/api/vendor')])
         setVendors(vendorsRes.data.docs || [])
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.')
+        setError('Failed to load data. Please try again later.')
         console.error('Error fetching data:', error)
       } finally {
         setIsLoading(false)
@@ -289,28 +299,23 @@ export default function AddTodiPage() {
     fetchData()
   }, [setVendors, setIsLoading, setError])
 
+
+
+
+
+
   return (
     <form onSubmit={handleSubmit} className="p-6 py-28 space-y-6">
       <h1 className="text-xl font-bold">Add Todi</h1>
-      {error && (
-        <div className="text-red-500 mb-4">
-          {error}
-        </div>
-      )}
-      {isLoading && (
-        <div className="text-gray-600 mb-4">
-          Loading vendors...
-        </div>
-      )}
 
       {/* Basic Fields */}
       {/* Block Type Select */}
       <div className="space-y-2">
-        <label htmlFor="GalaType" className="block font-medium capitalize">Gala Type:</label>
+        <label htmlFor="BlockType" className="block font-medium capitalize">Block Type:</label>
         <select
-          id="GalaType"
-          name="GalaType"
-          value={todi.GalaType}
+          id="BlockType"
+          name="BlockType"
+          value={todi.BlockType}
           onChange={handleInput}
           className="w-full border p-2 rounded"
         >
@@ -320,25 +325,31 @@ export default function AddTodiPage() {
         </select>
       </div>
 
-      {/* Vendor Select */}
-      <div className="space-y-2">
-        <label htmlFor="vender_id" className="block font-medium capitalize">Vendor:</label>
-        <select
-          id="vender_id"
-          name="vender_id"
-          value={todi.vender_id}
-          onChange={handleInput}
-          className="w-full border p-2 rounded"
-        >
-          <option value="">Select Vendor</option>
-          {vendors.map((vendor) => (
-            <option key={vendor.id} value={vendor.id}>
-              {vendor.vendor}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Vendor
+                      </label>
+                      <select
+                        value={todi.vender_id}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          handleInput({...e, target: { ...e.target, name: 'vender_id', value }})
+                        }}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        required
+                      >
+                        <option value="">Select vendor</option>
+                        {vendors.map((vendor) => (
+                          <option key={vendor.id} value={vendor.id}>
+                            {vendor.vendor}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
+
+      {/* Basic Fields */}
       <div className="space-y-2">
         <label htmlFor="munim" className="block font-medium capitalize">Munim:</label>
         <input
@@ -362,53 +373,14 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="front_b" className="block font-medium capitalize">Front B (चौड़ाई) - Breadth:</label>
+        <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:</label>
         <input
           type="text"
-          id="front_b"
-          name="front_b"
-          value={todi.front_b}
-          onChange={(e) => {
-            const { value } = e.target;
-            handleInput(e);
-            // Calculate total_b when front_b changes
-            const frontB = parseFloat(value || '0');
-            const backB = parseFloat(todi.back_b || '0');
-            const totalB = (frontB + backB)/2;
-            handleInput({ target: { name: 'total_b', value: totalB.toFixed(2) } });
-          }}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
-        />
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="back_b" className="block font-medium capitalize">Back B (चौड़ाई) - Breadth:</label>
-        <input
-          type="text"
-          id="back_b"
-          name="back_b"
-          value={todi.back_b}
-          onChange={(e) => {
-            const { value } = e.target;
-            handleInput(e);
-            // Calculate total_b when back_b changes
-            const frontB = parseFloat(todi.front_b || '0');
-            const backB = parseFloat(value || '0');
-            const totalB = (frontB + backB)/2;
-            handleInput({ target: { name: 'total_b', value: totalB.toFixed(2) } });
-          }}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
-        />
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="total_b" className="block font-medium capitalize">Total B (चौड़ाई) - Breadth:</label>
-        <input
-          type="text"
-          id="total_b"
-          name="total_b"
-          value={todi.total_b}
+          id="b"
+          name="b"
+          value={todi.b}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
-          disabled
+          className="w-full border p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
