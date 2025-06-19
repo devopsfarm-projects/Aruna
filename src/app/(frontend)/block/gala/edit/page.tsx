@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-
+import { ApiResponse } from '../../types'
 import Link from 'next/link'
 
 // Type for error response
@@ -44,11 +44,18 @@ interface Group {
 // Define valid field names for each level
 type GroupField = keyof Group
 
-
+type Vendor = {
+  id: number
+  vendor: string
+  vendor_no: string
+  address: string
+}
 
 type BlockType = {
   total_cost: any
+  GalaType: string
   block: any
+  vender_id: number
   total_area: number
   munim: string
   todirate: string
@@ -57,14 +64,15 @@ type BlockType = {
   depreciation: string
   final_cost: string
   l: string
-  b: string
+  front_b: string
+  back_b: string
+  total_b: string
   h: string
   todi_cost: string
   hydra_cost: string
   truck_cost: string
   total_todi_cost: string
   id: number | string
-  vender_id: number
   BlockType: string
   date: string
   mines: number
@@ -93,6 +101,9 @@ export default function EditBlock() {
   const [newBlock, setNewBlock] = useState<BlockType | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [munims, setMunims] = useState<string[]>([])
+  const [vendors, setVendors] = useState<Vendor[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadingData, setLoadingData] = useState(true)
   // Update currentBlock when newBlock changes
   useEffect(() => {
     if (newBlock) {
@@ -122,8 +133,13 @@ export default function EditBlock() {
 
       try {
         // Fetch block data
-        const blockRes = await axios.get<BlockType>(`/api/Todi/${id}`)
+        const blockRes = await axios.get<BlockType>(`/api/Gala/${id}`)
         const blockData = blockRes.data
+
+        // Fetch vendors
+        const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
+        const vendorsData = vendorsRes.data.docs
+        setVendors(vendorsData)
         // Ensure measurements array exists
         if (!blockData.addmeasures) {
           blockData.addmeasures = []
@@ -134,6 +150,9 @@ export default function EditBlock() {
         setNewBlock(blockData)
       } catch (error) {
         console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
+        setLoadingData(false)
       }
     }
 
@@ -235,9 +254,9 @@ export default function EditBlock() {
  
      try {
        setIsSubmitting(true)
-       await axios.patch(`/api/Todi/${id}`, newBlock)
+       await axios.patch(`/api/Gala/${id}`, newBlock)
        setShowSuccessModal(true)
-      
+       router.push('/block/gala')
      } catch (error) {
        console.error('Error updating block:', error)
      } finally {
@@ -245,6 +264,17 @@ export default function EditBlock() {
      }
    }
 
+
+   if (loading || loadingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
+          <p className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Loading...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
@@ -263,16 +293,16 @@ export default function EditBlock() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Block Type
+              GalaType
               </label>
               <select
-               value={newBlock?.BlockType || ''}
+               value={newBlock?.GalaType || ''}
                onChange={(e) =>
                  setNewBlock((prev: BlockType | null) =>
                    prev
                      ? {
                          ...prev,
-                         BlockType: e.target.value,
+                         GalaType: e.target.value,
                        }
                      : prev,
                  )
@@ -283,6 +313,53 @@ export default function EditBlock() {
                 <option value="White">White</option>
               </select>
             </div>
+
+
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Vendor Name
+              </label>
+              <select
+                value={newBlock?.vender_id?.toString() || ''}
+                onChange={(e) => {
+                  const selectedId = Number(e.target.value)
+                  const selectedVendor = vendors.find((v) => v.id === selectedId)
+                  if (selectedVendor) {
+                    setNewBlock((prev: BlockType | null) =>
+                      prev
+                        ? {
+                            ...prev,
+                            vender_id: selectedId,
+                            vendor_no: selectedVendor.vendor_no,
+                          }
+                        : prev,
+                    )
+                  } else {
+                    setNewBlock((prev: BlockType | null) =>
+                      prev
+                        ? {
+                            ...prev,
+                            vender_id: selectedId,
+                          }
+                        : prev,
+                    )
+                  }
+                }}
+                disabled={loadingData}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="">Select Vendor</option>
+                {vendors.map((vendor) => (
+                  <option key={vendor.id} value={vendor.id}>
+                    {vendor.vendor}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+
+
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -330,17 +407,59 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Breadth (चौड़ाई)
+              Front Breadth (चौड़ाई)
               </label>
               <input
                 type="text"
-                value={newBlock?.b || ''}
+                value={newBlock?.front_b || ''}
                 onChange={(e) =>
                   setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
-                          b: e.target.value,
+                          front_b: e.target.value,
+                        }
+                      : prev,
+                  )
+                }
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Back Breadth (चौड़ाई)
+              </label>
+              <input
+                type="text"
+                value={newBlock?.back_b || ''}
+                onChange={(e) =>
+                  setNewBlock((prev: BlockType | null) =>
+                    prev
+                      ? {
+                          ...prev,
+                          back_b: e.target.value,
+                        }
+                      : prev,
+                  )
+                }
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Total Breadth (चौड़ाई)
+              </label>
+              <input
+                type="text"
+                value={newBlock?.total_b || ''}
+                onChange={(e) =>
+                  setNewBlock((prev: BlockType | null) =>
+                    prev
+                      ? {
+                          ...prev,
+                          total_b: e.target.value,
                         }
                       : prev,
                   )

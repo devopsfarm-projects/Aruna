@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { GroupField, Vendor } from '../../addblock/types'
+import type { GroupField, Vendor } from '../../types'
 import axios from 'axios'
 
 interface Block {

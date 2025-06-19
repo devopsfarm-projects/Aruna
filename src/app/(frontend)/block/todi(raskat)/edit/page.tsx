@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-import { ApiResponse } from './types'
+import { ApiResponse } from '../../types'
 import Link from 'next/link'
 
 // Type for error response
@@ -133,10 +133,10 @@ export default function EditBlock() {
         const blockRes = await axios.get<BlockType>(`/api/Todi/${id}`)
         const blockData = blockRes.data
 
-             // Fetch vendors
-             const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
-             const vendorsData = vendorsRes.data.docs
-             setVendors(vendorsData)
+        // Fetch vendors
+        const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
+        const vendorsData = vendorsRes.data.docs
+        setVendors(vendorsData)
         // Ensure measurements array exists
         if (!blockData.addmeasures) {
           blockData.addmeasures = []
@@ -251,7 +251,7 @@ export default function EditBlock() {
  
      try {
        setIsSubmitting(true)
-       await axios.patch(`/api/Todi/${id}`, newBlock)
+       await axios.patch(`/api/TodiRaskat/${id}`, newBlock)
        setShowSuccessModal(true)
        router.push('/block/todi(raskat)')
      } catch (error) {
