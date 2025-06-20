@@ -17,12 +17,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { user } = await payload.auth({ headers })
   return (
     <html lang="en" className="dark">
-      <body className="bg-white dark:bg-gray-900 dark:text-white">
-        
+      <body className="bg-white dark:bg-gray-900">
           {user && <Navbar />}
           {!user && <Login />}
           {user && <main className="flex-1">{children}</main>}
-      
       </body>
     </html>
   )
