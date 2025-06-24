@@ -44,9 +44,12 @@ export default function LoginForm() {
       } else {
         setError(data.message || 'Login failed.')
       }
+      setIsLoading(false)
     } catch (err) {
       console.error(err)
       setError('An unexpected error occurred.')
+      setIsLoading(false)
+    } finally {
       setIsLoading(false)
     }
   }

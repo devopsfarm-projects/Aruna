@@ -5,7 +5,8 @@ import config from '@payload-config';
 export async function POST(request: Request) {
   try {
     const payload = await getPayload({ config });
-    const { id } = new URL(request.url).pathname.split('/').slice(-1)[0];
+    const pathSegments = new URL(request.url).pathname.split('/');
+    const id = pathSegments[pathSegments.length - 1];
     const { amount, description } = await request.json();
 
     if (!id || isNaN(Number(id))) {

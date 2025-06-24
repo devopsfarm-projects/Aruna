@@ -100,10 +100,10 @@ export default async function Page() {
                         {todi.l} x {todi.b} x {todi.h}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        {todi.total_block_area}
+                        {todi.total_todi_area}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        ₹{todi.total_block_cost}
+                        ₹{todi.total_todi_cost}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         ₹{todi.estimate_cost}

@@ -24,7 +24,7 @@
     "axios": "^1.9.0",
     "cross-env": "^7.0.3",
     "daisyui": "^5.0.35",
-    "framer-motion": "^12.12.1",
+    "framer-motion": "^12.19.1",
     "graphql": "^16.8.1",
     "ioredis": "^5.6.1",
     "js-cookie": "^3.0.5",

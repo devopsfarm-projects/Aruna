@@ -54,7 +54,7 @@ type Vendor = {
 type BlockType = {
   total_cost: any
   block: any
-  vender_id: number
+  vender_id: number | Vendor
   total_area: number
   munim: string
   todirate: string

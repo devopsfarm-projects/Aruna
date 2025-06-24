@@ -2,17 +2,19 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { RiAccountCircle2Fill } from 'react-icons/ri'
+import { RiAccountCircle2Fill, RiMenu2Fill, RiCloseFill } from 'react-icons/ri'
 import { FaHome } from 'react-icons/fa'
 import Image from 'next/image'
 import { GiStoneBlock, GiStonePile } from 'react-icons/gi'
 import { MdAccountCircle } from 'react-icons/md'
 import { GrUserManager } from 'react-icons/gr'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Navbar() {
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -74,11 +76,10 @@ export default function Navbar() {
     fetchUser()
   }, [setUser])
 
- 
-
   return (
     <>
-      <nav className="fixed pt-6 top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+      {/* Top Navigation Bar */}
+      <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start rtl:justify-end">
@@ -91,10 +92,51 @@ export default function Navbar() {
                   alt="The Jodhpur Mines Logo"
                   priority
                 />
-                
-                {/* <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-gold-600">The Jodhpur Mines</span> */}
+              </Link>
+              
+            
+            </div>
+
+            {/* Desktop navigation */}
+            <div className="hidden lg:flex items-center space-x-4">
+              <Link
+                href="/"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                {/* <FaHome className="inline-block mr-1" /> */}
+                Home
+              </Link>
+              <Link
+                href="/stone"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                {/* <GiStonePile className="inline-block mr-1" /> */}
+                Stone
+              </Link>
+              <Link
+                href="/block"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                {/* <GiStoneBlock className="inline-block mr-1" /> */}
+                Block
+              </Link>
+              <Link
+                href="/vendor"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                {/* <GrUserManager className="inline-block mr-1" /> */}
+                Vendor
+              </Link>
+              <Link
+                href="/accounts"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                {/* <MdAccountCircle className="inline-block mr-1" /> */}
+                Accounts
               </Link>
             </div>
+
+            {/* User menu */}
             <div className="flex items-center">
               <div className="flex items-center ms-3 relative">
                 <div>
@@ -150,39 +192,87 @@ export default function Navbar() {
                   </ul>
                 </div>
               </div>
+
+                {/* Mobile menu button */}
+                <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              >
+                {isMobileMenuOpen ? <RiCloseFill size={24} /> : <RiMenu2Fill size={24} />}
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
- 
-      
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-y-0 right-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-700"
+          >
+        <div className="h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+          >
+            <RiCloseFill size={24} />
+          </button>
+        </div>
 
-<div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-    <div className="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
-        <Link  href="/" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
-        <FaHome />
-            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Home</span>
-        </Link>
-        <Link  href="/stone" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
-        <GiStonePile />
-            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Stone</span>
-        </Link>
-        <Link  href="/block" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
-        <GiStoneBlock />
-            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Block</span>
-        </Link>
-        <Link  href="/vendor" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
-        <GrUserManager />
-            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Vendor</span>
-        </Link>
-        <Link  href="/accounts" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
-        <MdAccountCircle />
-            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Accounts</span>
-        </Link>
-    </div>
-</div>
+        <nav className="h-full flex flex-col">
+          <div className="flex-1 px-4 py-4 space-y-1">
+            <Link
+              href="/"
+              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            >
+              <FaHome className="w-5 h-5 mr-3" />
+              Home
+            </Link>
+            <Link
+              href="/stone"
+              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            >
+              <GiStonePile className="w-5 h-5 mr-3" />
+              Stone
+            </Link>
+            <Link
+              href="/block"
+              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            >
+              <GiStoneBlock className="w-5 h-5 mr-3" />
+              Block
+            </Link>
+            <Link
+              href="/vendor"
+              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            >
+              <GrUserManager className="w-5 h-5 mr-3" />
+              Vendor
+            </Link>
+            <Link
+              href="/accounts"
+              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            >
+              <MdAccountCircle className="w-5 h-5 mr-3" />
+              Accounts
+            </Link>
+          </div>
+        </nav>
+      </motion.div>
+      )}
+      </AnimatePresence>
 
+      {/* Content wrapper */}
+      <div className="pt-16 lg:pt-16 pl-0 lg:pl-0 transition-all duration-300 ease-in-out" style={{
+        marginRight: isMobileMenuOpen ? '16rem' : '0'
+      }}>
+        {/* Main content will go here */}
+      </div>
     </>
   )
 }

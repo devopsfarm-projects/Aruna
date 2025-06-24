@@ -16,7 +16,7 @@ async function getData() {
 
 export default async function Page() {
   const todis = await getData();
-  console.log(todis);
+
 
   return (
     <div className="max-w-7xl py-24 mx-auto px-4 sm:px-6 lg:px-8">
