@@ -11,6 +11,27 @@ export const VendorAccount: CollectionConfig = {
       type: 'relationship',
       relationTo: 'Todi',
     },
+    {
+      name: 'received_amount',
+      type: 'array',
+      label: 'Received Amounts',
+      fields: [
+        {
+          name: 'amount',
+          type: 'number',
+          required: true,
+        },
+        {
+          name: 'date',
+          type: 'date',
+          required: true,
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+        },
+      ],
+    },
   ],
 };
 

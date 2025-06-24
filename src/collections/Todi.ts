@@ -63,6 +63,28 @@ export const Todi: CollectionConfig = {
     ],
     },
 
+    {
+      name: 'received_amount',
+      type: 'array',
+      label: 'Received Amounts',
+      fields: [
+        {
+          name: 'amount',
+          type: 'number',
+          required: true,
+        },
+        {
+          name: 'date',
+          type: 'date',
+          required: true,
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+        },
+      ],
+    },
+
     { name: 'createdBy', label: 'Created By (Client)', type: 'relationship', relationTo: 'users',
       access: {
         create: () => true,
