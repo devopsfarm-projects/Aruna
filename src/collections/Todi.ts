@@ -85,6 +85,12 @@ export const Todi: CollectionConfig = {
       ],
     },
 
+    {
+      name: 'partyRemainingPayment',
+      label: 'Party Remaining Payment',
+      type: 'number',
+    },
+
     { name: 'createdBy', label: 'Created By (Client)', type: 'relationship', relationTo: 'users',
       access: {
         create: () => true,

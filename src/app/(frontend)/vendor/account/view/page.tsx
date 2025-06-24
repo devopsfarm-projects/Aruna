@@ -241,104 +241,35 @@ console.log(blockData)
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Vendor Name
               </label>
-              <select
-                value={newBlock?.vender_id || ''}
-                onChange={(e) => {
-                  const selectedId = Number(e.target.value)
-                  const selectedVendor = vendors.find((v) => v.id === selectedId)
-                  if (selectedVendor) {
-                    setNewBlock((prev: BlockType | null) =>
-                      prev
-                        ? {
-                            ...prev,
-                            vender_id: selectedId,
-                            vendor_no: selectedVendor.vendor_no,
-                          }
-                        : prev,
-                    )
-                  } else {
-                    setNewBlock((prev: BlockType | null) =>
-                      prev
-                        ? {
-                            ...prev,
-                            vender_id: selectedId,
-                          }
-                        : prev,
-                    )
-                  }
-                }}
-                disabled={loadingData}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select Vendor</option>
-                {vendors.map((vendor) => (
-                  <option key={vendor.id} value={vendor.id}>
-                    {vendor.vendor}
-                  </option>
-                ))}
-              </select>
+             <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+               {typeof newBlock?.vender_id === 'object' && newBlock?.vender_id?.vendor ? newBlock?.vender_id.vendor : 'N/A'}
+             </div>
             </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                   total_todi_area
                   </label>
-                  <input
-                    type="text"
-                    value={newBlock?.total_todi_area || ''}
-                    onChange={(e) =>
-                      setNewBlock((prev: BlockType | null) =>
-                        prev
-                          ? {
-                              ...prev,
-                              total_todi_area: e.target.value,
-                            }
-                          : prev,
-                      )
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
+                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                    {newBlock?.total_todi_area || ''}
+                  </div>
                 </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                       total_todi_cost
                       </label>
-                      <input
-                        type="text"
-                        value={newBlock?.total_todi_cost || ''}
-                        onChange={(e) =>
-                          setNewBlock((prev: BlockType | null) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  total_todi_cost: e.target.value,
-                                }
-                              : prev,
-                          )
-                        }
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
+                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                        {newBlock?.total_todi_cost || ''}
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                       estimate_cost
                       </label>
-                      <input
-                        type="text"
-                        value={newBlock?.estimate_cost || ''}
-                        onChange={(e) =>
-                          setNewBlock((prev: BlockType | null) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  estimate_cost: e.target.value,
-                                }
-                              : prev,
-                          )
-                        }
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
+                      <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                        {newBlock?.estimate_cost || ''}
+                      </div>
                     </div>
 
                
@@ -405,6 +336,17 @@ console.log(blockData)
               </button>
             </div>
           </div>
+
+
+<div>
+  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+    Remaining Amount
+  </label>
+  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+  partyRemainingPayment {newBlock?.estimate_cost ? (Number(newBlock.estimate_cost) - Number(receivedAmounts.reduce((total, item) => total + item.amount, 0) || 0)).toFixed(2) : '0.00'} 
+  </div>
+</div>
+
 
           <div className="mt-8">
         <button

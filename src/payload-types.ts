@@ -245,6 +245,7 @@ export interface Todi {
         id?: string | null;
       }[]
     | null;
+  partyRemainingPayment?: number | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -568,6 +569,7 @@ export interface TodiSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  partyRemainingPayment?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
