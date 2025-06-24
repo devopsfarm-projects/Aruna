@@ -1,3 +1,17 @@
+export interface ApiResponse<T> {
+  docs: T[]
+  totalDocs: number
+  limit: number
+  page: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPrevPage: boolean
+  pagingCounter: number
+  prevPage?: number
+  nextPage?: number
+}
+
+
 import { ReactNode } from 'react'
 
 export type GroupField = 'g_hydra_cost' | 'g_truck_cost' | 'total_block_area' | 'total_block_cost' | 'remaining_amount' | 'date'
@@ -148,4 +162,3 @@ export interface Vendor {
   createdAt: string;
   updatedAt: string;
 }
-

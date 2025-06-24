@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import type { GroupField } from '../types'
+import { useEffect, useState } from 'react'
+import type { GroupField, Vendor } from '../../types'
+import axios from 'axios'
 
 interface Block {
   id: string;
@@ -27,10 +28,13 @@ interface Group {
 
 interface TodiState {
   munim: string;
-  BlockType: string;
+  GalaType: string;
   date: Date | string;
+  vender_id: string | number | readonly string[] | undefined;
   l: string;
-  b: string;
+  front_b: string;
+  back_b: string;
+  total_b: string;
   h: string;
   total_todi_area: string;
   todi_cost: string;
@@ -44,12 +48,18 @@ interface TodiState {
 }
 
 export default function AddTodiPage() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [vendors, setVendors] = useState<Vendor[]>([])
   const [todi, setTodi] = useState<TodiState>({
     munim: '',
-    BlockType: '',
+    GalaType: '',
     date: new Date().toISOString(),
+    vender_id: 0,
     l: '',
-    b: '',
+    front_b: '',
+    back_b: '',
+    total_b: '',
     h: '',
     total_todi_area: '',
     todi_cost: '',
@@ -106,10 +116,10 @@ export default function AddTodiPage() {
       const updatedTodi = { ...prev, [name]: value };
       
       // If any dimension changes, recalculate total_todi_area
-      if (name === 'l' || name === 'b' || name === 'h') {
+      if (name === 'l' || name === 'total_b' || name === 'h') {
         updatedTodi.total_todi_area = calculateTotalTodiArea(
           updatedTodi.l || '0',
-          updatedTodi.b || '0',
+          updatedTodi.total_b || '0',
           updatedTodi.h || '0'
         );
       }
@@ -240,44 +250,95 @@ export default function AddTodiPage() {
     // Create a copy of the form data to modify dates
     const formData = { ...todi };
     
+
+    formData.vender_id = Number(todi.vender_id);
     // Format the main date field
     formData.date = formData.date || new Date().toISOString();
     
 
-    const res = await fetch('/api/TodiRaskat', {
+    const res = await fetch('/api/Gala', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     })
 
     if (res.ok) {
-      alert('Todi Raskat created!')
+      alert('Gala created!')
     } else {
       const err = await res.json()
       alert('Error: ' + err.message)
     }
   }
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const [vendorsRes] = await Promise.all([axios.get<{ docs: Vendor[] }>('/api/vendor')])
+        setVendors(vendorsRes.data.docs || [])
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.')
+        console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [setVendors, setIsLoading, setError])
+
   return (
     <form onSubmit={handleSubmit} className="p-6 py-28 space-y-6">
       <h1 className="text-xl font-bold">Add Todi</h1>
+      {error && (
+        <div className="text-red-500 mb-4">
+          {error}
+        </div>
+      )}
+      {isLoading && (
+        <div className="text-gray-600 mb-4">
+          Loading vendors...
+        </div>
+      )}
 
       {/* Basic Fields */}
       {/* Block Type Select */}
       <div className="space-y-2">
-        <label htmlFor="BlockType" className="block font-medium capitalize">Block Type:</label>
+        <label htmlFor="GalaType" className="block font-medium capitalize">Gala Type:</label>
         <select
-          id="BlockType"
-          name="BlockType"
-          value={todi.BlockType}
+          id="GalaType"
+          name="GalaType"
+          value={todi.GalaType}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           <option value="">Select Type</option>
           <option value="White">White</option>
           <option value="Brown">Brown</option>
         </select>
       </div>
+
+      {/* Vendor Select */}
+      <div className="space-y-2">
+        <label htmlFor="vender_id" className="block font-medium capitalize">Vendor:</label>
+        <select
+          id="vender_id"
+          name="vender_id"
+          value={todi.vender_id}
+          onChange={handleInput}
+          className="w-full border dark:bg-gray-700 p-2 rounded"
+        >
+          <option value="">Select Vendor</option>
+          {vendors.map((vendor) => (
+            <option key={vendor.id} value={vendor.id}>
+              {vendor.vendor}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="space-y-2">
         <label htmlFor="munim" className="block font-medium capitalize">Munim:</label>
         <input
@@ -286,7 +347,7 @@ export default function AddTodiPage() {
           name="munim"
           value={todi.munim}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div> 
       <div className="space-y-2"> 
@@ -297,18 +358,57 @@ export default function AddTodiPage() {
           name="l"
           value={todi.l}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:</label>
+        <label htmlFor="front_b" className="block font-medium capitalize">Front B (चौड़ाई) - Breadth:</label>
         <input
           type="text"
-          id="b"
-          name="b"
-          value={todi.b}
+          id="front_b"
+          name="front_b"
+          value={todi.front_b}
+          onChange={(e) => {
+            const { value } = e.target;
+            handleInput(e);
+            // Calculate total_b when front_b changes
+            const frontB = parseFloat(value || '0');
+            const backB = parseFloat(todi.back_b || '0');
+            const totalB = (frontB + backB)/2;
+            handleInput({ target: { name: 'total_b', value: totalB.toFixed(2) } });
+          }}
+          className="w-full border dark:bg-gray-700 p-2 rounded"
+        />
+      </div>
+      <div className="space-y-2"> 
+        <label htmlFor="back_b" className="block font-medium capitalize">Back B (चौड़ाई) - Breadth:</label>
+        <input
+          type="text"
+          id="back_b"
+          name="back_b"
+          value={todi.back_b}
+          onChange={(e) => {
+            const { value } = e.target;
+            handleInput(e);
+            // Calculate total_b when back_b changes
+            const frontB = parseFloat(todi.front_b || '0');
+            const backB = parseFloat(value || '0');
+            const totalB = (frontB + backB)/2;
+            handleInput({ target: { name: 'total_b', value: totalB.toFixed(2) } });
+          }}
+          className="w-full border dark:bg-gray-700 p-2 rounded"
+        />
+      </div>
+      <div className="space-y-2"> 
+        <label htmlFor="total_b" className="block font-medium capitalize">Total B (चौड़ाई) - Breadth:</label>
+        <input
+          type="text"
+          id="total_b"
+          name="total_b"
+          value={todi.total_b}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
+          disabled
         />
       </div>
       <div className="space-y-2"> 
@@ -319,7 +419,7 @@ export default function AddTodiPage() {
           name="h"
           value={todi.h}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
 
@@ -331,7 +431,7 @@ export default function AddTodiPage() {
           name="todi_cost"
           value={todi.todi_cost}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
@@ -342,7 +442,7 @@ export default function AddTodiPage() {
           name="hydra_cost"
           value={todi.hydra_cost}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
@@ -353,13 +453,13 @@ export default function AddTodiPage() {
           name="truck_cost"
           value={todi.truck_cost}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
         <label htmlFor="total_todi_area" className="block font-medium capitalize">Total Todi Area:</label>
         <div
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           {todi.total_todi_area}
         </div>
@@ -367,7 +467,7 @@ export default function AddTodiPage() {
       <div className="space-y-2"> 
         <label htmlFor="total_todi_cost" className="block font-medium capitalize">Total Todi Cost:</label>
         <div
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           {todi.total_todi_cost}
         </div>
@@ -375,7 +475,7 @@ export default function AddTodiPage() {
       <div className="space-y-2"> 
         <label htmlFor="estimate_cost" className="block font-medium capitalize">Estimate Cost:</label>
         <div
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           {todi.estimate_cost}
         </div>
@@ -388,13 +488,13 @@ export default function AddTodiPage() {
           name="depreciation"
           value={todi.depreciation}
           onChange={handleInput}
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
         <label htmlFor="final_cost" className="block font-medium capitalize">Final Cost:</label>
         <div
-          className="w-full border p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           {todi.final_cost}
         </div>
@@ -424,7 +524,7 @@ export default function AddTodiPage() {
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
                 }}
-                className="w-full border p-2 rounded"
+                className="w-full border dark:bg-gray-700 p-2 rounded"
               />
 
               <div className="space-y-2">
@@ -435,7 +535,7 @@ export default function AddTodiPage() {
                   name="date"
                   value={group.date}
                   onChange={(e) => handleNestedChange(e, gIdx)}
-                  className="w-full border p-2 rounded"
+                  className="w-full border dark:bg-gray-700 p-2 rounded"
                 />
               </div>
             </div>
@@ -456,7 +556,7 @@ export default function AddTodiPage() {
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
                 }}
-                className="w-full border p-2 rounded"
+                className="w-full border dark:bg-gray-700 p-2 rounded"
               />
             </div>
 
@@ -493,7 +593,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                       />
                     </div>
                     <div className="space-y-2">
@@ -512,7 +612,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                       />
                     </div>
                     <div className="space-y-2">
@@ -531,7 +631,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                       />
                     </div>
                     <div className="space-y-2">
@@ -551,7 +651,7 @@ export default function AddTodiPage() {
                           const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                           handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                         disabled
                       />
                     </div>
@@ -562,7 +662,7 @@ export default function AddTodiPage() {
                         id="block_cost"
                         name="block_cost"
                         value={m.block_cost}
-                        className="w-full border p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                         disabled
                       />
                     </div>

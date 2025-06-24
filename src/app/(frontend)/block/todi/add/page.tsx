@@ -1,7 +1,23 @@
 'use client'
 
-import { useState } from 'react'
-import type { GroupField } from '../types'
+import { useEffect, useState } from 'react'
+import type { GroupField } from '../../types'
+import axios from 'axios'
+
+interface Vendor {
+  id: number
+  vendor: string
+  vendor_no: string
+  address: string
+  mail_id: string
+  Company_no: string
+  phone: Array<{
+    number: string
+    type?: string
+  }>
+  createdAt: string
+  updatedAt: string
+}
 
 interface Block {
   id: string;
@@ -26,6 +42,7 @@ interface Group {
 }
 
 interface TodiState {
+  vender_id: string | number | readonly string[] | undefined;
   munim: string;
   BlockType: string;
   date: Date | string;
@@ -44,10 +61,14 @@ interface TodiState {
 }
 
 export default function AddTodiPage() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [vendors, setVendors] = useState<Vendor[]>([])
   const [todi, setTodi] = useState<TodiState>({
     munim: '',
     BlockType: '',
     date: new Date().toISOString(),
+    vender_id: 0,
     l: '',
     b: '',
     h: '',
@@ -100,7 +121,6 @@ export default function AddTodiPage() {
 
   const handleInput = (e: any) => {
     const { name, value } = e.target;
-    
     // Update the state with the new value
     setTodi(prev => {
       const updatedTodi = { ...prev, [name]: value };
@@ -234,12 +254,13 @@ export default function AddTodiPage() {
     setTodi(prev => ({ ...prev, group: updated }))
   }
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
     // Create a copy of the form data to modify dates
     const formData = { ...todi };
     
+    formData.vender_id = Number(todi.vender_id);
     // Format the main date field
     formData.date = formData.date || new Date().toISOString();
     
@@ -251,15 +272,40 @@ export default function AddTodiPage() {
     })
 
     if (res.ok) {
-      alert('Todi created!')
+      alert('Todi Raskat created!')
     } else {
       const err = await res.json()
       alert('Error: ' + err.message)
     }
   }
 
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const [vendorsRes] = await Promise.all([axios.get<{ docs: Vendor[] }>('/api/vendor')])
+        setVendors(vendorsRes.data.docs || [])
+      } catch (error) {
+        setError('Failed to load data. Please try again later.')
+        console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [setVendors, setIsLoading, setError])
+
+
+
+
+
+
   return (
-    <form onSubmit={handleSubmit} className="p-6  py-28 space-y-6">
+    <form onSubmit={handleSubmit} className="p-6 py-28 space-y-6">
       <h1 className="text-xl font-bold">Add Todi</h1>
 
       {/* Basic Fields */}
@@ -271,13 +317,39 @@ export default function AddTodiPage() {
           name="BlockType"
           value={todi.BlockType}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           <option value="">Select Type</option>
           <option value="White">White</option>
           <option value="Brown">Brown</option>
         </select>
       </div>
+
+      <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Vendor
+                      </label>
+                      <select
+                        value={todi.vender_id}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          handleInput({...e, target: { ...e.target, name: 'vender_id', value }})
+                        }}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        required
+                      >
+                        <option value="">Select vendor</option>
+                        {vendors.map((vendor) => (
+                          <option key={vendor.id} value={vendor.id}>
+                            {vendor.vendor}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+
+      {/* Basic Fields */}
       <div className="space-y-2">
         <label htmlFor="munim" className="block font-medium capitalize">Munim:</label>
         <input
@@ -286,7 +358,7 @@ export default function AddTodiPage() {
           name="munim"
           value={todi.munim}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div> 
       <div className="space-y-2"> 
@@ -297,7 +369,7 @@ export default function AddTodiPage() {
           name="l"
           value={todi.l}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
@@ -308,7 +380,7 @@ export default function AddTodiPage() {
           name="b"
           value={todi.b}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
@@ -319,7 +391,7 @@ export default function AddTodiPage() {
           name="h"
           value={todi.h}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
 
@@ -331,7 +403,7 @@ export default function AddTodiPage() {
           name="todi_cost"
           value={todi.todi_cost}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
@@ -342,7 +414,7 @@ export default function AddTodiPage() {
           name="hydra_cost"
           value={todi.hydra_cost}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
@@ -353,13 +425,13 @@ export default function AddTodiPage() {
           name="truck_cost"
           value={todi.truck_cost}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
         <label htmlFor="total_todi_area" className="block font-medium capitalize">Total Todi Area:</label>
         <div
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           {todi.total_todi_area}
         </div>
@@ -367,7 +439,7 @@ export default function AddTodiPage() {
       <div className="space-y-2"> 
         <label htmlFor="total_todi_cost" className="block font-medium capitalize">Total Todi Cost:</label>
         <div
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           {todi.total_todi_cost}
         </div>
@@ -375,7 +447,7 @@ export default function AddTodiPage() {
       <div className="space-y-2"> 
         <label htmlFor="estimate_cost" className="block font-medium capitalize">Estimate Cost:</label>
         <div
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           {todi.estimate_cost}
         </div>
@@ -388,13 +460,13 @@ export default function AddTodiPage() {
           name="depreciation"
           value={todi.depreciation}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         />
       </div>
       <div className="space-y-2"> 
         <label htmlFor="final_cost" className="block font-medium capitalize">Final Cost:</label>
         <div
-          className="w-full border dark:bg-gray-600 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 rounded"
         >
           {todi.final_cost}
         </div>
@@ -424,7 +496,7 @@ export default function AddTodiPage() {
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
                 }}
-                className="w-full border dark:bg-gray-600 p-2 rounded"
+                className="w-full border dark:bg-gray-700 p-2 rounded"
               />
 
               <div className="space-y-2">
@@ -435,7 +507,7 @@ export default function AddTodiPage() {
                   name="date"
                   value={group.date}
                   onChange={(e) => handleNestedChange(e, gIdx)}
-                  className="w-full border dark:bg-gray-600 p-2 rounded"
+                  className="w-full border dark:bg-gray-700 p-2 rounded"
                 />
               </div>
             </div>
@@ -456,7 +528,7 @@ export default function AddTodiPage() {
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
                 }}
-                className="w-full border dark:bg-gray-600 p-2 rounded"
+                className="w-full border dark:bg-gray-700 p-2 rounded"
               />
             </div>
 
@@ -493,7 +565,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                       />
                     </div>
                     <div className="space-y-2">
@@ -512,7 +584,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                       />
                     </div>
                     <div className="space-y-2">
@@ -531,7 +603,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                       />
                     </div>
                     <div className="space-y-2">
@@ -551,7 +623,7 @@ export default function AddTodiPage() {
                           const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                           handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                         disabled
                       />
                     </div>
@@ -562,7 +634,7 @@ export default function AddTodiPage() {
                         id="block_cost"
                         name="block_cost"
                         value={m.block_cost}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border p-2 rounded"
                         disabled
                       />
                     </div>

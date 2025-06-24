@@ -16,12 +16,12 @@ async function getData() {
 
 export default async function Page() {
   const todis = await getData();
-  console.log(todis);
+
 
   return (
     <div className="max-w-7xl py-24 mx-auto px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-        Todi List
+        Todi Raskat List
       </h1>
       <div className="mt-6">
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
@@ -89,7 +89,7 @@ export default async function Page() {
                       {todi.date ? new Date(todi.date).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {typeof todi.vender_id === 'object' ? todi.vender_id?.id || 'N/A' : todi.vender_id || 'N/A'}
+                    {typeof todi.vender_id === 'object' && todi.vender_id?.vendor ? todi.vender_id.vendor : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {todi.munim || 'N/A'}
@@ -146,7 +146,7 @@ export default async function Page() {
       </div>
             <div className="fixed bottom-20 right-4 z-50">
               <div className="flex flex-col items-end space-y-2">
-                <Link href="/block/addblock/todi">
+                <Link href="/block/todi(raskat)/add">
                   <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
