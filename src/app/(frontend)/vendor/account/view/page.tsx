@@ -164,7 +164,6 @@ export default function EditBlock() {
         // Fetch block data
         const blockRes = await axios.get<BlockType>(`/api/Todi/${id}`)
         const blockData = blockRes.data
-console.log(blockData)
         // Fetch vendors
         const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
         const vendorsData = vendorsRes.data.docs
@@ -189,17 +188,33 @@ console.log(blockData)
   }, [id])
 
 
+  
+  const totalReceived = receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0)
+const remainingPayment = Number(newBlock?.estimate_cost || 0) - totalReceived
 
-   const handleSubmit = async (e: React.FormEvent) => {
+const updatedBlock = {
+  ...newBlock,
+  received_amount: receivedAmounts,
+  partyRemainingPayment: remainingPayment
+}
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newBlock || !id) return
-
+  
     try {
       setIsSubmitting(true)
+  
+      const totalReceived = receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0)
+      const remainingPayment = Number(newBlock.estimate_cost || 0) - totalReceived
+  
       const updatedBlock = {
         ...newBlock,
-        received_amount: receivedAmounts
+        received_amount: receivedAmounts,
+        partyRemainingPayment: remainingPayment,
       }
+  
       await axios.patch(`/api/Todi/${id}`, updatedBlock)
       setShowSuccessModal(true)
       router.push('/vendor/account')
@@ -207,9 +222,9 @@ console.log(blockData)
       console.error('Error updating block:', error)
     } finally {
       setIsSubmitting(false)
-    } 
-   }
-
+    }
+  }
+  
 
    if (loading || loadingData) {
     return (
@@ -343,7 +358,7 @@ console.log(blockData)
     Remaining Amount
   </label>
   <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-  partyRemainingPayment {newBlock?.estimate_cost ? (Number(newBlock.estimate_cost) - Number(receivedAmounts.reduce((total, item) => total + item.amount, 0) || 0)).toFixed(2) : '0.00'} 
+  {newBlock?.partyRemainingPayment ? (Number(newBlock.estimate_cost) - Number(receivedAmounts.reduce((total, item) => total + item.amount, 0) || 0)).toFixed(2) : '0.00'} 
   </div>
 </div>
 
