@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-import { ApiResponse } from '@/types'
+import { ApiResponse } from './types'
 import Link from 'next/link'
 
 // Type for error response
@@ -88,6 +88,12 @@ type BlockType = {
   vehicle_cost: number | null
   vehicle_number: string | null
   group: Group[]
+  received_amount: Array<{
+    id: string
+    amount: number
+    date: string
+    description: string
+  }>
 }
 
 
@@ -101,6 +107,43 @@ export default function EditBlock() {
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingData, setLoadingData] = useState(true)
+  const [receivedAmounts, setReceivedAmounts] = useState<Array<{
+    id: string
+    amount: number
+    date: string
+    description: string
+  }>>([])
+
+  // Update currentBlock when newBlock changes
+  useEffect(() => {
+    if (newBlock) {
+      setCurrentBlock(newBlock)
+      setReceivedAmounts(newBlock.received_amount || [])
+    }
+  }, [newBlock])
+
+  const handleAddReceivedAmount = () => {
+    const newAmount = {
+      id: Date.now().toString(),
+      amount: 0,
+      date: new Date().toISOString(),
+      description: ''
+    }
+    setReceivedAmounts([...receivedAmounts, newAmount])
+  }
+
+  const handleRemoveReceivedAmount = (id: string) => {
+    setReceivedAmounts(receivedAmounts.filter(amount => amount.id !== id))
+  }
+
+  const handleReceivedAmountChange = (index: number, field: keyof typeof receivedAmounts[0], value: any) => {
+    const updatedAmounts = [...receivedAmounts]
+    updatedAmounts[index] = {
+      ...updatedAmounts[index],
+      [field]: value
+    }
+    setReceivedAmounts(updatedAmounts)
+  }
   // Update currentBlock when newBlock changes
   useEffect(() => {
     if (newBlock) {
@@ -108,21 +151,10 @@ export default function EditBlock() {
     }
   }, [newBlock])
 
-  const id = searchParams.get('id') ?? null
+  const id = Number(searchParams.get('id'))
   const [, setIsSubmitting] = useState(false)
 
-  // Fetch munims
-  useEffect(() => {
-    const fetchMunims = async () => {
-      try {
-        const response = await axios.get<string[]>('/api/munims')
-        setMunims(response.data)
-      } catch (error) {
-        console.error('Error fetching munims:', error)
-      }
-    }
-    fetchMunims()
-  }, [])
+
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -132,7 +164,7 @@ export default function EditBlock() {
         // Fetch block data
         const blockRes = await axios.get<BlockType>(`/api/Todi/${id}`)
         const blockData = blockRes.data
-
+console.log(blockData)
         // Fetch vendors
         const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
         const vendorsData = vendorsRes.data.docs
@@ -156,109 +188,26 @@ export default function EditBlock() {
     fetchAllData()
   }, [id])
 
-  // Handle nested changes in groups, blocks, and measures
-  const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, field: string, gIdx: number, bIdx?: number, mIdx?: number) => {
-    if (!newBlock) return
 
-    const updatedBlock = { ...newBlock }
-    const fieldName = e.target.name;
-    
-    // Update group level fields
-    if (bIdx === undefined) {
-      // Update group level fields
-      if (fieldName in updatedBlock.group[gIdx]) {
-        updatedBlock.group[gIdx][fieldName] = e.target.value;
-      }
-    }
-    // Update block level fields
-    else if (mIdx === undefined) {
-      // Get the current block object
-      const currentBlock = updatedBlock.group[gIdx].block[bIdx];
-      // Update group level fields
-      if (fieldName in updatedBlock.group[gIdx]) {
-        updatedBlock.group[gIdx] = {
-          ...updatedBlock.group[gIdx],
-          [fieldName]: e.target.value
-        };
-      }
-    }
-    // Update block level fields
-    else if (field in updatedBlock.group[gIdx].block[bIdx]) {
-      updatedBlock.group[gIdx].block[bIdx] = {
-        ...updatedBlock.group[gIdx].block[bIdx],
-        [field]: e.target.value
-      };
-    }
-    // Update measure level fields
-    else if (bIdx !== undefined && mIdx !== undefined) {
-      updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx] = {
-        ...updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx],
-        [field]: e.target.value
-      };
-    }
-
-    setNewBlock(updatedBlock)
-  }
-
-  // Add group
-  const addGroup = () => {
-    if (!newBlock) return
-
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group.push({
-      g_hydra_cost: '',
-      g_truck_cost: '',
-      date: new Date().toISOString().split('T')[0],
-      block: []
-    })
-
-    setNewBlock(updatedBlock)
-  }
-
-  // Add block
-  const addBlock = (gIdx: number) => {
-    if (!newBlock) return
-
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group[gIdx].block.push({
-      addmeasures: [],
-      block_cost: ''
-    })
-
-    setNewBlock(updatedBlock)
-  }
-
-  // Add measure
-  const addMeasure = (gIdx: number, bIdx: number) => {
-    if (!newBlock) return
-
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group[gIdx].block[bIdx].addmeasures.push({
-      l: '',
-      b: '',
-      h: '',
-      block_area: '',
-      block_cost: ''
-    })
-
-    setNewBlock(updatedBlock)
-  }
 
    const handleSubmit = async (e: React.FormEvent) => {
-     e.preventDefault()
-     if (!newBlock || !id) return
- 
- 
-     try {
-       setIsSubmitting(true)
-       await axios.patch(`/api/Todi/${id}`, newBlock)
-       setShowSuccessModal(true)
-       router.push('/vendor/account')
-     } catch (error) {
-       console.error('Error updating block:', error)
-     } finally {
-       setIsSubmitting(false)
-     }
+    e.preventDefault()
+    if (!newBlock || !id) return
+
+    try {
+      setIsSubmitting(true)
+      const updatedBlock = {
+        ...newBlock,
+        received_amount: receivedAmounts
+      }
+      await axios.patch(`/api/Todi/${id}`, updatedBlock)
+      setShowSuccessModal(true)
+      router.push('/vendor/account')
+    } catch (error) {
+      console.error('Error updating block:', error)
+    } finally {
+      setIsSubmitting(false)
+    } 
    }
 
 
@@ -277,8 +226,8 @@ export default function EditBlock() {
     <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white"> block</h1>
-          <Link href="vendor/account" className="text-gray-600 hover:text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
+          <Link href="/vendor/account" className="text-gray-600 hover:text-gray-800">
             ← Back to block List
           </Link>
         </div>
@@ -288,31 +237,6 @@ export default function EditBlock() {
           className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md"
         >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Block Type
-              </label>
-              <select
-               value={newBlock?.BlockType || ''}
-               onChange={(e) =>
-                 setNewBlock((prev: BlockType | null) =>
-                   prev
-                     ? {
-                         ...prev,
-                         BlockType: e.target.value,
-                       }
-                     : prev,
-                 )
-               }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="Brown">Brown</option>
-                <option value="White">White</option>
-              </select>
-            </div>
-
-
-
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Vendor Name
@@ -354,31 +278,6 @@ export default function EditBlock() {
                 ))}
               </select>
             </div>
-
-
-
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Munim
-              </label>
-              <input
-                type="text"
-                value={newBlock?.munim || ''}
-                onChange={(e) =>
-                  setNewBlock((prev: BlockType | null) =>
-                    prev
-                      ? {
-                          ...prev,
-                          munim: e.target.value,
-                        }
-                      : prev,
-                  )
-                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-
 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -442,15 +341,76 @@ export default function EditBlock() {
                       />
                     </div>
 
+               
+
                     </div>
 
- 
+          <div className="col-span-4">
+            <h2 className="text-xl font-semibold mb-4">Received Amounts</h2>
+            <div className="space-y-4">
+              {receivedAmounts.map((amount, index) => (
+                <div key={amount.id} className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow">
+                  <div className="grid grid-cols-4 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Amount
+                      </label>
+                      <input
+                        type="number"
+                        value={amount.amount}
+                        onChange={(e) => handleReceivedAmountChange(index, 'amount', Number(e.target.value))}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        value={new Date(amount.date).toISOString().split('T')[0]}
+                        onChange={(e) => handleReceivedAmountChange(index, 'date', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Description
+                      </label>
+                      <input
+                        type="text"
+                        value={amount.description}
+                        onChange={(e) => handleReceivedAmountChange(index, 'description', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveReceivedAmount(amount.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={handleAddReceivedAmount}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+              >
+                Add Received Amount
+              </button>
+            </div>
+          </div>
 
           <div className="mt-8">
         <button
           type="submit"
           className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
-          disabled={!newBlock}
+          disabled={!newBlock || receivedAmounts.length === 0}
         >
           Save Changes
         </button>
