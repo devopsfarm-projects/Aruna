@@ -31,15 +31,6 @@ export default function DashboardPage() {
       description: 'Add new block',
       stats: 'Updated Today',
     },
-    {
-      title: 'Todi(raskat)',
-      color: 'bg-green-500 dark:bg-green-600',
-      icon: <GiStonePile size={28} className="text-white" />,
-      link: '/block/todi(raskat)',
-      description: 'Add new block',
-      stats: '250+ Stones',
-    },
-
   ]
 
   return (

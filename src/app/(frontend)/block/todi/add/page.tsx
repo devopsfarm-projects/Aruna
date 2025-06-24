@@ -265,7 +265,7 @@ export default function AddTodiPage() {
     formData.date = formData.date || new Date().toISOString();
     
 
-    const res = await fetch('/api/TodiRaskat', {
+    const res = await fetch('/api/Todi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
