@@ -32,13 +32,13 @@ interface Block {
 }
 
 interface Group {
-  g_hydra_cost: string;
-  g_truck_cost: string;
-  total_block_area: string;
-  total_block_cost: string;
-  remaining_amount: string;
-  date: string;
-  block: Block[];
+  g_hydra_cost: string
+  g_truck_cost: string
+  date: string
+  block: Block[]
+  total_block_area: string
+  total_block_cost: string
+  [key: string]: string | Block[]
 }
 
 interface TodiState {
@@ -57,6 +57,8 @@ interface TodiState {
   estimate_cost: string;
   depreciation: string;
   final_cost: string;
+  total_block_area: string;
+  total_block_cost: string;
   group: Group[];
 }
 
@@ -80,15 +82,16 @@ export default function AddTodiPage() {
     estimate_cost: '',
     depreciation: '',
     final_cost: '',
+    total_block_area: '',
+    total_block_cost: '',
     group: [
       {
         g_hydra_cost: '',
         g_truck_cost: '',
-        total_block_area: '',
-        total_block_cost: '',
-        remaining_amount: '',
         date: new Date().toISOString(),
-        block: []
+        block: [],
+        total_block_area: '',
+        total_block_cost: ''
       }
     ]
   })
@@ -117,6 +120,26 @@ export default function AddTodiPage() {
     const est = parseFloat(estimate) || 0;
     const dep = parseFloat(depreciation) || 0;
     return ((est-((dep/100)*est))).toFixed(2);
+  };
+
+  const calculateTotalBlockArea = (group: Group[]): string => {
+    return group.reduce((total, group) => {
+      return total + group.block.reduce((groupTotal, block) => {
+        return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+          return measureTotal + parseFloat(measure.block_area || '0');
+        }, 0);
+      }, 0);
+    }, 0).toFixed(2);
+  };
+
+  const calculateTotalBlockCost = (group: Group[]): string => {
+    return group.reduce((total, group) => {
+      return total + group.block.reduce((groupTotal, block) => {
+        return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+          return measureTotal + parseFloat(measure.block_cost || '0');
+        }, 0);
+      }, 0);
+    }, 0).toFixed(2);
   };
 
   const handleInput = (e: any) => {
@@ -157,6 +180,12 @@ export default function AddTodiPage() {
           updatedTodi.estimate_cost,
           updatedTodi.depreciation
         );
+      }
+
+      // Recalculate total block area and cost whenever group data changes
+      if (name.startsWith('group.') || name.startsWith('block.') || name.startsWith('addmeasures.')) {
+        updatedTodi.total_block_area = calculateTotalBlockArea(updatedTodi.group);
+        updatedTodi.total_block_cost = calculateTotalBlockCost(updatedTodi.group);
       }
       
       return updatedTodi;
@@ -200,7 +229,13 @@ export default function AddTodiPage() {
       block_area: '',
       block_cost: ''
     })
-    setTodi({ ...todi, group: updatedGroups })
+    const updatedTodi = {
+      ...todi,
+      group: updatedGroups,
+      total_block_area: calculateTotalBlockArea(updatedGroups),
+      total_block_cost: calculateTotalBlockCost(updatedGroups)
+    };
+    setTodi(updatedTodi)
   }
 
   const handleNestedChange = (e: any, groupIdx: number, blockIdx?: number, measureIdx?: number) => {
@@ -634,7 +669,7 @@ export default function AddTodiPage() {
                         id="block_cost"
                         name="block_cost"
                         value={m.block_cost}
-                        className="w-full border p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 rounded"
                         disabled
                       />
                     </div>
@@ -671,7 +706,7 @@ export default function AddTodiPage() {
                         Total Block Area
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {todi.group.reduce((total, group) => {
+                      {todi.total_block_area} = {todi.group.reduce((total, group) => {
                           return total + group.block.reduce((groupTotal, block) => {
                             return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
                               return measureTotal + parseFloat(measure.block_area || '0');
@@ -697,7 +732,7 @@ export default function AddTodiPage() {
                         Total Block Cost
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {todi.group.reduce((total, group) => {
+                      {todi.total_block_cost} = {todi.group.reduce((total, group) => {
                           return total + group.block.reduce((groupTotal, block) => {
                             return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
                               return measureTotal + parseFloat(measure.block_cost || '0');

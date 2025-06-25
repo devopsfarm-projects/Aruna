@@ -63,9 +63,6 @@ export const Todi: CollectionConfig = {
       { name: 'date', label: 'Date', type: 'date', defaultValue: () => new Date(), },
       { name: 'g_hydra_cost', label: 'Hydra Cost', type: 'number' },
       { name: 'g_truck_cost', label: 'Truck Cost', type: 'number' },
-      { name: 'total_block_area', label: 'Total Block Area', type: 'number' },
-      { name: 'total_block_cost', label: 'Total Block Cost', type: 'number' },
-      { name: 'remaining_amount', label: 'Remaining Amount', type: 'number' },
       { name: 'block', label: 'Add Block', type: 'array', fields: [
         {
           name: 'addmeasures',
@@ -84,6 +81,20 @@ export const Todi: CollectionConfig = {
     ],
     },
 
+    {name:'total_block_area',label:'Total Block Area',type:'number'},
+    {name:'total_block_cost',label:'Total Block Cost',type:'number'},
+   
+   
+    {name:'delivered_block',label:'Delivered Block',type:'array',
+      fields:[
+        {name:'delivered_block_area',label:'Delivered Block Area',type:'number'},
+        {name:'delivered_block_cost',label:'Delivered Block Cost',type:'number'},
+        {name:'date',label:'Date',type:'date'},
+        {name:'description',label:'Description',type:'textarea'},
+      ]
+    },
+
+   
     {
       name: 'received_amount',
       type: 'array',

@@ -216,9 +216,6 @@ export interface Todi {
         date?: string | null;
         g_hydra_cost?: number | null;
         g_truck_cost?: number | null;
-        total_block_area?: number | null;
-        total_block_cost?: number | null;
-        remaining_amount?: number | null;
         block?:
           | {
               addmeasures?:
@@ -234,6 +231,17 @@ export interface Todi {
               id?: string | null;
             }[]
           | null;
+        id?: string | null;
+      }[]
+    | null;
+  total_block_area?: number | null;
+  total_block_cost?: number | null;
+  delivered_block?:
+    | {
+        delivered_block_area?: number | null;
+        delivered_block_cost?: number | null;
+        date?: string | null;
+        description?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -541,9 +549,6 @@ export interface TodiSelect<T extends boolean = true> {
         date?: T;
         g_hydra_cost?: T;
         g_truck_cost?: T;
-        total_block_area?: T;
-        total_block_cost?: T;
-        remaining_amount?: T;
         block?:
           | T
           | {
@@ -559,6 +564,17 @@ export interface TodiSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+        id?: T;
+      };
+  total_block_area?: T;
+  total_block_cost?: T;
+  delivered_block?:
+    | T
+    | {
+        delivered_block_area?: T;
+        delivered_block_cost?: T;
+        date?: T;
+        description?: T;
         id?: T;
       };
   received_amount?:
