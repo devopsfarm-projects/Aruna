@@ -35,7 +35,7 @@ export default function TodiList({
   }
 
   return (
-    <div className="max-w-7xl py-28 mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl py-4 mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Todi List
@@ -45,7 +45,7 @@ export default function TodiList({
             <select
               value={selectedVendor || ''}
               onChange={(e) => handleVendorChange(e.target.value || null)}
-              className="w-64 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-64 px-4 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="">All Vendors</option>
               {vendors.map((vendor) => (
@@ -58,7 +58,7 @@ export default function TodiList({
         </div>
       </div>
       <div className="mt-6">
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-gray-800 shadow -lg p-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
@@ -107,7 +107,7 @@ export default function TodiList({
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <Link
                 href={`/vendor/account/view?id=${todi.id}`}
-                className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-800"
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-indigo-600 -lg hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-800"
               >
                
                 view
@@ -123,7 +123,7 @@ export default function TodiList({
             <div className="fixed bottom-20 right-4 z-50">
               <div className="flex flex-col items-end space-y-2">
                 <Link href="/vendor/account/add">
-                  <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
+                  <button className="bg-indigo-600 text-white p-3 -full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"

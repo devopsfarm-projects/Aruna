@@ -169,11 +169,11 @@ export default function AddStonePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
+    <div className="min-h-screen bg-gray-50 dark:bg-black pt-24">
         {/* Success Modal */}
         {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md mx-4 z-50 relative">
+          <div className="bg-white dark:bg-gray-800 p-6 -lg shadow-lg max-w-md mx-4 z-50 relative">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Success
@@ -204,7 +204,7 @@ export default function AddStonePage() {
                   setShowSuccessModal(false)
                   router.push('/stone')
                 }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+                className="bg-blue-500 text-white px-4 py-2 -md hover:bg-blue-600 transition duration-200"
               >
                 OK
               </button>
@@ -218,7 +218,7 @@ export default function AddStonePage() {
             <span className="text-indigo-600 dark:text-indigo-400">Add</span> New Stone
           </h1>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8">
+        <div className="bg-white dark:bg-gray-800 -2xl shadow-md p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Stone Type */}
@@ -227,7 +227,7 @@ export default function AddStonePage() {
                   Stone Type
                 </label>
                 <select
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={newStone.stoneType}
                   onChange={(e) => setNewStone({ ...newStone, stoneType: e.target.value })}
                   required
@@ -248,7 +248,7 @@ export default function AddStonePage() {
                 <div className="relative">
                   <input
                     type="number"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
                     value={newStone.rate === 0 ? '' : newStone.rate}
                     onChange={(e) => {
                       const rate = Number(e.target.value)
@@ -277,7 +277,7 @@ export default function AddStonePage() {
                 </label>
                 <input
                   type="number"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={newStone.total_quantity || ''}
                   onChange={(e) => {
                     const quantity = Number(e.target.value) || 0
@@ -303,7 +303,7 @@ export default function AddStonePage() {
                 </label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={newStone.munim}
                   onChange={(e) => setNewStone({ ...newStone, munim: e.target.value })}
                   required
@@ -318,7 +318,7 @@ export default function AddStonePage() {
                 <div className="relative">
                   <input
                     type="number"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
                     value={newStone.hydra_cost || ''}
                     onChange={(e) => {
                       const cost = Number(e.target.value) || 0
@@ -343,12 +343,12 @@ export default function AddStonePage() {
             </div>
 
             {/* Summary */}
-            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+            <div className="bg-gray-100 dark:bg-gray-700 -lg p-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 <span className="text-indigo-600 dark:text-indigo-400">Summary</span>
               </h3>
               <div className="space-y-4">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                <div className="bg-white dark:bg-gray-800 p-4 -lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                     Total Quantity
                   </div>
@@ -357,7 +357,7 @@ export default function AddStonePage() {
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                <div className="bg-white dark:bg-gray-800 p-4 -lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                     Rate
                   </div>
@@ -366,7 +366,7 @@ export default function AddStonePage() {
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                <div className="bg-white dark:bg-gray-800 p-4 -lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                     Hydra Cost
                   </div>
@@ -375,7 +375,7 @@ export default function AddStonePage() {
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                <div className="bg-white dark:bg-gray-800 p-4 -lg shadow-sm">
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                     Total Amount
                   </div>
@@ -390,13 +390,13 @@ export default function AddStonePage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="w-full md:w-auto bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200 text-sm md:text-base"
+                className="w-full md:w-auto bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 -lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200 text-sm md:text-base"
               >
                 <span className="font-medium">Cancel</span>
               </button>
               <button
                 type="submit"
-                className="w-full md:w-auto bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 text-sm md:text-base"
+                className="w-full md:w-auto bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 -lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 text-sm md:text-base"
                 disabled={isSubmitting}
               >
                 <span className="font-medium">{isSubmitting ? 'Saving...' : 'Save Stone'}</span>

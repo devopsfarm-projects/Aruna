@@ -267,9 +267,9 @@ export default function EditBlock() {
 
    if (loading || loadingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
+          <div className="animate-spin -full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
           <p className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Loading...</p>
         </div>
       </div>
@@ -277,7 +277,7 @@ export default function EditBlock() {
   }
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
+    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
@@ -288,7 +288,7 @@ export default function EditBlock() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md"
+          className="bg-white dark:bg-gray-800 -2xl p-8 shadow-md"
         >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
@@ -307,7 +307,7 @@ export default function EditBlock() {
                      : prev,
                  )
                }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="Brown">Brown</option>
                 <option value="White">White</option>
@@ -347,7 +347,7 @@ export default function EditBlock() {
                   }
                 }}
                 disabled={loadingData}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="">Select Vendor</option>
                 {vendors.map((vendor) => (
@@ -378,7 +378,7 @@ export default function EditBlock() {
                       : prev,
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -399,7 +399,7 @@ export default function EditBlock() {
                       : prev,
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -422,7 +422,7 @@ export default function EditBlock() {
                       : prev,
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -443,7 +443,7 @@ export default function EditBlock() {
                       : prev,
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -464,7 +464,7 @@ export default function EditBlock() {
                       : prev,
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -487,7 +487,7 @@ export default function EditBlock() {
                       : prev,
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -508,7 +508,7 @@ export default function EditBlock() {
                       : prev,
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -529,7 +529,7 @@ export default function EditBlock() {
                       : prev,
                   )
                 }
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
                 <div>
@@ -549,7 +549,7 @@ export default function EditBlock() {
                           : prev,
                       )
                     }
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
 
@@ -570,7 +570,7 @@ export default function EditBlock() {
                           : prev,
                       )
                     }
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
                     <div>
@@ -590,7 +590,7 @@ export default function EditBlock() {
                               : prev,
                           )
                         }
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
 
@@ -611,7 +611,7 @@ export default function EditBlock() {
                               : prev,
                           )
                         }
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
 
@@ -632,7 +632,7 @@ export default function EditBlock() {
                               : prev,
                           )
                         }
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
 
@@ -653,7 +653,7 @@ export default function EditBlock() {
                               : prev,
                           )
                         }
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
                     </div>
@@ -662,7 +662,7 @@ export default function EditBlock() {
    <div className="space-y-4">
         <h2 className="text-lg font-semibold">Groups</h2>
         {currentBlock?.group?.map((group, gIdx) => (
-          <div key={gIdx} className="border p-4 rounded space-y-2">
+          <div key={gIdx} className="border p-4  space-y-2">
 
             <div className="space-y-2">
               <label htmlFor="g_hydra_cost" className="block font-medium capitalize">Hydra Cost:</label>
@@ -681,7 +681,7 @@ export default function EditBlock() {
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, 0, 0);
                 }}
-                className="w-full border dark:bg-gray-600 p-2 rounded"
+                className="w-full border dark:bg-gray-600 p-2 "
               />
 
               <div className="space-y-2">
@@ -692,7 +692,7 @@ export default function EditBlock() {
                   name="date"
                   value={group.date}
                   onChange={(e) => handleNestedChange(e, 'date', gIdx)}
-                  className="w-full border dark:bg-gray-600 p-2 rounded"
+                  className="w-full border dark:bg-gray-600 p-2 "
                 />
               </div>
             </div>
@@ -713,7 +713,7 @@ export default function EditBlock() {
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, 0, 0);
                 }}
-                className="w-full border dark:bg-gray-600 p-2 rounded"
+                className="w-full border dark:bg-gray-600 p-2 "
               />
             </div>
 
@@ -723,7 +723,7 @@ export default function EditBlock() {
 
             {/* Blocks */}
             {group.block.map((block, bIdx) => (
-              <div key={bIdx} className="ml-4 mt-2 border p-3 rounded">
+              <div key={bIdx} className="ml-4 mt-2 border p-3 ">
               
              
 
@@ -733,7 +733,7 @@ export default function EditBlock() {
 
                 {/* Add Measures */}
                 {block.addmeasures.map((m, mIdx) => (
-                  <div key={mIdx} className="ml-4 mt-2 border p-2 rounded bg-gray-50">
+                  <div key={mIdx} className="ml-4 mt-2 border p-2  bg-gray-50">
                     <div className="space-y-2">
                       <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:</label>
                       <input
@@ -750,7 +750,7 @@ export default function EditBlock() {
                           const blockArea = l * b * h;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea.toString() } } as React.ChangeEvent<HTMLInputElement>, 'block_area', gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-600 p-2 "
                       />
                     </div>
                     <div className="space-y-2">
@@ -769,7 +769,7 @@ export default function EditBlock() {
                           const blockArea = l * b * h;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea.toString() } } as React.ChangeEvent<HTMLInputElement>, 'block_area', gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-600 p-2 "
                       />
                     </div>
                     <div className="space-y-2">
@@ -788,7 +788,7 @@ export default function EditBlock() {
                           const blockArea = l * b * h;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_area', gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-600 p-2 "
                       />
                     </div>
                     <div className="space-y-2">
@@ -809,7 +809,7 @@ export default function EditBlock() {
                           handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, bIdx, mIdx);
                           handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-600 p-2 "
                         disabled
                       />
                     </div>
@@ -820,7 +820,7 @@ export default function EditBlock() {
                         id="block_cost"
                         name="block_cost"
                         value={m.block_cost}
-                        className="w-full border dark:bg-gray-600 p-2 rounded"
+                        className="w-full border dark:bg-gray-600 p-2 "
                         disabled
                       />
                     </div>
@@ -831,7 +831,7 @@ export default function EditBlock() {
           </div>
         ))}
 
-        <button type="button" onClick={addGroup} className="bg-blue-500 text-white px-3 py-2 rounded">
+        <button type="button" onClick={addGroup} className="bg-blue-500 text-white px-3 py-2 ">
           + Add Group
         </button>
       </div>
@@ -839,7 +839,7 @@ export default function EditBlock() {
           <div className="mt-8">
         <button
           type="submit"
-          className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
+          className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 -lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
           disabled={!newBlock}
         >
           Save Changes

@@ -340,7 +340,7 @@ export default function AddTodiPage() {
 
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 py-28 space-y-6">
+    <form onSubmit={handleSubmit} className="p-6 py-4 space-y-6">
       <h1 className="text-xl font-bold">Add Todi</h1>
 
       {/* Basic Fields */}
@@ -352,7 +352,7 @@ export default function AddTodiPage() {
           name="BlockType"
           value={todi.BlockType}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         >
           <option value="">Select Type</option>
           <option value="White">White</option>
@@ -370,7 +370,7 @@ export default function AddTodiPage() {
                           const value = Number(e.target.value);
                           handleInput({...e, target: { ...e.target, name: 'vender_id', value }})
                         }}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                         required
                       >
@@ -393,7 +393,7 @@ export default function AddTodiPage() {
           name="munim"
           value={todi.munim}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         />
       </div> 
       <div className="space-y-2"> 
@@ -404,7 +404,7 @@ export default function AddTodiPage() {
           name="l"
           value={todi.l}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         />
       </div>
       <div className="space-y-2"> 
@@ -415,7 +415,7 @@ export default function AddTodiPage() {
           name="b"
           value={todi.b}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         />
       </div>
       <div className="space-y-2"> 
@@ -426,7 +426,7 @@ export default function AddTodiPage() {
           name="h"
           value={todi.h}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         />
       </div>
 
@@ -438,7 +438,7 @@ export default function AddTodiPage() {
           name="todi_cost"
           value={todi.todi_cost}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         />
       </div>
       <div className="space-y-2"> 
@@ -449,7 +449,7 @@ export default function AddTodiPage() {
           name="hydra_cost"
           value={todi.hydra_cost}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         />
       </div>
       <div className="space-y-2"> 
@@ -460,13 +460,13 @@ export default function AddTodiPage() {
           name="truck_cost"
           value={todi.truck_cost}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         />
       </div>
       <div className="space-y-2"> 
         <label htmlFor="total_todi_area" className="block font-medium capitalize">Total Todi Area:</label>
         <div
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         >
           {todi.total_todi_area}
         </div>
@@ -474,7 +474,7 @@ export default function AddTodiPage() {
       <div className="space-y-2"> 
         <label htmlFor="total_todi_cost" className="block font-medium capitalize">Total Todi Cost:</label>
         <div
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         >
           {todi.total_todi_cost}
         </div>
@@ -482,7 +482,7 @@ export default function AddTodiPage() {
       <div className="space-y-2"> 
         <label htmlFor="estimate_cost" className="block font-medium capitalize">Estimate Cost:</label>
         <div
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         >
           {todi.estimate_cost}
         </div>
@@ -495,13 +495,13 @@ export default function AddTodiPage() {
           name="depreciation"
           value={todi.depreciation}
           onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         />
       </div>
       <div className="space-y-2"> 
         <label htmlFor="final_cost" className="block font-medium capitalize">Final Cost:</label>
         <div
-          className="w-full border dark:bg-gray-700 p-2 rounded"
+          className="w-full border dark:bg-gray-700 p-2 "
         >
           {todi.final_cost}
         </div>
@@ -512,7 +512,7 @@ export default function AddTodiPage() {
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Groups</h2>
         {todi.group.map((group, gIdx) => (
-          <div key={gIdx} className="border p-4 rounded space-y-2">
+          <div key={gIdx} className="border p-4  space-y-2">
 
             <div className="space-y-2">
               <label htmlFor="g_hydra_cost" className="block font-medium capitalize">Hydra Cost:</label>
@@ -531,7 +531,7 @@ export default function AddTodiPage() {
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
                 }}
-                className="w-full border dark:bg-gray-700 p-2 rounded"
+                className="w-full border dark:bg-gray-700 p-2 "
               />
 
               <div className="space-y-2">
@@ -542,7 +542,7 @@ export default function AddTodiPage() {
                   name="date"
                   value={group.date}
                   onChange={(e) => handleNestedChange(e, gIdx)}
-                  className="w-full border dark:bg-gray-700 p-2 rounded"
+                  className="w-full border dark:bg-gray-700 p-2 "
                 />
               </div>
             </div>
@@ -563,7 +563,7 @@ export default function AddTodiPage() {
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
                 }}
-                className="w-full border dark:bg-gray-700 p-2 rounded"
+                className="w-full border dark:bg-gray-700 p-2 "
               />
             </div>
 
@@ -573,7 +573,7 @@ export default function AddTodiPage() {
 
             {/* Blocks */}
             {group.block.map((block, bIdx) => (
-              <div key={bIdx} className="ml-4 mt-2 border p-3 rounded">
+              <div key={bIdx} className="ml-4 mt-2 border p-3 ">
               
              
 
@@ -583,7 +583,7 @@ export default function AddTodiPage() {
 
                 {/* Add Measures */}
                 {block.addmeasures.map((m, mIdx) => (
-                  <div key={mIdx} className="ml-4 mt-2 border p-2 rounded bg-gray-50">
+                  <div key={mIdx} className="ml-4 mt-2 border p-2  bg-gray-50">
                     <div className="space-y-2">
                       <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:</label>
                       <input
@@ -600,7 +600,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-700 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 "
                       />
                     </div>
                     <div className="space-y-2">
@@ -619,7 +619,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-700 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 "
                       />
                     </div>
                     <div className="space-y-2">
@@ -638,7 +638,7 @@ export default function AddTodiPage() {
                           const blockArea = (l * b * h)/144;
                           handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-700 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 "
                       />
                     </div>
                     <div className="space-y-2">
@@ -658,7 +658,7 @@ export default function AddTodiPage() {
                           const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                           handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
-                        className="w-full border dark:bg-gray-700 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 "
                         disabled
                       />
                     </div>
@@ -669,7 +669,7 @@ export default function AddTodiPage() {
                         id="block_cost"
                         name="block_cost"
                         value={m.block_cost}
-                        className="w-full border dark:bg-gray-700 p-2 rounded"
+                        className="w-full border dark:bg-gray-700 p-2 "
                         disabled
                       />
                     </div>
@@ -680,15 +680,15 @@ export default function AddTodiPage() {
           </div>
         ))}
 
-        <button type="button" onClick={addGroup} className="bg-blue-500 text-white px-3 py-2 rounded">
+        <button type="button" onClick={addGroup} className="bg-blue-500 text-white px-3 py-2 ">
           + Add Group
         </button>
       </div>
 
 
-      <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+      <section className="bg-white dark:bg-gray-800 -lg shadow-md p-6 max-w-4xl mx-auto">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center sm:text-left">
-                  <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-3 py-1 rounded-full inline-block">
+                  <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-3 py-1 -full inline-block">
                     Summary
                   </span>
                 </h3>
@@ -700,7 +700,7 @@ export default function AddTodiPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  
                     <div
-                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                      className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                     >
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         Total Block Area
@@ -726,7 +726,7 @@ export default function AddTodiPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                
                     <div
-                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                      className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                     >
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                         Total Block Cost
@@ -750,7 +750,7 @@ export default function AddTodiPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
                 <div
-                  className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                  className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                 >
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                     Remaining Amount
@@ -771,7 +771,7 @@ export default function AddTodiPage() {
             </div>
               </section>
 
-      <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded mt-6">Submit</button>
+      <button type="submit" className="bg-green-600 text-white px-4 py-2  mt-6">Submit</button>
     </form>
   )
 }

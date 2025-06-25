@@ -1,20 +1,28 @@
 'use client'
-
-import Link from 'next/link'
+import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { Bars3Icon, BellIcon, XMarkIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline'
+import { useDarkMode } from './DarkModeProvider'
 import { useEffect, useState } from 'react'
-import { RiAccountCircle2Fill, RiMenu2Fill, RiCloseFill } from 'react-icons/ri'
-import { FaHome } from 'react-icons/fa'
-import Image from 'next/image'
-import { GiStoneBlock, GiStonePile } from 'react-icons/gi'
-import { MdAccountCircle } from 'react-icons/md'
-import { GrUserManager } from 'react-icons/gr'
-import { motion, AnimatePresence } from 'framer-motion'
+
+const navigation = [
+  { name: 'Home', href: '/', current: false },
+  { name: 'Stone', href: '/stone', current: false },
+  { name: 'Block', href: '/block', current: false },
+  { name: 'Vendor', href: '/vendor', current: false },
+  { name: 'Accounts', href: '/accounts', current: false },
+]
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
+}
 
 export default function Navbar() {
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null)
-  const [isDarkMode, setIsDarkMode] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { isDarkMode, toggleDarkMode } = useDarkMode()
+
+
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -39,26 +47,7 @@ export default function Navbar() {
     window.location.href = '/api/logout'
   }
 
-  // Initialize dark mode
-  useEffect(() => {
-    const savedMode = localStorage.getItem('theme')
-    const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches
-    setIsDarkMode(savedMode === 'dark' || (savedMode === null && systemPref))
-    document.documentElement.classList.toggle('dark', isDarkMode)
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleChange = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('theme')) {
-        setIsDarkMode(e.matches)
-        document.documentElement.classList.toggle('dark', e.matches)
-      }
-    }
-    mediaQuery.addEventListener('change', handleChange)
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange)
-    }
-  }, [isDarkMode])
 
   // Fetch user data
   useEffect(() => {
@@ -77,202 +66,119 @@ export default function Navbar() {
   }, [setUser])
 
   return (
-    <>
-      {/* Top Navigation Bar */}
-      <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-        <div className="px-3 py-3 lg:px-5 lg:pl-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center justify-start rtl:justify-end">
-              <Link href="/" className="flex ms-2 md:me-24">
-                <Image
-                  src="/image.png"
-                  className="h-12 w-20 me-3"
-                  height={205}
-                  width={205}
-                  alt="The Jodhpur Mines Logo"
-                  priority
-                />
-              </Link>
-              
-            
-            </div>
 
-            {/* Desktop navigation */}
-            <div className="hidden lg:flex items-center space-x-4">
-              <Link
-                href="/"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                {/* <FaHome className="inline-block mr-1" /> */}
-                Home
-              </Link>
-              <Link
-                href="/stone"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                {/* <GiStonePile className="inline-block mr-1" /> */}
-                Stone
-              </Link>
-              <Link
-                href="/block"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                {/* <GiStoneBlock className="inline-block mr-1" /> */}
-                Block
-              </Link>
-              <Link
-                href="/vendor"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                {/* <GrUserManager className="inline-block mr-1" /> */}
-                Vendor
-              </Link>
-              <Link
-                href="/accounts"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                {/* <MdAccountCircle className="inline-block mr-1" /> */}
-                Accounts
-              </Link>
+    <Disclosure as="nav" className="bg-white dark:bg-black border-b dark:border-gray-700 shadow-sm dark:shadow-lg">
+      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div className="relative flex h-16 items-center justify-between">
+          <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+            {/* Mobile menu button*/}
+            <DisclosureButton className="group relative inline-flex items-center justify-center -md p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-900 hover:text-white dark:hover:bg-gray-800 dark:hover:text-white focus:ring-2 focus:ring-white dark:focus:ring-gray-400 focus:outline-none focus:ring-inset">
+              <span className="absolute -inset-0.5" />
+              <span className="sr-only">Open main menu</span>
+              <Bars3Icon aria-hidden="true" className="block size-6 group-data-open:hidden" />
+              <XMarkIcon aria-hidden="true" className="hidden size-6 group-data-open:block" />
+            </DisclosureButton>
+          </div>
+          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+            <div className="flex shrink-0 items-center">
+              <img
+                alt="Your Company"
+                src="/image.png"
+                className="h-8 w-auto"
+              />
             </div>
-
-            {/* User menu */}
-            <div className="flex items-center">
-              <div className="flex items-center ms-3 relative">
-                <div>
-                  <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+            <div className="hidden sm:ml-6 sm:block">
+              <div className="flex space-x-4">
+                {navigation.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    aria-current={item.current ? 'page' : undefined}
+                    className={classNames(
+                      item.current ? 'bg-gray-900 text-white dark:bg-gray-800 dark:text-white' : 'text-gray-700 hover:bg-gray-900 hover:text-white dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white',
+                      '-md px-3 py-2 text-sm font-medium',
+                    )}
                   >
-                    <span className="sr-only">Open user menu</span>
-                    <RiAccountCircle2Fill className="w-8 h-8 text-gray-600 dark:text-gray-300" />
-                  </button>
-                </div>
-                <div
-                  className={`absolute right-0 top-full mt-2 z-50 ${isUserMenuOpen ? 'block' : 'hidden'} w-48 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600`}
-                  id="dropdown-user"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="px-4 py-3" role="none">
-                    <p className="text-sm text-gray-900 dark:text-white" role="none">
-                      {user?.name || 'User'}
-                    </p>
-                    <p
-                      className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
-                      role="none"
-                    >
-                      {user?.email || 'user@example.com'}
-                    </p>
-                  </div>
-                  <div className="px-4 py-3">
-                    <label className="flex items-center text-sm font-medium text-gray-900 dark:text-white">
-                      Dark Mode
-                      <input
-                        type="checkbox"
-                        className="ml-2"
-                        checked={isDarkMode}
-                        onChange={(e) => {
-                          setIsDarkMode(e.target.checked)
-                          localStorage.setItem('theme', e.target.checked ? 'dark' : 'light')
-                          document.documentElement.classList.toggle('dark', e.target.checked)
-                        }}
-                      />
-                    </label>
-                  </div>
-                  <ul className="py-1" role="none">
-                    <li>
-                      <button
-                        onClick={handleLogout}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
-                        role="menuitem"
-                      >
-                        Sign out
-                      </button>
-                    </li>
-                  </ul>
-                </div>
+                    {item.name}
+                  </a>
+                ))}
               </div>
-
-                {/* Mobile menu button */}
-                <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-              >
-                {isMobileMenuOpen ? <RiCloseFill size={24} /> : <RiMenu2Fill size={24} />}
-              </button>
             </div>
           </div>
-        </div>
-      </nav>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+          
 
-      {/* Mobile Sidebar */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ x: '100%', opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: '100%', opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-y-0 right-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-700"
-          >
-        <div className="h-16 flex items-center px-4 border-b border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-          >
-            <RiCloseFill size={24} />
-          </button>
-        </div>
+            {/* Profile dropdown */}
+            <Menu as="div" className="relative  ml-3">
+              <div>
+                <MenuButton className="relative flex -full rounded-full bg-gray-900 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-white dark:focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 dark:focus:ring-offset-gray-800 focus:outline-none">
+                  <span className="absolute -inset-1.5" />
+                  <span className="sr-only dark:text-black">Open user menu</span>
+                  <img
+                    alt=""
+                    src="https://png.pngtree.com/png-vector/20231019/ourlarge/pngtree-user-profile-avatar-png-image_10211468.png"
+                    className="size-8 -full border-gray-300 rounded-full dark:border-gray-600"
+                  />
+                </MenuButton>
+              </div>
+              <MenuItems
+                transition
+                className="absolute right-0 z-50 mt-2 w-48 origin-top-right -md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black/5 dark:ring-white/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+              >
+                <MenuItem>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 data-focus:bg-gray-100 dark:data-focus:bg-gray-700 data-focus:outline-none"
+                  >
+                    Your Profile
+                  </a>
+                </MenuItem>
+                <MenuItem>
+                  <button
+                    onClick={toggleDarkMode}
+                    className="block w-full px-4 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 data-focus:bg-gray-100 dark:data-focus:bg-gray-700 data-focus:outline-none flex items-center justify-between"
+                  >
+                    Dark Mode
+                    {isDarkMode ? (
+                      <MoonIcon className="ml-2 h-5 w-5" />
+                    ) : (
+                      <SunIcon className="ml-2 h-5 w-5" />
+                    )}
+                  </button>
+                </MenuItem>
+                <MenuItem>
+                  <button
+                  onClick={handleLogout}
 
-        <nav className="h-full flex flex-col">
-          <div className="flex-1 px-4 py-4 space-y-1">
-            <Link
-              href="/"
-              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-            >
-              <FaHome className="w-5 h-5 mr-3" />
-              Home
-            </Link>
-            <Link
-              href="/stone"
-              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-            >
-              <GiStonePile className="w-5 h-5 mr-3" />
-              Stone
-            </Link>
-            <Link
-              href="/block"
-              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-            >
-              <GiStoneBlock className="w-5 h-5 mr-3" />
-              Block
-            </Link>
-            <Link
-              href="/vendor"
-              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-            >
-              <GrUserManager className="w-5 h-5 mr-3" />
-              Vendor
-            </Link>
-            <Link
-              href="/accounts"
-              className="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-            >
-              <MdAccountCircle className="w-5 h-5 mr-3" />
-              Accounts
-            </Link>
+                    className="block px-4 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 data-focus:bg-gray-100 dark:data-focus:bg-gray-700 data-focus:outline-none"
+                  >
+                    Sign out
+                  </button>
+                </MenuItem>
+              </MenuItems>
+            </Menu>
           </div>
-        </nav>
-      </motion.div>
-      )}
-      </AnimatePresence>
-
-      {/* Content wrapper */}
-      <div className="pt-16 lg:pt-16 pl-0 lg:pl-0 transition-all duration-300 ease-in-out" style={{
-        marginRight: isMobileMenuOpen ? '16rem' : '0'
-      }}>
-        {/* Main content will go here */}
+        </div>
       </div>
-    </>
+
+      <DisclosurePanel className="sm:hidden">
+        <div className="space-y-1 px-2 pt-2 pb-3">
+          {navigation.map((item) => (
+            <DisclosureButton
+              key={item.name}
+              as="a"
+              href={item.href}
+              aria-current={item.current ? 'page' : undefined}
+              className={classNames(
+                item.current ? 'bg-gray-900 text-white dark:bg-gray-800 dark:text-white' : 'text-gray-700 hover:bg-gray-900 hover:text-white dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white',
+                'block -md px-3 py-2 text-base font-medium',
+              )}
+            >
+              {item.name}
+            </DisclosureButton>
+          ))}
+        </div>
+      </DisclosurePanel>
+    </Disclosure>
   )
 }

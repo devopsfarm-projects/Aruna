@@ -95,11 +95,11 @@ export default function EditStone() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-black pt-20 px-4 sm:px-6 lg:px-8">
         {/* Success Modal */}
         {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md mx-4 z-50 relative">
+          <div className="bg-white dark:bg-gray-800 p-6 -lg shadow-lg max-w-md mx-4 z-50 relative">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Success
@@ -130,7 +130,7 @@ export default function EditStone() {
                   setShowSuccessModal(false)
                   router.push('/stone')
                 }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+                className="bg-blue-500 text-white px-4 py-2 -md hover:bg-blue-600 transition duration-200"
               >
                 OK
               </button>
@@ -153,7 +153,7 @@ export default function EditStone() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-md"
+          className="bg-white dark:bg-gray-800 -2xl p-4 sm:p-6 shadow-md"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Stone Type */}
@@ -169,7 +169,7 @@ export default function EditStone() {
                       prev && { ...prev, stoneType: e.target.value as 'Khanda' | 'Gudiya' },
                   )
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="Khanda">Khanda</option>
                 <option value="Gudiya">Gudiya</option>
@@ -189,7 +189,7 @@ export default function EditStone() {
                     prev ? { ...prev, date: e.target.value } : prev,
                   )
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -207,7 +207,7 @@ export default function EditStone() {
                       prev ? { ...prev, rate: parseFloat(e.target.value) } : prev,
                     )
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
                   ₹
@@ -228,7 +228,7 @@ export default function EditStone() {
                     prev ? { ...prev, total_quantity: parseInt(e.target.value) || 0 } : prev,
                   )
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 min={0}
               />
             </div>
@@ -246,7 +246,7 @@ export default function EditStone() {
                       prev ? { ...prev, minum: e.target.value } : prev,
                     )
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
                   ₹
@@ -268,7 +268,7 @@ export default function EditStone() {
                       prev ? { ...prev, hydra_cost: parseFloat(e.target.value) } : prev,
                     )
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
                   ₹
@@ -281,7 +281,7 @@ export default function EditStone() {
           <div className="mt-6 flex justify-end">
             <button
               type="submit"
-              className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-base font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-base font-semibold -lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               disabled={errors.length > 0}
             >
               {errors.length > 0 ? 'Fix Errors' : 'Update Stone'}
@@ -291,7 +291,7 @@ export default function EditStone() {
 
         {/* Display Errors */}
         {errors.length > 0 && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800">
+          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 -lg border border-red-200 dark:border-red-800">
             <ul>
               {errors.map((error, index) => (
                 <li key={index}>{error.message}</li>

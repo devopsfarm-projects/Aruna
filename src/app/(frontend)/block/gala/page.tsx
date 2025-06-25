@@ -20,12 +20,12 @@ export default async function Page() {
 
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
         Gala List
       </h1>
       <div className="mt-6">
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-gray-800 shadow -lg p-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
@@ -125,7 +125,7 @@ export default async function Page() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       <Link
                         href={`/block/gala/edit?id=${todi.id}`}
-                        className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+                        className="bg-blue-500 text-white px-3 py-2  hover:bg-blue-600"
                       >
                         Edit
                       </Link>
@@ -140,7 +140,7 @@ export default async function Page() {
        <div className="fixed bottom-20 right-4 z-50">
                     <div className="flex flex-col items-end space-y-2">
                       <Link href="/block/gala/add">
-                        <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
+                        <button className="bg-indigo-600 text-white p-3 -full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                               strokeLinecap="round"

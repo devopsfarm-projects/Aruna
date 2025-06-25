@@ -249,9 +249,9 @@ export default function EditBlock() {
 
    if (loading || loadingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
+          <div className="animate-spin -full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
           <p className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Loading...</p>
         </div>
       </div>
@@ -259,7 +259,7 @@ export default function EditBlock() {
   }
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900 pt-24">
+    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">View Todi</h1>
@@ -268,14 +268,14 @@ export default function EditBlock() {
           </Link>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 -2xl p-8 shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Basic Block Info */}
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Vendor Name
               </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 {typeof newBlock?.vender_id === 'object' && newBlock?.vender_id?.vendor ? newBlock?.vender_id.vendor : 'N/A'}
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function EditBlock() {
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Total Todi Area
               </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 {newBlock?.total_todi_area || ''}
               </div>
             </div>
@@ -293,7 +293,7 @@ export default function EditBlock() {
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Total Todi Cost
               </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 {newBlock?.total_todi_cost || ''}
               </div>
             </div>
@@ -302,7 +302,7 @@ export default function EditBlock() {
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Estimate Cost
               </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 {newBlock?.estimate_cost || ''}
               </div>
             </div>
@@ -312,7 +312,7 @@ export default function EditBlock() {
               <h2 className="text-xl font-semibold mb-4">Delivered Blocks</h2>
               <div className="space-y-4">
                 {deliveredBlock.map((block, index) => (
-                  <div key={block.id} className="bg-white dark:bg-gray-700 p-4 rounded-lg">
+                  <div key={block.id} className="bg-white dark:bg-gray-700 p-4 -lg">
                     <div className="grid grid-cols-4 gap-4 mb-4">
                       <div>
                         <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -322,7 +322,7 @@ export default function EditBlock() {
                           type="number"
                           value={block.delivered_block_area}
                           onChange={(e) => handleDeliveredBlockChange(index, 'delivered_block_area', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
                       <div>
@@ -333,7 +333,7 @@ export default function EditBlock() {
                           type="number"
                           value={block.delivered_block_cost}
                           onChange={(e) => handleDeliveredBlockChange(index, 'delivered_block_cost', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
                       <div>
@@ -344,7 +344,7 @@ export default function EditBlock() {
                           type="date"
                           value={new Date(block.date).toISOString().split('T')[0]}
                           onChange={(e) => handleDeliveredBlockChange(index, 'date', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
                       <div>
@@ -355,7 +355,7 @@ export default function EditBlock() {
                           type="text"
                           value={block.description}
                           onChange={(e) => handleDeliveredBlockChange(index, 'description', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
                       <div className="flex items-end">
@@ -373,7 +373,7 @@ export default function EditBlock() {
                 <button
                   type="button"
                   onClick={handleAddDeliveredBlock}
-                  className="bg-green-500 text-white px-2 border-2 border-green-100 py-2 rounded-full hover:bg-green-600 transition flex items-center gap-2"
+                  className="bg-green-500 text-white px-2 border-2 border-green-100 py-2 -full hover:bg-green-600 transition flex items-center gap-2"
                 >
                   <PlusIcon className="h-5 w-5" />
                 </button>
@@ -385,7 +385,7 @@ export default function EditBlock() {
               <h2 className="text-xl font-semibold mb-4">Received Amounts</h2>
               <div className="space-y-4">
                 {receivedAmounts.map((amount, index) => (
-                  <div key={amount.id} className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow">
+                  <div key={amount.id} className="bg-white dark:bg-gray-700 p-4 -lg shadow">
                     <div className="grid grid-cols-4 gap-4 mb-4">
                       <div>
                         <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -395,7 +395,7 @@ export default function EditBlock() {
                           type="number"
                           value={amount.amount}
                           onChange={(e) => handleReceivedAmountChange(index, 'amount', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
                       <div>
@@ -406,7 +406,7 @@ export default function EditBlock() {
                           type="date"
                           value={new Date(amount.date).toISOString().split('T')[0]}
                           onChange={(e) => handleReceivedAmountChange(index, 'date', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
                       <div>
@@ -417,7 +417,7 @@ export default function EditBlock() {
                           type="text"
                           value={amount.description}
                           onChange={(e) => handleReceivedAmountChange(index, 'description', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
                       <div className="flex items-end">
@@ -435,7 +435,7 @@ export default function EditBlock() {
                 <button
                   type="button"
                   onClick={handleAddReceivedAmount}
-                  className="bg-green-500 text-white px-2 border-2 border-green-100 py-2 rounded-full hover:bg-green-600 transition flex items-center gap-2"
+                  className="bg-green-500 text-white px-2 border-2 border-green-100 py-2 -full hover:bg-green-600 transition flex items-center gap-2"
                 >
                   <PlusIcon className="h-5 w-5" />
                 </button>
@@ -449,7 +449,7 @@ export default function EditBlock() {
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                     Total Received
                   </label>
-                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                     {receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0).toFixed(2)}
                   </div>
                 </div>
@@ -457,7 +457,7 @@ export default function EditBlock() {
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                     Remaining Payment
                   </label>
-                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                     {calculateRemainingPayment().toFixed(2)}
                   </div>
                 </div>
@@ -468,7 +468,7 @@ export default function EditBlock() {
             <div className="col-span-4 mt-8">
               <button
                 type="submit"
-                className="w-full bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
+                className="w-full bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 -lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
                 disabled={!newBlock || isSubmitting}
               >
                 {isSubmitting ? 'Saving...' : 'Save Changes'}
