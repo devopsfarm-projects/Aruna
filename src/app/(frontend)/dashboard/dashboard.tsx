@@ -59,8 +59,13 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
         {/* Hero Section */}
         <section className="mb-12">
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 -2xl p-8 shadow-xl">
-            <div className="max-w-2xl mx-auto">
+          <div className="relative overflow-hidden  shadow-xl bg-black/5 dark:bg-black/10">
+            <div className="absolute opacity-50 inset-0" style={{
+              backgroundImage: 'url("https://d2n41s0wa71yzf.cloudfront.net/wp-content/uploads/2022/04/04131056/Gold-Mine_Adobe-scaled-e1643707309450.jpeg")',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}></div>
+            <div className="relative max-w-2xl mx-auto p-8">
               <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
                 Mining Management Dashboard
               </h1>
@@ -70,13 +75,13 @@ export default function DashboardPage() {
               <div className="mt-6 flex gap-4">
                 <Link
                   href="/vendor/addvendor"
-                  className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-medium -lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Add New Vendor
                 </Link>
                 <Link
                   href="/block"
-                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-medium -lg hover:bg-white/20 transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-all duration-300"
                 >
                   Add New Block
                 </Link>

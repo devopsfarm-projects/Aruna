@@ -2,18 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [isDarkMode, setIsDarkMode] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     // Check if dark mode is preferred by the user
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    setIsDarkMode(prefersDark)
 
     // Listen for changes in system preference
     window
@@ -54,90 +53,52 @@ export default function LoginForm() {
     }
   }
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode)
-    document.documentElement.classList.toggle('dark')
-  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-white to-pink-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
-      <div className="bg-white dark:bg-gray-800 shadow-xl dark:shadow-gray-900 -2xl p-6 sm:p-8 w-full max-w-md animate-fadeIn">
-        <div className="flex justify-between items-center mb-6 sm:mb-8">
-          <div className="flex-1">
-            <Image src="/image.png" alt="Payload Logo" width={80} height={80} className="w-20 h-20 sm:w-24 sm:h-24" />
-          </div>
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 sm:p-3 -full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
-            <svg
-              className="w-6 h-6 text-gray-600 dark:text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {isDarkMode ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 1.536l-.105-.105A5.5 5.5 0 0018 10.5M6.863 6.863l-1.435-1.435A5.5 5.5 0 003 10.5v1M6.863 6.863l1.435-1.435A5.5 5.5 0 0110.5 3v1M10.5 16.172l-1.435 1.435A5.5 5.5 0 013 13.5v-1m17.5 2.172l1.435-1.435A5.5 5.5 0 0013.5 21v-1M13.5 3.863l1.435 1.435A5.5 5.5 0 0121 10.5v1"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
-              )}
-            </svg>
-          </button>
+    <div className="bg-cover bg-center bg-fixed" style={{backgroundImage: 'url("https://g.foolcdn.com/editorial/images/439207/gold-mine-in-australia.jpg")'}}>
+    <div className="h-screen flex justify-center items-center">
+        <div className="bg-white dark:bg-gray-800 mx-4 p-8 rounded shadow-md w-full md:w-1/2 lg:w-1/3">
+            <div className="flex justify-center mb-6">
+    <img src="/image.png" alt="Payload Logo" className="w-32 sm:w-32" />
+</div>
+            
+            <form>
+                <div className="mb-4">
+                    <label className="block font-semibold text-gray-700 mb-2 dark:text-gray-300">
+                        Email Address
+                    </label>
+                    <input
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                        id="email" type="email" placeholder="Enter your email address" />
+                </div>
+                <div className="mb-4">
+                    <label className="block font-semibold text-gray-700 mb-2 dark:text-gray-300" htmlFor="password">
+                        Password
+                    </label>
+                    <input
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        id="password" type="password" placeholder="Enter your password" />
+                    
+                </div>
+                <div className="mb-6">
+                    <button
+                        onClick={handleSubmit}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        type="button">
+                        {isLoading ? 'Loading...' : 'Login'}
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">
-          Welcome Back
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3.5 sm:p-4 border border-gray-300 dark:border-gray-600 -lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 text-sm sm:text-base"
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full dark:bg-gray-700 p-3.5 sm:p-4 border border-gray-300 dark:border-gray-600 -lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 text-sm sm:text-base"
-          />
-
-          {error && (
-            <div className="text-red-600 dark:text-red-400 text-sm text-center">{error}</div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3 -lg disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <>
-                Loading...
-              </>
-            ) : (
-              'Login'
-            )}
-          </button>
-        </form>
-      </div>
     </div>
+</div>
   )
 }
+function setIsDarkMode(matches: boolean): any {
+  throw new Error('Function not implemented.')
+}
+
