@@ -67,7 +67,7 @@ export default function Navbar() {
 
   return (
 
-    <Disclosure as="nav" className="bg-white dark:bg-black border-b dark:border-gray-700 shadow-sm dark:shadow-lg">
+    <Disclosure as="nav" className="bg-white pt-6 sm:pt-0 dark:bg-black border-b dark:border-gray-700 shadow-sm dark:shadow-lg">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
