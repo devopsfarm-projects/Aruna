@@ -61,14 +61,14 @@ export default function LoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 via-white to-pink-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
-      <div className="bg-white dark:bg-gray-800 shadow-xl dark:shadow-gray-900 rounded-2xl p-6 sm:p-8 w-full max-w-md animate-fadeIn">
+      <div className="bg-white dark:bg-gray-800 shadow-xl dark:shadow-gray-900 -2xl p-6 sm:p-8 w-full max-w-md animate-fadeIn">
         <div className="flex justify-between items-center mb-6 sm:mb-8">
           <div className="flex-1">
             <Image src="/image.png" alt="Payload Logo" width={80} height={80} className="w-20 h-20 sm:w-24 sm:h-24" />
           </div>
           <button
             onClick={toggleTheme}
-            className="p-2.5 sm:p-3 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="p-2.5 sm:p-3 -full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <svg
               className="w-6 h-6 text-gray-600 dark:text-gray-400"
@@ -107,7 +107,7 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3.5 sm:p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 text-sm sm:text-base"
+            className="w-full dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-3.5 sm:p-4 border border-gray-300 dark:border-gray-600 -lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 text-sm sm:text-base"
           />
 
           <input
@@ -116,7 +116,7 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full dark:bg-gray-700 p-3.5 sm:p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 text-sm sm:text-base"
+            className="w-full dark:bg-gray-700 p-3.5 sm:p-4 border border-gray-300 dark:border-gray-600 -lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 text-sm sm:text-base"
           />
 
           {error && (
@@ -126,7 +126,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors text-white font-semibold p-3 -lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

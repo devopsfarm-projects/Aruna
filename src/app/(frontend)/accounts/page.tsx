@@ -31,14 +31,14 @@ export default async function Page() {
   const { todis, galas } = await getData()
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <div className="space-y-12">
         {/* Todi Section */}
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             Todi List
           </h2>
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow -lg p-6">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-700">
@@ -127,7 +127,7 @@ export default async function Page() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             Gala List
           </h2>
-          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow -lg p-6">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-700">

@@ -147,11 +147,11 @@ export default function VendorForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 flex flex-col justify-center sm:py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-black py-6 flex flex-col justify-center sm:py-12">
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md mx-4 z-50 relative">
+          <div className="bg-white dark:bg-gray-800 p-6 -lg shadow-lg max-w-md mx-4 z-50 relative">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Success
@@ -182,7 +182,7 @@ export default function VendorForm() {
                   setShowSuccessModal(false)
                   router.push('/vendor')
                 }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+                className="bg-blue-500 text-white px-4 py-2 -md hover:bg-blue-600 transition duration-200"
               >
                 OK
               </button>
@@ -203,7 +203,7 @@ export default function VendorForm() {
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8">
+        <div className="bg-white dark:bg-gray-800 -2xl shadow-lg p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -216,7 +216,7 @@ export default function VendorForm() {
                 <input
                   id="vendor"
                   type="text"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                   value={newVendor.vendor}
                   onChange={(e) => setNewVendor({ ...newVendor, vendor: e.target.value })}
                   required
@@ -236,7 +236,7 @@ export default function VendorForm() {
                     id="vendor_no"
                     type="tel"
                     pattern="[0-9]{10,15}"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition pr-8"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition pr-8"
                     value={newVendor.vendor_no}
                     onChange={(e) => setNewVendor({ ...newVendor, vendor_no: e.target.value })}
                     required
@@ -257,7 +257,7 @@ export default function VendorForm() {
               <input
                 id="address"
                 type="text"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                 value={newVendor.address}
                 onChange={(e) => setNewVendor({ ...newVendor, address: e.target.value })}
                 required
@@ -270,14 +270,14 @@ export default function VendorForm() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="w-full sm:w-auto bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200 text-sm sm:text-base"
+                className="w-full sm:w-auto bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 -lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-200 text-sm sm:text-base"
               >
                 <span className="font-medium">Cancel</span>
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 -lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="font-medium">{isSubmitting ? 'Saving...' : 'Save Vendor'}</span>
               </button>

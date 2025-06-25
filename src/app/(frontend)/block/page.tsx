@@ -46,11 +46,11 @@ export default function DashboardPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-gray-100 py-28 dark:bg-gray-900 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gray-100 py-4 dark:bg-black px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <section className="mb-12">
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-2xl p-8 shadow-xl">
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 -2xl p-8 shadow-xl">
             <div className="max-w-2xl mx-auto">
               <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
                 Block Management Dashboard
@@ -61,13 +61,13 @@ export default function DashboardPage() {
               <div className="mt-6 flex gap-4">
                 <Link
                   href="/block/todi/add"
-                  className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-medium -lg shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Add New Todi Block
                 </Link>
                 <Link
                   href="/block/gala/add"
-                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-medium -lg hover:bg-white/20 transition-all duration-300"
                 >
                   Add New Gala Block
                 </Link>
@@ -81,10 +81,10 @@ export default function DashboardPage() {
           {cards.map((card, index) => (
             <Link key={index} href={card.link} className="group">
               <div
-                className={`flex flex-col justify-between h-full rounded-2xl p-6 transition-all duration-300 ${card.color} text-white hover:shadow-xl hover:scale-[1.02]`}
+                className={`flex flex-col justify-between h-full -2xl p-6 transition-all duration-300 ${card.color} text-white hover:shadow-xl hover:scale-[1.02]`}
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="p-4 rounded-xl bg-white/20 group-hover:bg-white/30">
+                  <div className="p-4 -xl bg-white/20 group-hover:bg-white/30">
                     {card.icon}
                   </div>
                   <div>

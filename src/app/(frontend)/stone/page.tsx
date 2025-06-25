@@ -148,7 +148,7 @@ export default function StoneList() {
 
   if (stonesLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
           <svg
             className="animate-spin h-8 w-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-4"
@@ -180,7 +180,7 @@ export default function StoneList() {
 
   if (stonesError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
           <svg
             className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-4"
@@ -203,7 +203,7 @@ export default function StoneList() {
   } 
 
   return (
-    <div className="min-h-screen pt-24 px-4 md:px-8 bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen pt-24 px-4 md:px-8 bg-gray-50 dark:bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col gap-6 mb-8">
           <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
@@ -215,7 +215,7 @@ export default function StoneList() {
 
         <div className="space-y-4 md:hidden">
           {filteredStones.map((stone, index) => (
-            <div key={stone.id} className="p-4 rounded-xl bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700">
+            <div key={stone.id} className="p-4 -xl bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center mb-2">
                 <div className="text-sm text-gray-500 dark:text-gray-400">#{index + 1}</div>
             
@@ -257,7 +257,7 @@ export default function StoneList() {
               <div className="mt-4 flex justify-end">
                 <Link 
                   href={`/stone/edit?id=${stone.id}`} 
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-800"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-indigo-600 -lg hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-800"
                 >
                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -269,7 +269,7 @@ export default function StoneList() {
           ))}
         </div>
 
-        <div className="hidden md:block overflow-x-auto rounded-lg">
+        <div className="hidden md:block overflow-x-auto -lg">
           <table className="min-w-full bg-white dark:bg-gray-800">
             <thead className="bg-gray-800 text-white dark:bg-gray-700">
               <tr>
@@ -335,7 +335,7 @@ export default function StoneList() {
           {selectedStones.size > 0 && (
             <button
               onClick={handleBulkDelete}
-              className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition-all flex items-center justify-center shadow-md"
+              className="bg-red-600 text-white p-3 -full hover:bg-red-700 transition-all flex items-center justify-center shadow-md"
               title={`Delete ${selectedStones.size} selected items`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,7 +344,7 @@ export default function StoneList() {
             </button>
           )}
           <Link href="/stone/addstone">
-            <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
+            <button className="bg-indigo-600 text-white p-3 -full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
