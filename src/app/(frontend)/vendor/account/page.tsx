@@ -2,9 +2,9 @@
 
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { Todi, Vendor } from '@/payload-types'
-import TodiList from './components/VendorAccountCard'
-import { useSearchParams } from 'next/navigation'
+import { Todi, Gala, Vendor } from '@/payload-types'
+import TodiList from './components/TodiAccountCard'
+import GalaAccountCard from './components/GalaAccountCard'
 
 async function getData(vendorId: string | null = null): Promise<Todi[]> {
   const payload = await getPayload({ config })
@@ -15,6 +15,7 @@ async function getData(vendorId: string | null = null): Promise<Todi[]> {
   }
 
   const { docs } = await payload.find({ collection: 'Todi', ...query }) as { docs: Todi[] }
+ 
   
   // Transform the docs to match the Todi interface
   return docs.map(doc => ({
@@ -48,6 +49,20 @@ async function getData(vendorId: string | null = null): Promise<Todi[]> {
   })) as Todi[]
 }
 
+
+
+async function getGalas(vendorId: string | null = null): Promise<Gala[]> {
+  const payload = await getPayload({ config })
+  const query: any = { limit: 100 }
+
+  if (vendorId) {
+    query.where = { vender_id: { equals: vendorId } }
+  }
+
+  const { docs } = await payload.find({ collection: 'Gala', ...query }) as { docs: Gala[] }
+  return docs
+}
+
 async function getVendors(): Promise<Vendor[]> {
   const payload = await getPayload({ config })
   const { docs } = await payload.find({ collection: 'vendor' })
@@ -57,16 +72,21 @@ async function getVendors(): Promise<Vendor[]> {
 export default async function Page({ searchParams }: { searchParams: Promise<{ vendor?: string }> }) {
   const searchParamsResolved = await searchParams
   const vendorId = searchParamsResolved.vendor || null
-  const [todis, vendors] = await Promise.all([
+  const [todis, galas, vendors] = await Promise.all([
     getData(vendorId),
+    getGalas(vendorId),
     getVendors(),
   ])
 
   return (
-    <TodiList
-      initialTodis={todis}
-      initialVendors={vendors}
-      initialVendorId={vendorId}
-    />
+    <>
+    <label>select block type</label>
+      <select  className="w-64 p-2 border dark:border-gray-600 dark:bg-black dark:text-white border-gray-300 rounded">
+        <option value="todi">Todi</option>
+        <option value="gala">Gala</option>
+      </select>
+      <TodiList        initialTodis={todis}        initialVendors={vendors}        initialVendorId={vendorId}      />
+      <GalaAccountCard        initialGalas={galas}        initialVendors={vendors}        initialVendorId={vendorId}      />
+    </>
   )
 }

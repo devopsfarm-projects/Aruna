@@ -46,7 +46,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-gray-100 py-4 dark:bg-black px-4 sm:px-6 lg:px-8">
+    <main className=" bg-gray-100 py-4 dark:bg-black px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <section className="mb-12">

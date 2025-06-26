@@ -360,6 +360,24 @@ export interface Gala {
     | null;
   total_block_area?: number | null;
   total_block_cost?: number | null;
+  delivered_block?:
+    | {
+        delivered_block_area?: number | null;
+        delivered_block_cost?: number | null;
+        date?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  received_amount?:
+    | {
+        amount: number;
+        date: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  partyRemainingPayment?: number | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -690,6 +708,24 @@ export interface GalaSelect<T extends boolean = true> {
       };
   total_block_area?: T;
   total_block_cost?: T;
+  delivered_block?:
+    | T
+    | {
+        delivered_block_area?: T;
+        delivered_block_cost?: T;
+        date?: T;
+        description?: T;
+        id?: T;
+      };
+  received_amount?:
+    | T
+    | {
+        amount?: T;
+        date?: T;
+        description?: T;
+        id?: T;
+      };
+  partyRemainingPayment?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;

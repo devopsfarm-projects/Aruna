@@ -22,6 +22,26 @@ export const Gala: CollectionConfig = {
       return false
     },
   },
+  hooks: {
+    beforeChange: [
+      async ({ data, req }) => {
+        // 1. Default final_cost = estimate_cost if depreciation not provided
+        if (!data.depreciation || data.depreciation === 0) {
+          data.final_cost = data.estimate_cost;
+        }
+  
+        // 2. Calculate partyRemainingPayment
+        const estimateCost = Number(data.estimate_cost || 0);
+        const received = Array.isArray(data.received_amount)
+          ? data.received_amount.reduce((sum, amt) => sum + (amt.amount || 0), 0)
+          : 0;
+  
+        data.partyRemainingPayment = estimateCost - received;
+  
+        return data;
+      },
+    ],
+  },
   fields: [
     { name: 'GalaType', label: 'Gala Type', type: 'select', required: true, options: ['Brown', 'White'], },
     { name: 'date', label: 'Date', type: 'date', defaultValue: () => new Date(), },
@@ -67,6 +87,46 @@ export const Gala: CollectionConfig = {
 
     {name:'total_block_area',label:'Total Block Area',type:'number'},
     {name:'total_block_cost',label:'Total Block Cost',type:'number'},
+
+    {name:'delivered_block',label:'Delivered Block',type:'array',
+      fields:[
+        {name:'delivered_block_area',label:'Delivered Block Area',type:'number'},
+        {name:'delivered_block_cost',label:'Delivered Block Cost',type:'number'},
+        {name:'date',label:'Date',type:'date'},
+        {name:'description',label:'Description',type:'textarea'},
+      ]
+    },
+
+   
+    {
+      name: 'received_amount',
+      type: 'array',
+      label: 'Received Amounts',
+      fields: [
+        {
+          name: 'amount',
+          type: 'number',
+          required: true,
+        },
+        {
+          name: 'date',
+          type: 'date',
+          required: true,
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+        },
+      ],
+    },
+
+    {
+      name: 'partyRemainingPayment',
+      label: 'Party Remaining Payment',
+      type: 'number',
+    },
+
+
     { name: 'createdBy', label: 'Created By (Client)', type: 'relationship', relationTo: 'users',
       access: {
         create: () => true,
