@@ -26,7 +26,7 @@ export default function DashboardPage() {
       count: 12
     },
     {
-      title: 'Accounting',
+      title: 'Account',
       color: 'bg-gradient-to-br from-gray-700 to-gray-800 dark:from-gray-800 dark:to-gray-900',
       icon: <MdAccountBalance size={32} className="text-white" />,
       link: '/accounts',
