@@ -3,6 +3,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, BellIcon, XMarkIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline'
 import { useDarkMode } from './DarkModeProvider'
 import { useEffect, useState } from 'react'
+import RouteProgress from '../components/RouteProgress.jsx'
 
 const navigation = [
   { name: 'Home', href: '/', current: false },
@@ -19,7 +20,7 @@ function classNames(...classes: string[]) {
 export default function Navbar() {
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
   const { isDarkMode, toggleDarkMode } = useDarkMode()
 
 
@@ -66,7 +67,8 @@ export default function Navbar() {
   }, [setUser])
 
   return (
-
+    <>
+   
     <Disclosure as="nav" className="bg-white pt-6 sm:pt-0 dark:bg-black border-b dark:border-gray-700 shadow-sm dark:shadow-lg">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
@@ -180,5 +182,7 @@ export default function Navbar() {
         </div>
       </DisclosurePanel>
     </Disclosure>
+    <RouteProgress />
+    </>
   )
 }

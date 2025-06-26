@@ -3,20 +3,26 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
 
-async function getData() {
+async function getData(page = 1) {
   const payload = await getPayload({ config })
-  const { docs } = await payload.find({ collection: 'Todi', limit: 100 })
-  return docs
+  const { docs, totalDocs, totalPages, page: currentPage } = await payload.find({
+    collection: 'Todi',
+    limit: 10,
+    page,
+  })
+  return { docs, totalDocs, totalPages, currentPage }
 }
 
-export default async function Page() {
-  const todis = await getData()
+export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const params = await searchParams
+  const page = Number(params.page || 1)
+  const { docs: todis, totalPages, currentPage } = await getData(page)
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Todi List</h1>
 
-      <div className="overflow-x-auto bg-white dark:bg-gray-800  shadow">
+      <div className="overflow-x-auto bg-white dark:bg-gray-800 shadow">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
             <tr>
@@ -51,7 +57,20 @@ export default async function Page() {
         </table>
       </div>
 
-      {/* Add Button (FAB) */}
+      {/* Pagination controls */}
+      <div className="flex justify-center mt-6 space-x-2">
+        {Array.from({ length: totalPages }, (_, i) => (
+          <Link
+            key={i + 1}
+            href={`?page=${i + 1}`}
+            className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+          >
+            {i + 1}
+          </Link>
+        ))}
+      </div>
+
+      {/* Add Button */}
       <div className="fixed bottom-20 right-4 z-50">
         <Link href="/block/todi/add">
           <button className="bg-indigo-600 text-white p-3 rounded-full shadow hover:bg-indigo-700">
