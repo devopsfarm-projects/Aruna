@@ -1,92 +1,23 @@
-// app/(frontend)/vendor/account/page.tsx
+// ❌ NO "use client" here
+import { getTodiData, getGalaData, getVendors } from './lib/getVendorAccounts'
+import ClientAccountPage from './ClientAccountPage' // the interactive component
 
-import { getPayload } from 'payload'
-import config from '@payload-config'
-import { Todi, Gala, Vendor } from '@/payload-types'
-import TodiList from './components/TodiAccountCard'
-import GalaAccountCard from './components/GalaAccountCard'
+export default async function Page({ searchParams }: { searchParams: { vendor?: string } }) {
+  const vendorId = searchParams.vendor || null
 
-async function getData(vendorId: string | null = null): Promise<Todi[]> {
-  const payload = await getPayload({ config })
-  const query: any = { limit: 100 }
-
-  if (vendorId) {
-    query.where = { vender_id: { equals: vendorId } }
-  }
-
-  const { docs } = await payload.find({ collection: 'Todi', ...query }) as { docs: Todi[] }
- 
-  
-  // Transform the docs to match the Todi interface
-  return docs.map(doc => ({
-    ...doc,
-    BlockType: doc.BlockType || 'Brown',
-    l: doc.l || 0,
-    b: doc.b || 0,
-    h: doc.h || 0,
-    blockType: doc.BlockType || 'Brown',
-    vendorId: typeof doc.vender_id === 'object' ? doc.vender_id?.id || 0 : doc.vender_id || 0,
-    blockCost: doc.todi_cost || 0,
-    totalTodiArea: doc.total_todi_area || 0,
-    totalTodiCost: doc.total_todi_cost || 0,
-    hydraCost: doc.hydra_cost || 0,
-    groupCost: doc.group?.[0]?.g_hydra_cost || 0,
-    partyRemainingPayment: doc.partyRemainingPayment || 0,
-    totalBlockArea: doc.total_block_area || 0,
-    totalBlockCost: doc.total_block_cost || 0,
-    remainingAmount: doc.partyRemainingPayment || 0,
-    frontLength: doc.group?.[0]?.block?.[0]?.addmeasures?.[0]?.l || 0,
-    frontBreadth: doc.group?.[0]?.block?.[0]?.addmeasures?.[0]?.b || 0,
-    frontHeight: doc.group?.[0]?.block?.[0]?.addmeasures?.[0]?.h || 0,
-    backLength: doc.group?.[0]?.block?.[0]?.addmeasures?.[1]?.l || 0,
-    backBreadth: doc.group?.[0]?.block?.[0]?.addmeasures?.[1]?.b || 0,
-    backHeight: doc.group?.[0]?.block?.[0]?.addmeasures?.[1]?.h || 0,
-    totalQuantity: doc.group?.[0]?.block?.[0]?.addmeasures?.length || 0,
-    issuedQuantity: doc.group?.[0]?.block?.[0]?.addmeasures?.filter(measure => measure.block_cost)?.length || 0,
-    leftQuantity: (doc.group?.[0]?.block?.[0]?.addmeasures?.length || 0) - (doc.group?.[0]?.block?.[0]?.addmeasures?.filter(measure => measure.block_cost)?.length || 0),
-    transportCost: doc.truck_cost || 0,
-    depreciation: doc.depreciation || 0,
-  })) as Todi[]
-}
-
-
-
-async function getGalas(vendorId: string | null = null): Promise<Gala[]> {
-  const payload = await getPayload({ config })
-  const query: any = { limit: 100 }
-
-  if (vendorId) {
-    query.where = { vender_id: { equals: vendorId } }
-  }
-
-  const { docs } = await payload.find({ collection: 'Gala', ...query }) as { docs: Gala[] }
-  return docs
-}
-
-async function getVendors(): Promise<Vendor[]> {
-  const payload = await getPayload({ config })
-  const { docs } = await payload.find({ collection: 'vendor' })
-  return docs
-}
-
-export default async function Page({ searchParams }: { searchParams: Promise<{ vendor?: string }> }) {
-  const searchParamsResolved = await searchParams
-  const vendorId = searchParamsResolved.vendor || null
+  // ✅ Server-side fetching (safe to use fs, nodemailer, etc.)
   const [todis, galas, vendors] = await Promise.all([
-    getData(vendorId),
-    getGalas(vendorId),
+    getTodiData(vendorId),
+    getGalaData(vendorId),
     getVendors(),
   ])
 
   return (
-    <>
-    <label>select block type</label>
-      <select  className="w-64 p-2 border dark:border-gray-600 dark:bg-black dark:text-white border-gray-300 rounded">
-        <option value="todi">Todi</option>
-        <option value="gala">Gala</option>
-      </select>
-      <TodiList        initialTodis={todis}        initialVendors={vendors}        initialVendorId={vendorId}      />
-      <GalaAccountCard        initialGalas={galas}        initialVendors={vendors}        initialVendorId={vendorId}      />
-    </>
+    <ClientAccountPage
+      initialTodis={todis}
+      initialGalas={galas}
+      initialVendors={vendors}
+      initialVendorId={vendorId}
+    />
   )
 }
