@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import TableSection from './TableSection'
+import { TableSection } from './TableSection'
 import StoneTable from './StoneTable'
 type AccountType = 'todi' | 'gala' | 'stone'
 
