@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { GiStonePile, GiStoneWall } from 'react-icons/gi'
-import { MdOutlineSupervisorAccount, MdAccountBalance, MdConstruction } from 'react-icons/md'
+import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md'
 
 
 interface CardProps {

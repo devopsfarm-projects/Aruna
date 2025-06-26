@@ -24,7 +24,7 @@ export const Gala: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      async ({ data, req }) => {
+      async ({ data }) => {
         // 1. Default final_cost = estimate_cost if depreciation not provided
         if (!data.depreciation || data.depreciation === 0) {
           data.final_cost = data.estimate_cost;

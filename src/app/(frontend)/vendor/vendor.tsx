@@ -6,8 +6,8 @@ import type { Vendor as PayloadVendor } from '../../../payload-types'
 export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }) {
   const [searchVendor, setSearchVendor] = useState('')
   const [filteredVendor, setFilteredVendor] = useState<PayloadVendor[]>([])
-  const [vendorLoading, setVendorLoading] = useState(false)
-  const [vendorError, setVendorError] = useState<string | null>(null)
+  const [vendorLoading, ] = useState(false)
+  const [vendorError,   ] = useState<string | null>(null)
 
   useEffect(() => {
     const filtered = VendorItems.filter((vendor) => {

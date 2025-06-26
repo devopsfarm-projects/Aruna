@@ -5,18 +5,6 @@ import axios from 'axios';
 import { ApiResponse } from '../../types'
 import Link from 'next/link'
 
-// Type for error response
-interface ErrorResponse {
-  errors?: Array<{ message: string }>
-  message?: string
-}
-
-// Type guard function to check if an object is an ErrorResponse
-function isErrorResponse(obj: unknown): obj is ErrorResponse {
-  return typeof obj === 'object' && obj !== null &&
-    ('errors' in obj || 'message' in obj)
-}
-
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Measure {

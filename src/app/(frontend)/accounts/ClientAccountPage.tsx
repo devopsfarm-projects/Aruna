@@ -39,8 +39,8 @@ export default function ClientAccountPage({
       </div>
 
 
-      {select === 'todi' && <TableSection title="Todi List" data={todis} type="Todi" />}
-      {select === 'gala' && <TableSection title="Gala List" data={galas} type="Gala" />}
+      {select === 'todi' && <TableSection data={todis} type="Todi" />}
+      {select === 'gala' && <TableSection data={galas} type="Gala" />}
       {select === 'stone' && <StoneTable stones={stones} />}
     </div>
   )

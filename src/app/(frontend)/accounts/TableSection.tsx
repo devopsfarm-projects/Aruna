@@ -3,11 +3,9 @@
 import { useState } from 'react'
 
 export function TableSection({
-  title,
   data,
   type,
 }: {
-  title: string
   data: any[]
   type: 'Todi' | 'Gala' | 'Stone'
 }) {
