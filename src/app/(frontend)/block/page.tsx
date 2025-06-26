@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { GiStonePile, GiStoneWall } from 'react-icons/gi'
-import { MdOutlineSupervisorAccount, MdAccountBalance, MdConstruction } from 'react-icons/md'
+import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md'
 
 
 interface CardProps {
@@ -46,7 +45,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-gray-100 py-4 dark:bg-black px-4 sm:px-6 lg:px-8">
+    <main className=" bg-gray-100 py-4 dark:bg-black px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <section className="mb-12">

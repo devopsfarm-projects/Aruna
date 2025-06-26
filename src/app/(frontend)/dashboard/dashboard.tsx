@@ -17,16 +17,16 @@ interface CardProps {
 export default function DashboardPage() {
   const cards: CardProps[] = [
     {
-      title: 'Vendor Management',
+      title: 'Vendor Accounts',
       color: 'bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700',
       icon: <MdOutlineSupervisorAccount size={32} className="text-white" />,
-      link: '/vendor',
+      link: '/vendor/account',
       description: 'Manage your vendor relationships',
       stats: 'Active Vendors',
       count: 12
     },
     {
-      title: 'Accounting',
+      title: 'Account',
       color: 'bg-gradient-to-br from-gray-700 to-gray-800 dark:from-gray-800 dark:to-gray-900',
       icon: <MdAccountBalance size={32} className="text-white" />,
       link: '/accounts',
@@ -55,7 +55,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-gray-100 dark:bg-black py-4 px-4 sm:px-6 lg:px-8">
+    <main className=" bg-black dark:bg-black py-4 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
         {/* Hero Section */}
         <section className="mb-12">
@@ -107,10 +107,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-3xl font-bold">{card.count}</span>
-                    <span className="text-sm text-white/90">{card.stats}</span>
-                  </div>
                   <div className="flex justify-end">
                     <span className="text-sm font-medium group-hover:underline">View Details →</span>
                   </div>

@@ -5,17 +5,7 @@ import axios from 'axios';
 import { ApiResponse } from '../../types'
 import Link from 'next/link'
 
-// Type for error response
-interface ErrorResponse {
-  errors?: Array<{ message: string }>
-  message?: string
-}
 
-// Type guard function to check if an object is an ErrorResponse
-function isErrorResponse(obj: unknown): obj is ErrorResponse {
-  return typeof obj === 'object' && obj !== null &&
-    ('errors' in obj || 'message' in obj)
-}
 
 import { useRouter, useSearchParams } from 'next/navigation'
 
@@ -99,8 +89,8 @@ export default function EditBlock() {
   const searchParams = useSearchParams()
   const [currentBlock, setCurrentBlock] = useState<BlockType | null>(null)
   const [newBlock, setNewBlock] = useState<BlockType | null>(null)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
-  const [munims, setMunims] = useState<string[]>([])
+  const [, setShowSuccessModal] = useState(false)
+  const [, setMunims] = useState<string[]>([])
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingData, setLoadingData] = useState(true)

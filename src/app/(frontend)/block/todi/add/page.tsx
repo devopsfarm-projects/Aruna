@@ -63,8 +63,8 @@ interface TodiState {
 }
 
 export default function AddTodiPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [, setIsLoading] = useState(false)
+  const [, setError] = useState<string | null>(null)
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [todi, setTodi] = useState<TodiState>({
     munim: '',

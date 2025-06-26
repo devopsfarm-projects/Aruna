@@ -6,8 +6,8 @@ import type { Vendor as PayloadVendor } from '../../../payload-types'
 export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }) {
   const [searchVendor, setSearchVendor] = useState('')
   const [filteredVendor, setFilteredVendor] = useState<PayloadVendor[]>([])
-  const [vendorLoading, setVendorLoading] = useState(false)
-  const [vendorError, setVendorError] = useState<string | null>(null)
+  const [vendorLoading, ] = useState(false)
+  const [vendorError,   ] = useState<string | null>(null)
 
   useEffect(() => {
     const filtered = VendorItems.filter((vendor) => {
@@ -229,110 +229,136 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
           {filteredVendor.map((item, index) => (
             <div
               key={item.id || index}
-              className="bg-white dark:bg-gray-800 -xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 transition-all hover:shadow-md"
+              className="bg-white dark:bg-gray-800  overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
             >
-              <div className="flex justify-between items-center mb-3">
-                <div className="flex flex-col">
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {item.vendor}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">#{index + 1}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedVendor.has(item.id.toString())}
-                    onChange={() => handleSelectVendor(item.id.toString())}
-                    className=" cursor-pointer h-4 w-4"
-                  />
-                  <button
-                    onClick={() => handleDelete(String(item.id))}
-                    className="p-1.5 -full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                    title="Delete"
-                  >
-                    <svg
-                      className="w-4 h-4 text-red-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              <div className="relative">
+             
+                
+                <div className="p-4">
+                  {/* Vendor Header */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex flex-col">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        {item.vendor}
+                      </h3>
+                      <span className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Vendor #{index + 1}
+                      </span>
+                    </div>
+                    
+                    {/* Actions */}
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedVendor.has(item.id.toString())}
+                        onChange={() => handleSelectVendor(item.id.toString())}
+                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
                       />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+                      <button
+                        onClick={() => handleDelete(String(item.id))}
+                        className="p-2 rounded-full bg-red-500/10 dark:bg-red-500/20 hover:bg-red-500/20 dark:hover:bg-red-500/30 transition-colors"
+                        title="Delete"
+                      >
+                        <svg
+                          className="w-5 h-5 text-red-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">{item.address}</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  <a
-                    href={`tel:${item.vendor_no}`}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    📞 {item.vendor_no ?? '-'}
-                  </a>
-                </div>
-              </div>
+                  {/* Vendor Details */}
+                  <div className="space-y-4">
+                    {/* Location */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                        <svg
+                          className="w-4 h-4 text-blue-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <span className="block text-sm font-medium text-gray-900 dark:text-white">Location</span>
+                        <span className="block text-sm text-gray-500 dark:text-gray-400">{item.address}</span>
+                      </div>
+                    </div>
 
-              <div className="mt-4 flex justify-end">
-                <Link
-                  href={`/vendor/edit?id=${item.id}`}
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-indigo-600 -lg hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-800"
-                >
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                    />
-                  </svg>
-                  Edit
-                </Link>
+                    {/* Contact */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                        <svg
+                          className="w-4 h-4 text-green-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <span className="block text-sm font-medium text-gray-900 dark:text-white">Contact</span>
+                        <a
+                          href={`tel:${item.vendor_no}`}
+                          className="block text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                           {item.vendor_no ?? '-'}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Edit Button */}
+                  <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <Link
+                      href={`/vendor/edit?id=${item.id}`}
+                      className="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white bg-indigo-600  hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-400"
+                    >
+                      <svg
+                        className="w-5 h-5 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        />
+                      </svg>
+                      Edit Vendor
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           ))}

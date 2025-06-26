@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-import { ApiResponse } from './types'
+import { ApiResponse } from '../../types'
 import Link from 'next/link'
 import { PlusIcon } from '@heroicons/react/24/outline'
 
@@ -193,7 +193,7 @@ export default function EditBlock() {
       if (!id) return
 
       try {
-        const blockRes = await axios.get<BlockType>(`/api/Todi/${id}`)
+        const blockRes = await axios.get<BlockType>(`/api/Gala/${id}`)
         const blockData = blockRes.data
         const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
         const vendorsData = vendorsRes.data.docs
@@ -236,7 +236,7 @@ export default function EditBlock() {
         delivered_block: deliveredBlock
       }
 
-      await axios.patch(`/api/Todi/${id}`, updatedBlock)
+      await axios.patch(`/api/Gala/${id}`, updatedBlock)
       setShowSuccessModal(true)
       router.push('/vendor/account')
     } catch (error) {
@@ -251,7 +251,7 @@ export default function EditBlock() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
-          <div className="animate-spin -full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
+          <div className="animate-spin -full rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
           <p className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Loading...</p>
         </div>
       </div>
@@ -262,7 +262,7 @@ export default function EditBlock() {
     <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black pt-24">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">View Todi</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">View Gala</h1>
           <Link href="/vendor/account" className="text-gray-600 hover:text-gray-800">
             ← Back to Blocks
           </Link>
@@ -282,19 +282,19 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Todi Area
+                Total Gala Area
               </label>
               <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_todi_area || ''}
+                {newBlock?.total_area || ''}
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Todi Cost
+                Total Gala Cost
               </label>
               <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_todi_cost || ''}
+                {newBlock?.total_cost || ''}
               </div>
             </div>
 
