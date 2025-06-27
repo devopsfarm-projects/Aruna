@@ -28,6 +28,35 @@ export interface Measure {
   rate: number;
 }
 
+export interface TodiState {
+  id: string;
+  total_gala_cost: string;
+  total_gala_area: string;
+  GalaType: string;
+  front_b: string;
+  back_b: string;
+  total_b: string;
+  gala_cost: string;
+  vender_id: string | number | readonly string[] | undefined;
+  munim: string;
+  BlockType: string;
+  date: string;
+  l: string;
+  b: string;
+  h: string;
+  total_todi_area: string;
+  todi_cost: string;
+  hydra_cost: string;
+  truck_cost: string;
+  total_todi_cost: string;
+  estimate_cost: string;
+  depreciation: string;
+  final_cost: string;
+  total_block_area: string;
+  total_block_cost: string;
+  group: Group[];
+}
+
 export interface Block {
   addmeasures: any
   id: string;
@@ -113,28 +142,7 @@ export interface Group {
 }
 
 
-export interface TodiState {
-  total_block_cost: number;
-  total_block_area: number;
-  total_gala_cost: number;
-  total_gala_area: number;
-  vender_id: string | number | readonly string[] | undefined;
-  munim: string;
-  GalaType: string;
-  date: Date | string;
-  l: number;
-  front_b: number;
-  back_b: number;
-  total_b: number;
-  h: number;
-  gala_cost: number;
-  hydra_cost: number;
-  truck_cost: number;
-  estimate_cost: number;
-  depreciation: number;
-  final_cost: number;
-  group: Group1[];
-}
+
 
 
 export interface Todi {

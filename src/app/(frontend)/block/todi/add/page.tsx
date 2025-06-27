@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import type { GroupField } from '../../types'
 import axios from 'axios'
 import { FormInput, FormSelect, FormDisplay, SummaryCard } from '../../components/FormSection'
+import FetchVendor from '../../components/FetchVendor'
+import Summary from '../../components/Summary'
+import Group from '../../components/Group'
 
 interface Vendor {
   id: number
@@ -362,45 +365,17 @@ export default function AddTodiPage() {
   return (
     <form onSubmit={handleSubmit} className="max-w-7xl mx-auto p-6 py-4 space-y-6">
       <h1 className="text-xl font-bold">Add Todi</h1>
-
       <div className=" px-4 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-gray-50 dark:bg-black">
-  {/* Block Type */}
   <FormSelect label="Block Type:" id="BlockType" name="BlockType" value={todi.BlockType} onChange={handleInput}>
     <option value="">Select Type</option>
     <option value="White">White</option>
     <option value="Brown">Brown</option>
   </FormSelect>
 
-
-  {/* Vendor */}
-  <div className="flex flex-col gap-2">
-    <label className="font-semibold text-gray-800 dark:text-gray-200">Vendor</label>
-    <select
-      value={todi.vender_id}
-      onChange={(e) => {
-        const value = Number(e.target.value);
-        handleInput({ ...e, target: { ...e.target, name: 'vender_id', value } });
-      }}
-      className="p-2 border rounded-md dark:bg-gray-700 dark:text-white"
-    >
-      <option value="">Select vendor</option>
-      {vendors.map((vendor) => (
-        <option key={vendor.id} value={vendor.id}>{vendor.vendor}</option>
-      ))}
-    </select>
-  </div>
-
-  {/* Munim */}
+<FetchVendor todi={todi} handleInput={handleInput} setTodi={setTodi} />
   <FormInput label="Munim:" id="munim" name="munim" value={todi.munim} onChange={handleInput} />
-
-
-  {/* Length */}
   <FormInput label="Length (L - लंबाई) [m]" id="l" name="l" value={todi.l} onChange={handleInput} />
-
-  {/* Height */}
   <FormInput label="Height (H - ऊंचाई) [m]" id="h" name="h" value={todi.h} onChange={handleInput} />
-
-  {/* Breadth */}
   <FormInput label="Breadth (B - चौड़ाई) [m]" id="b" name="b" value={todi.b} onChange={handleInput} />
 
 
@@ -416,6 +391,8 @@ export default function AddTodiPage() {
 
 
 </div>
+
+
 
 
       {/* Groups */}
@@ -621,59 +598,12 @@ export default function AddTodiPage() {
         </button>
       </div>
 
-
-      <section className="bg-white dark:bg-black border border-gray-200 dark:border-gray-600 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
-  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center sm:text-left">
-    <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-4 py-1 rounded-full inline-block">
-      Summary
-    </span>
-  </h3>
-
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-    {/* Summary Card - Total Block Area */}
-    <SummaryCard
-      title="Total Block Area (m³)"
-      value={todi.group
-        .reduce((total, group) =>
-          total + group.block.reduce((groupTotal, block) =>
-            groupTotal + block.addmeasures.reduce((measureTotal, measure) =>
-              measureTotal + parseFloat(measure.block_area || '0'), 0
-            ), 0
-          ), 0
-        ).toFixed(2)}
-    />
-
-    {/* Summary Card - Total Block Cost */}
-    <SummaryCard
-      title="Total Block Cost (₹)"
-      value={todi.group
-        .reduce((total, group) =>
-          total + group.block.reduce((groupTotal, block) =>
-            groupTotal + block.addmeasures.reduce((measureTotal, measure) =>
-              measureTotal + parseFloat(measure.block_cost || '0'), 0
-            ), 0
-          ), 0
-        ).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-    />
-
-    {/* Summary Card - Remaining Amount */}
-    <SummaryCard
-      title="Remaining Amount (₹)"
-      value={(() => {
-        const finalCost = parseFloat(todi.final_cost || '0');
-        const totalBlockCost = todi.group.reduce((total, group) =>
-          total + group.block.reduce((groupTotal, block) =>
-            groupTotal + block.addmeasures.reduce((measureTotal, measure) =>
-              measureTotal + parseFloat(measure.block_cost || '0'), 0
-            ), 0
-          ), 0
-        );
-        const remaining = finalCost - totalBlockCost;
-        return remaining.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      })()}
-    />
-  </div>
-</section>
+<Summary 
+  title="Summary"
+  totalBlockArea={todi.total_block_area}
+  totalBlockCost={todi.total_block_cost}
+  remainingAmount={(parseFloat(todi.final_cost || '0') - parseFloat(todi.total_block_cost)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+/>
 
 
       <button type="submit" className="bg-green-600 text-white px-4 py-2  mt-6">Submit</button>
