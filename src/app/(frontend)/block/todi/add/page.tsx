@@ -103,6 +103,23 @@ export default function AddTodiPage() {
     return (length * breadth * height).toFixed(2);
   };
 
+  todi.total_block_cost = todi.group.reduce((total, group) => {
+    return total + group.block.reduce((groupTotal, block) => {
+      return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+        return measureTotal + parseFloat(measure.block_cost || '0');
+      }, 0);
+    }, 0);
+  }, 0).toFixed(2)
+
+
+  todi.total_block_area = todi.group.reduce((total, group) => {
+    return total + group.block.reduce((groupTotal, block) => {
+      return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+        return measureTotal + parseFloat(measure.block_area || '0');
+      }, 0);
+    }, 0);
+  }, 0).toFixed(2);
+
   const calculateTotalTodiCost = (todiCost: string, hydraCost: string, truckCost: string): string => {
     const todi = parseFloat(todiCost) || 0;
     const hydra = parseFloat(hydraCost) || 0;
@@ -397,7 +414,7 @@ export default function AddTodiPage() {
         />
       </div> 
       <div className="space-y-2"> 
-        <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:</label>
+        <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:(in meter)</label>
         <input
           type="text"
           id="l"
@@ -408,7 +425,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:</label>
+        <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:(in meter)</label>
         <input
           type="text"
           id="b"
@@ -419,7 +436,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:</label>
+        <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:(in meter)</label>
         <input
           type="text"
           id="h"
@@ -431,7 +448,7 @@ export default function AddTodiPage() {
       </div>
 
       <div className="space-y-2"> 
-        <label htmlFor="todi_cost" className="block font-medium capitalize">Todi Cost:</label>
+        <label htmlFor="todi_cost" className="block font-medium capitalize">Todi Cost:(in rupees)</label>
         <input
           type="text"
           id="todi_cost"
@@ -442,7 +459,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="hydra_cost" className="block font-medium capitalize">Hydra Cost:</label>
+        <label htmlFor="hydra_cost" className="block font-medium capitalize">Hydra Cost:(in rupees)</label>
         <input
           type="text"
           id="hydra_cost"
@@ -453,7 +470,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="truck_cost" className="block font-medium capitalize">Truck Cost:</label>
+        <label htmlFor="truck_cost" className="block font-medium capitalize">Truck Cost:(in rupees)</label>
         <input
           type="text"
           id="truck_cost"
@@ -464,7 +481,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="total_todi_area" className="block font-medium capitalize">Total Todi Area:</label>
+        <label htmlFor="total_todi_area" className="block font-medium capitalize">Total Todi Area: (m³)</label>
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
@@ -476,7 +493,7 @@ export default function AddTodiPage() {
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.total_todi_cost}
+          {Number(todi.total_todi_cost)?.toLocaleString('en-IN') || '0'}
         </div>
       </div>
       <div className="space-y-2"> 
@@ -484,7 +501,7 @@ export default function AddTodiPage() {
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.estimate_cost}
+          {Number(todi.estimate_cost)?.toLocaleString('en-IN') || '0'}
         </div>
       </div>
       <div className="space-y-2"> 
@@ -503,7 +520,7 @@ export default function AddTodiPage() {
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.final_cost}
+          {Number(todi.final_cost)?.toLocaleString('en-IN') || '0'}
         </div>
       </div>
 
@@ -583,9 +600,9 @@ export default function AddTodiPage() {
 
                 {/* Add Measures */}
                 {block.addmeasures.map((m, mIdx) => (
-                  <div key={mIdx} className="ml-4 mt-2 border p-2  bg-gray-50">
+                  <div key={mIdx} className="ml-4 mt-2 border p-2">
                     <div className="space-y-2">
-                      <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:</label>
+                      <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:(in meter)</label>
                       <input
                         type="text"
                         id="length"
@@ -604,7 +621,7 @@ export default function AddTodiPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:</label>
+                      <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:(in meter)</label>
                       <input
                         type="text"
                         id="breadth"
@@ -623,7 +640,7 @@ export default function AddTodiPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:</label>
+                      <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:(in meter)</label>
                       <input
                         type="text"
                         id="height"
@@ -642,7 +659,7 @@ export default function AddTodiPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="block_area" className="block font-medium capitalize">Block Area:</label>
+                      <label htmlFor="block_area" className="block font-medium capitalize">Block Area: (m³)</label>
                       <input
                         type="text"
                         id="blockArea"
@@ -668,7 +685,7 @@ export default function AddTodiPage() {
                         type="text"
                         id="block_cost"
                         name="block_cost"
-                        value={m.block_cost}
+                        value={Number(m.block_cost)?.toLocaleString('en-IN') || '0'}
                         className="w-full border dark:bg-gray-700 p-2 "
                         disabled
                       />
@@ -703,10 +720,10 @@ export default function AddTodiPage() {
                       className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                     >
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                        Total Block Area
+                        Total Block Area (m³)
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {todi.total_block_area} = {todi.group.reduce((total, group) => {
+                    {todi.group.reduce((total, group) => {
                           return total + group.block.reduce((groupTotal, block) => {
                             return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
                               return measureTotal + parseFloat(measure.block_area || '0');
@@ -729,16 +746,16 @@ export default function AddTodiPage() {
                       className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                     >
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                        Total Block Cost
+                        Total Block Cost (₹)
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {todi.total_block_cost} = {todi.group.reduce((total, group) => {
+                     {todi.group.reduce((total, group) => {
                           return total + group.block.reduce((groupTotal, block) => {
                             return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
                               return measureTotal + parseFloat(measure.block_cost || '0');
                             }, 0);
                           }, 0);
-                        }, 0).toFixed(2)}
+                        }, 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </div>
                     </div>
                   </div>
@@ -753,18 +770,21 @@ export default function AddTodiPage() {
                   className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                 >
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                    Remaining Amount
+                    Remaining Amount (₹)
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {(parseFloat(todi.final_cost || '0') - 
-                     todi.group.reduce((total: number, group) => {
-                       return total + group.block.reduce((groupTotal: number, block) => {
-                         return groupTotal + block.addmeasures.reduce((measureTotal: number, measure) => {
-                           return measureTotal + parseFloat(measure.block_cost || '0');
-                         }, 0);
-                       }, 0);
-                     }, 0))
-                    .toFixed(2)}
+                    {(() => {
+                      const finalCost = parseFloat(todi.final_cost || '0');
+                      const totalBlockCost = todi.group.reduce((total: number, group) => {
+                        return total + group.block.reduce((groupTotal: number, block) => {
+                          return groupTotal + block.addmeasures.reduce((measureTotal: number, measure) => {
+                            return measureTotal + parseFloat(measure.block_cost || '0');
+                          }, 0);
+                        }, 0);
+                      }, 0);
+                      const remaining = finalCost - totalBlockCost;
+                      return remaining.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    })()}
                   </div>
                 </div>
               </div>

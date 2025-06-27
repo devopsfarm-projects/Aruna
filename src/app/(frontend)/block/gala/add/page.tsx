@@ -32,7 +32,6 @@ interface TodiState {
   total_block_area: ReactNode;
   total_gala_cost: ReactNode;
   total_gala_area: ReactNode;
-  gala_cost: string | number | readonly string[] | undefined;
   vender_id: string | number | readonly string[] | undefined;
   munim: string;
   GalaType: string;
@@ -42,7 +41,7 @@ interface TodiState {
   back_b: string;
   total_b: string;
   h: string;
-  todi_cost: string;
+  gala_cost: string;
   hydra_cost: string;
   truck_cost: string;
 
@@ -67,7 +66,7 @@ export default function AddTodiPage() {
     total_b: '',
     h: '',
     total_gala_area: '',
-    todi_cost: '',
+    gala_cost: '',
     hydra_cost: '',
     truck_cost: '',
     total_gala_cost: '',
@@ -86,6 +85,27 @@ export default function AddTodiPage() {
       }
     ]
   })
+
+
+
+
+  todi.total_block_cost = todi.group.reduce((total, group) => {
+    return total + group.block.reduce((groupTotal, block) => {
+      return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+        return measureTotal + parseFloat(measure.block_cost || '0');
+      }, 0);
+    }, 0);
+  }, 0).toFixed(2)
+
+ todi.total_block_area = todi.group.reduce((total, group) => {
+    return total + group.block.reduce((groupTotal, block) => {
+      return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+        return measureTotal + parseFloat(measure.block_area || '0');
+      }, 0);
+    }, 0);
+  }, 0).toFixed(2)
+
+
 
   const calculateTotalTodiArea = (l: string, b: string, h: string): string => {
     const length = parseFloat(l) || 0;
@@ -149,9 +169,9 @@ export default function AddTodiPage() {
       }
 
       // If any cost field changes, recalculate total_gala_cost
-      if (name === 'todi_cost' || name === 'hydra_cost' || name === 'truck_cost') {
+      if (name === 'gala_cost' || name === 'hydra_cost' || name === 'truck_cost') {
         updatedTodi.total_gala_cost = calculateTotalTodiCost(
-          updatedTodi.todi_cost || '0',
+          updatedTodi.gala_cost || '0',
           updatedTodi.hydra_cost || '0',
           updatedTodi.truck_cost || '0'
         );
@@ -243,7 +263,7 @@ export default function AddTodiPage() {
           const blockArea = parseFloat(measure.block_area) || 0;
           const truckCost = parseFloat(updated[groupIdx].g_truck_cost) || 0;
           const hydraCost = parseFloat(updated[groupIdx].g_hydra_cost) || 0;
-          const todiCost = parseFloat(todi.todi_cost) || 0;
+          const todiCost = parseFloat(todi.gala_cost) || 0;
           const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
           measure.block_cost = blockCost.toFixed(2);
         });
@@ -271,7 +291,7 @@ export default function AddTodiPage() {
         // Recalculate block cost with new area
         const truckCost = parseFloat(updated[groupIdx].g_truck_cost) || 0;
         const hydraCost = parseFloat(updated[groupIdx].g_hydra_cost) || 0;
-        const todiCost = parseFloat(todi.todi_cost) || 0;
+        const todiCost = parseFloat(todi.gala_cost) || 0;
         const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
         measure.block_cost = blockCost.toFixed(2);
       }
@@ -400,7 +420,7 @@ export default function AddTodiPage() {
         />
       </div> 
       <div className="space-y-2"> 
-        <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:</label>
+        <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length (m):</label>
         <input
           type="text"
           id="l"
@@ -411,7 +431,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="front_b" className="block font-medium capitalize">Front B (चौड़ाई) - Breadth:</label>
+        <label htmlFor="front_b" className="block font-medium capitalize">Front B (चौड़ाई) - Breadth (m):</label>
         <input
           type="text"
           id="front_b"
@@ -430,7 +450,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="back_b" className="block font-medium capitalize">Back B (चौड़ाई) - Breadth:</label>
+        <label htmlFor="back_b" className="block font-medium capitalize">Back B (चौड़ाई) - Breadth (m):</label>
         <input
           type="text"
           id="back_b"
@@ -449,7 +469,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="total_b" className="block font-medium capitalize">Total B (चौड़ाई) - Breadth:</label>
+        <label htmlFor="total_b" className="block font-medium capitalize">Total B (चौड़ाई) - Breadth (m):</label>
         <input
           type="text"
           id="total_b"
@@ -461,7 +481,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:</label>
+        <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height (m):</label>
         <input
           type="text"
           id="h"
@@ -473,18 +493,18 @@ export default function AddTodiPage() {
       </div>
 
       <div className="space-y-2"> 
-        <label htmlFor="gala_cost" className="block font-medium capitalize">Gala Cost:</label>
+        <label htmlFor="gala_cost" className="block font-medium capitalize">Gala Cost (₹):</label>
         <input
           type="text"
           id="gala_cost"
           name="gala_cost"
-          value={todi.gala_cost}
+          value={todi.gala_cost?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           onChange={handleInput}
           className="w-full border dark:bg-gray-700 p-2 "
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="hydra_cost" className="block font-medium capitalize">Hydra Cost:</label>
+        <label htmlFor="hydra_cost" className="block font-medium capitalize">Hydra Cost (₹):</label>
         <input
           type="text"
           id="hydra_cost"
@@ -495,7 +515,7 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="truck_cost" className="block font-medium capitalize">Truck Cost:</label>
+        <label htmlFor="truck_cost" className="block font-medium capitalize">Truck Cost (₹):</label>
         <input
           type="text"
           id="truck_cost"
@@ -506,31 +526,31 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="total_gala_area" className="block font-medium capitalize">Total Gala Area:</label>
+        <label htmlFor="total_gala_area" className="block font-medium capitalize">Total Gala Area (m³):</label>
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.total_gala_area}
+          {Number(todi.total_gala_area)?.toLocaleString('en-IN') || '0'}
         </div>
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="total_gala_cost" className="block font-medium capitalize">Total Gala Cost:</label>
+        <label htmlFor="total_gala_cost" className="block font-medium capitalize">Total Gala Cost (₹):</label>
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.total_gala_cost}
+          {Number(todi.total_gala_cost)?.toLocaleString('en-IN') || '0'}
         </div>
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="estimate_cost" className="block font-medium capitalize">Estimate Cost:</label>
+        <label htmlFor="estimate_cost" className="block font-medium capitalize">Estimate Cost (₹):</label>
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.estimate_cost}
+          {Number(todi.estimate_cost)?.toLocaleString('en-IN') || '0'}
         </div>
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="depreciation" className="block font-medium capitalize">Depreciation:</label>
+        <label htmlFor="depreciation" className="block font-medium capitalize">Depreciation (%):</label>
         <input
           type="text"
           id="depreciation"
@@ -541,11 +561,11 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="final_cost" className="block font-medium capitalize">Final Cost:</label>
+        <label htmlFor="final_cost" className="block font-medium capitalize">Final Cost (₹):</label>
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.final_cost}
+          {Number(todi.final_cost)?.toLocaleString('en-IN') || '0'}
         </div>
       </div>
 
@@ -557,7 +577,7 @@ export default function AddTodiPage() {
           <div key={gIdx} className="border p-4  space-y-2">
 
             <div className="space-y-2">
-              <label htmlFor="g_hydra_cost" className="block font-medium capitalize">Hydra Cost:</label>
+              <label htmlFor="g_hydra_cost" className="block font-medium capitalize">Hydra Cost (₹):</label>
               <input
                 type="text"
                 id="g_hydra_cost"
@@ -569,7 +589,7 @@ export default function AddTodiPage() {
                   const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
                   const truckCost = parseFloat(group.g_truck_cost) || 0;
                   const hydraCost = parseFloat(e.target.value) || 0;
-                  const todiCost = parseFloat(todi.todi_cost) || 0;
+                  const todiCost = parseFloat(todi.gala_cost) || 0;
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
                 }}
@@ -589,7 +609,7 @@ export default function AddTodiPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <label htmlFor="g_truck_cost" className="block font-medium capitalize">Truck Cost:</label>
+              <label htmlFor="g_truck_cost" className="block font-medium capitalize">Truck Cost (₹):</label>
               <input
                 type="text"
                 id="g_truck_cost"
@@ -601,7 +621,7 @@ export default function AddTodiPage() {
                   const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
                   const truckCost = parseFloat(e.target.value) || 0;
                   const hydraCost = parseFloat(group.g_hydra_cost) || 0;
-                  const todiCost = parseFloat(todi.todi_cost) || 0;
+                  const todiCost = parseFloat(todi.gala_cost) || 0;
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
                 }}
@@ -625,9 +645,9 @@ export default function AddTodiPage() {
 
                 {/* Add Measures */}
                 {block.addmeasures.map((m, mIdx) => (
-                  <div key={mIdx} className="ml-4 mt-2 border p-2  bg-gray-50">
+                  <div key={mIdx} className="ml-4 mt-2 border p-2  ">
                     <div className="space-y-2">
-                      <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:</label>
+                      <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length (m):</label>
                       <input
                         type="text"
                         id="length"
@@ -646,7 +666,7 @@ export default function AddTodiPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:</label>
+                      <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth (m):</label>
                       <input
                         type="text"
                         id="breadth"
@@ -665,7 +685,7 @@ export default function AddTodiPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:</label>
+                      <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height (m):</label>
                       <input
                         type="text"
                         id="height"
@@ -684,7 +704,7 @@ export default function AddTodiPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="block_area" className="block font-medium capitalize">Block Area:</label>
+                      <label htmlFor="block_area" className="block font-medium capitalize">Block Area (m<sup>3</sup>):</label>
                       <input
                         type="text"
                         id="blockArea"
@@ -696,7 +716,7 @@ export default function AddTodiPage() {
                           const blockArea = parseFloat(e.target.value) || 0;
                           const truckCost = parseFloat(group.g_truck_cost) || 0;
                           const hydraCost = parseFloat(group.g_hydra_cost) || 0;
-                          const todiCost = parseFloat(todi.todi_cost) || 0;
+                          const todiCost = parseFloat(todi.gala_cost) || 0;
                           const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                           handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
                         }}
@@ -705,7 +725,7 @@ export default function AddTodiPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="block_cost" className="block font-medium capitalize">Block Cost:</label>
+                      <label htmlFor="block_cost" className="block font-medium capitalize">Block Cost (₹):</label>
                       <input
                         type="text"
                         id="block_cost"
@@ -745,10 +765,10 @@ export default function AddTodiPage() {
                       className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                     >
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                        Total Block Area
+                        Total Block Area (m³)
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {todi.total_block_area} = {todi.group.reduce((total, group) => {
+                      {todi.group.reduce((total, group) => {
                           return total + group.block.reduce((groupTotal, block) => {
                             return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
                               return measureTotal + parseFloat(measure.block_area || '0');
@@ -771,16 +791,16 @@ export default function AddTodiPage() {
                       className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                     >
                       <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                        Total Block Cost
+                        Total Block Cost (₹)
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {todi.total_block_cost} = {todi.group.reduce((total, group) => {
+                      {todi.group.reduce((total, group) => {
                           return total + group.block.reduce((groupTotal, block) => {
                             return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
                               return measureTotal + parseFloat(measure.block_cost || '0');
                             }, 0);
                           }, 0);
-                        }, 0).toFixed(2)}
+                        }, 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </div>
                     </div>
                   </div>
@@ -795,7 +815,7 @@ export default function AddTodiPage() {
                   className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
                 >
                   <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                    Remaining Amount
+                    Remaining Amount (₹)
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {(parseFloat(todi.final_cost || '0') - 
@@ -805,8 +825,7 @@ export default function AddTodiPage() {
                            return measureTotal + parseFloat(measure.block_cost || '0');
                          }, 0);
                        }, 0);
-                     }, 0))
-                    .toFixed(2)}
+                     }, 0)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
               </div>

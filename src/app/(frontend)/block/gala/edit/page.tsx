@@ -49,7 +49,7 @@ type BlockType = {
   total_area: number
   munim: string
   todirate: string
-  total_todi_area: string
+  total_gala_area: string
   estimate_cost: string
   depreciation: string
   final_cost: string
@@ -58,10 +58,10 @@ type BlockType = {
   back_b: string
   total_b: string
   h: string
-  todi_cost: string
+  gala_cost: string
   hydra_cost: string
   truck_cost: string
-  total_todi_cost: string
+  total_gala_cost: string
   id: number | string
   BlockType: string
   date: string
@@ -89,6 +89,104 @@ export default function EditBlock() {
   const searchParams = useSearchParams()
   const [currentBlock, setCurrentBlock] = useState<BlockType | null>(null)
   const [newBlock, setNewBlock] = useState<BlockType | null>(null)
+
+  useEffect(() => {
+    if (newBlock) {
+      const frontBreadth = parseFloat(newBlock.front_b || '0');
+      const backBreadth = parseFloat(newBlock.back_b || '0');
+      const totalBreadth = (frontBreadth + backBreadth) / 2;
+      if (totalBreadth !== parseFloat(newBlock.total_b || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                total_b: totalBreadth.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.front_b, newBlock?.back_b]);
+
+  useEffect(() => {
+    if (newBlock) {
+      const length = parseFloat(newBlock.l || '0');
+      const totalBreadth = parseFloat(newBlock.total_b || '0');
+      const height = parseFloat(newBlock.h || '0');
+      const area = length * totalBreadth * height;
+      if (area !== parseFloat(newBlock.total_gala_area || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                total_gala_area: area.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.l, newBlock?.total_b, newBlock?.h]);
+
+  useEffect(() => {
+    if (newBlock) {
+      const totalGalaCost = parseFloat(newBlock.total_gala_cost || '0');
+      const totalGalaArea = parseFloat(newBlock.total_gala_area || '0');
+      const estimateCost = totalGalaCost * totalGalaArea;
+      if (estimateCost !== parseFloat(newBlock.estimate_cost || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                estimate_cost: estimateCost.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.total_gala_cost, newBlock?.total_gala_area]);
+
+  useEffect(() => {
+    if (newBlock) {
+      const galaCost = parseFloat(newBlock.gala_cost || '0');
+      const hydraCost = parseFloat(newBlock.hydra_cost || '0');
+      const truckCost = parseFloat(newBlock.truck_cost || '0');
+      const totalGalaCost = galaCost + hydraCost + truckCost;
+      if (totalGalaCost !== parseFloat(newBlock.total_gala_cost || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                total_gala_cost: totalGalaCost.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.gala_cost, newBlock?.hydra_cost, newBlock?.truck_cost]);
+
+
+  useEffect(() => {
+    if (newBlock) {
+      const estimateCost = parseFloat(newBlock.estimate_cost || '0');
+      const depreciation = parseFloat(newBlock.depreciation || '0');
+      const finalCost = estimateCost - ((depreciation / 100) * estimateCost);
+      if (finalCost !== parseFloat(newBlock.final_cost || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                final_cost: finalCost.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.estimate_cost, newBlock?.depreciation]);
+
+
+
+
+
   const [, setShowSuccessModal] = useState(false)
   const [, setMunims] = useState<string[]>([])
   const [vendors, setVendors] = useState<Vendor[]>([])
@@ -117,6 +215,8 @@ export default function EditBlock() {
     fetchMunims()
   }, [])
 
+
+  
   useEffect(() => {
     const fetchAllData = async () => {
       if (!id) return
@@ -259,7 +359,7 @@ export default function EditBlock() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
-          <div className="animate-spin -full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
           <p className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Loading...</p>
         </div>
       </div>
@@ -374,7 +474,7 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Length (लम्बाई)
+              Length (लम्बाई) (m)
               </label>
               <input
                 type="text"
@@ -397,7 +497,7 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Front Breadth (चौड़ाई)
+              Front Breadth (चौड़ाई) (m)
               </label>
               <input
                 type="text"
@@ -418,7 +518,7 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Back Breadth (चौड़ाई)
+              Back Breadth (चौड़ाई) (m)
               </label>
               <input
                 type="text"
@@ -439,22 +539,13 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Total Breadth (चौड़ाई)
+              Total Breadth (चौड़ाई) (m)
               </label>
               <input
                 type="text"
                 value={newBlock?.total_b || ''}
-                onChange={(e) =>
-                  setNewBlock((prev: BlockType | null) =>
-                    prev
-                      ? {
-                          ...prev,
-                          total_b: e.target.value,
-                        }
-                      : prev,
-                  )
-                }
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                readOnly
               />
             </div>
 
@@ -462,7 +553,7 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              Height (ऊंचाई)
+              Height (ऊंचाई) (m)
               </label>
               <input
                 type="text"
@@ -483,17 +574,17 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              todi_cost
+              Gala Cost (₹)
               </label>
               <input
                 type="text"
-                value={newBlock?.todi_cost || ''}
+                value={newBlock?.gala_cost || ''}
                 onChange={(e) =>
                   setNewBlock((prev: BlockType | null) =>
                     prev
                       ? {
                           ...prev,
-                          todi_cost: e.target.value,
+                          gala_cost: e.target.value,
                         }
                       : prev,
                   )
@@ -504,7 +595,7 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-              hydra_cost
+              Hydra Cost (₹)
               </label>
               <input
                 type="text"
@@ -524,7 +615,7 @@ export default function EditBlock() {
             </div>
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  truck_cost
+                  Truck Cost (₹)
                   </label>
                   <input
                     type="text"
@@ -545,69 +636,57 @@ export default function EditBlock() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  total_todi_area
+                  Total Gala Area (m³)
                   </label>
                   <input
                     type="text"
-                    value={newBlock?.total_todi_area || ''}
-                    onChange={(e) =>
+                    value={Number(newBlock?.total_gala_area)?.toLocaleString('en-IN') || ''}
+                    onChange={(e) => {
+                      const length = parseFloat(newBlock?.l || '0');
+                      const totalBreadth = parseFloat(newBlock?.total_b || '0');
+                      const height = parseFloat(newBlock?.h || '0');
+                      const area = length * totalBreadth * height;
                       setNewBlock((prev: BlockType | null) =>
                         prev
                           ? {
                               ...prev,
-                              total_todi_area: e.target.value,
+                              total_gala_area: area.toFixed(2),
                             }
                           : prev,
-                      )
-                    }
+                      );
+                    }}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    readOnly
                   />
                 </div>
+
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      total_todi_cost
+                      Total Gala Cost (₹)
                       </label>
                       <input
                         type="text"
-                        value={newBlock?.total_todi_cost || ''}
-                        onChange={(e) =>
-                          setNewBlock((prev: BlockType | null) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  total_todi_cost: e.target.value,
-                                }
-                              : prev,
-                          )
-                        }
+                        value={Number(newBlock?.total_gala_cost)?.toLocaleString('en-IN') || ''}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        readOnly
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      estimate_cost
+                      Estimate Cost (₹)
                       </label>
                       <input
                         type="text"
-                        value={newBlock?.estimate_cost || ''}
-                        onChange={(e) =>
-                          setNewBlock((prev: BlockType | null) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  estimate_cost: e.target.value,
-                                }
-                              : prev,
-                          )
-                        }
+                        value={Number(newBlock?.estimate_cost)?.toLocaleString('en-IN') || ''}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        readOnly
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      depreciation
+                      Depreciation (%)
                       </label>
                       <input
                         type="text"
@@ -628,11 +707,11 @@ export default function EditBlock() {
 
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                      final_cost
+                      Final Cost (₹)
                       </label>
                       <input
                         type="text"
-                        value={newBlock?.final_cost || ''}
+                        value={Number(newBlock?.final_cost)?.toLocaleString('en-IN') || ''}
                         onChange={(e) =>
                           setNewBlock((prev: BlockType | null) =>
                             prev
@@ -667,7 +746,7 @@ export default function EditBlock() {
                   const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
                   const truckCost = parseFloat(group.g_truck_cost) || 0;
                   const hydraCost = parseFloat(e.target.value) || 0;
-                  const todiCost = parseFloat(newBlock?.todi_cost || '0') || 0;
+                  const todiCost = parseFloat(newBlock?.gala_cost || '0') || 0;
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, 0, 0);
                 }}
@@ -687,7 +766,7 @@ export default function EditBlock() {
               </div>
             </div>
             <div className="space-y-2">
-              <label htmlFor="g_truck_cost" className="block font-medium capitalize">Truck Cost:</label>
+              <label htmlFor="g_truck_cost" className="block font-medium capitalize">Truck Cost (₹):</label>
               <input
                 type="text"
                 id="g_truck_cost"
@@ -699,7 +778,7 @@ export default function EditBlock() {
                   const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
                   const truckCost = parseFloat(e.target.value) || 0;
                   const hydraCost = parseFloat(group.g_hydra_cost) || 0;
-                  const todiCost = parseFloat(newBlock?.todi_cost || '0') || 0;
+                  const todiCost = parseFloat(newBlock?.gala_cost || '0') || 0;
                   const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                   handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, 0, 0);
                 }}
@@ -725,7 +804,7 @@ export default function EditBlock() {
                 {block.addmeasures.map((m, mIdx) => (
                   <div key={mIdx} className="ml-4 mt-2 border p-2  bg-gray-50">
                     <div className="space-y-2">
-                      <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:</label>
+                      <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length (m):</label>
                       <input
                         type="text"
                         id="length"
@@ -744,7 +823,7 @@ export default function EditBlock() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:</label>
+                      <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth (m):</label>
                       <input
                         type="text"
                         id="breadth"
@@ -763,7 +842,7 @@ export default function EditBlock() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:</label>
+                      <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height (m):</label>
                       <input
                         type="text"
                         id="height"
@@ -782,19 +861,19 @@ export default function EditBlock() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="block_area" className="block font-medium capitalize">Block Area:</label>
+                      <label htmlFor="block_area" className="block font-medium capitalize">Block Area (m<sup>3</sup>):</label>
                       <input
                         type="text"
                         id="blockArea"
                         name="block_area"
-                        value={m.block_area}
+                        value={Number(m.block_area)?.toLocaleString('en-IN') || ''}
                         onChange={(e) => {
                           handleNestedChange(e, 'block_area', gIdx, bIdx, mIdx);
                           // Calculate block cost when block area changes
                           const blockArea = parseFloat(e.target.value) || 0;
                           const truckCost = parseFloat(group.g_truck_cost) || 0;
                           const hydraCost = parseFloat(group.g_hydra_cost) || 0;
-                          const todiCost = parseFloat(newBlock?.todi_cost || '0') || 0;
+                          const todiCost = parseFloat(newBlock?.gala_cost || '0') || 0;
                           const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
                           handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, bIdx, mIdx);
                           handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as React.ChangeEvent<HTMLInputElement>, 'block_cost', gIdx, bIdx, mIdx);
@@ -804,12 +883,12 @@ export default function EditBlock() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="block_cost" className="block font-medium capitalize">Block Cost:</label>
+                      <label htmlFor="block_cost" className="block font-medium capitalize">Block Cost (₹):</label>
                       <input
                         type="text"
                         id="block_cost"
                         name="block_cost"
-                        value={m.block_cost}
+                        value={Number(m.block_cost)?.toLocaleString('en-IN') || ''}
                         className="w-full border dark:bg-gray-600 p-2 "
                         disabled
                       />

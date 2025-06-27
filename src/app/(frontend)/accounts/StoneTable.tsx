@@ -26,10 +26,10 @@ export default function StoneTable({ stones }: { stones: any[] }) {
                 <td className="p-3">
                   {stone.date ? new Date(stone.date).toLocaleDateString() : '-'}
                 </td>
-                <td className="p-3">{stone.rate}</td>
+                <td className="p-3">{stone.rate?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-3">{stone.total_quantity ?? '-'}</td>
                 <td className="p-3">{stone.hydra_cost ?? '-'}</td>
-                <td className="p-3">₹{stone.total_amount ?? '-'}</td>
+                <td className="p-3">₹{stone.total_amount?.toLocaleString('en-IN') || '0'}</td>
               </tr>
             ))}
           </tbody>

@@ -99,6 +99,95 @@ export default function EditBlock() {
   const id = searchParams.get('id') ?? null
   const [, setIsSubmitting] = useState(false)
 
+
+
+  useEffect(() => {
+    if (newBlock) {
+      const length = parseFloat(newBlock.l || '0');
+      const totalBreadth = parseFloat(newBlock.b || '0');
+      const height = parseFloat(newBlock.h || '0');
+      const area = length * totalBreadth * height;
+      if (area !== parseFloat(newBlock.total_todi_area || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                total_todi_area: area.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.l, newBlock?.b, newBlock?.h]);
+
+  useEffect(() => {
+    if (newBlock) {
+      const totalGalaCost = parseFloat(newBlock.total_todi_cost || '0');
+      const totalGalaArea = parseFloat(newBlock.total_todi_area || '0');
+      const estimateCost = totalGalaCost * totalGalaArea;
+      if (estimateCost !== parseFloat(newBlock.estimate_cost || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                estimate_cost: estimateCost.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.total_todi_cost, newBlock?.total_todi_area]);
+
+  useEffect(() => {
+    if (newBlock) {
+      const galaCost = parseFloat(newBlock.todi_cost || '0');
+      const hydraCost = parseFloat(newBlock.hydra_cost || '0');
+      const truckCost = parseFloat(newBlock.truck_cost || '0');
+      const totalGalaCost = galaCost + hydraCost + truckCost;
+      if (totalGalaCost !== parseFloat(newBlock.total_todi_cost || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                total_todi_cost: totalGalaCost.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.todi_cost, newBlock?.hydra_cost, newBlock?.truck_cost]);
+
+
+  useEffect(() => {
+    if (newBlock) {
+      const estimateCost = parseFloat(newBlock.estimate_cost || '0');
+      const depreciation = parseFloat(newBlock.depreciation || '0');
+      const finalCost = estimateCost - ((depreciation / 100) * estimateCost);
+      if (finalCost !== parseFloat(newBlock.final_cost || '0')) {
+        setNewBlock(prev =>
+          prev
+            ? {
+                ...prev,
+                final_cost: finalCost.toFixed(2),
+              }
+            : prev,
+        );
+      }
+    }
+  }, [newBlock?.estimate_cost, newBlock?.depreciation]);
+
+
+
+
+
+
+
+
+
+
+
+
+
   // Fetch munims
   useEffect(() => {
     const fetchMunims = async () => {
@@ -254,7 +343,7 @@ export default function EditBlock() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
-          <div className="animate-spin -full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
           <p className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Loading...</p>
         </div>
       </div>
@@ -262,7 +351,7 @@ export default function EditBlock() {
   }
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black pt-24">
+    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black ">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
@@ -502,7 +591,7 @@ export default function EditBlock() {
                   </label>
                   <input
                     type="text"
-                    value={newBlock?.total_todi_area || ''}
+                    value={Number(newBlock?.total_todi_area).toLocaleString('en-IN') || ''}
                     onChange={(e) =>
                       setNewBlock((prev: BlockType | null) =>
                         prev
@@ -522,7 +611,7 @@ export default function EditBlock() {
                       </label>
                       <input
                         type="text"
-                        value={newBlock?.total_todi_cost || ''}
+                        value={Number(newBlock?.total_todi_cost).toLocaleString('en-IN') || ''}
                         onChange={(e) =>
                           setNewBlock((prev: BlockType | null) =>
                             prev
@@ -543,7 +632,7 @@ export default function EditBlock() {
                       </label>
                       <input
                         type="text"
-                        value={newBlock?.estimate_cost || ''}
+                        value={Number(newBlock?.estimate_cost).toLocaleString('en-IN') || ''}
                         onChange={(e) =>
                           setNewBlock((prev: BlockType | null) =>
                             prev
@@ -564,7 +653,7 @@ export default function EditBlock() {
                       </label>
                       <input
                         type="text"
-                        value={newBlock?.depreciation || ''}
+                        value={Number(newBlock?.depreciation).toLocaleString('en-IN') || ''}
                         onChange={(e) =>
                           setNewBlock((prev: BlockType | null) =>
                             prev
@@ -585,7 +674,7 @@ export default function EditBlock() {
                       </label>
                       <input
                         type="text"
-                        value={newBlock?.final_cost || ''}
+                        value={Number(newBlock?.final_cost).toLocaleString('en-IN') || ''}
                         onChange={(e) =>
                           setNewBlock((prev: BlockType | null) =>
                             prev
@@ -740,7 +829,7 @@ export default function EditBlock() {
                         type="text"
                         id="blockArea"
                         name="block_area"
-                        value={m.block_area}
+                        value={Number(m.block_area).toLocaleString('en-IN')}
                         onChange={(e) => {
                           handleNestedChange(e, 'block_area', gIdx, bIdx, mIdx);
                           // Calculate block cost when block area changes
@@ -762,7 +851,7 @@ export default function EditBlock() {
                         type="text"
                         id="block_cost"
                         name="block_cost"
-                        value={m.block_cost}
+                        value={Number(m.block_cost).toLocaleString('en-IN')}
                         className="w-full border dark:bg-gray-600 p-2 "
                         disabled
                       />

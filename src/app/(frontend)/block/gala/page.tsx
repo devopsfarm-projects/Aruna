@@ -42,8 +42,8 @@ export default async function GalaListPage() {
                 <td className="p-2">{todi.munim || '-'}</td>
                 <td className="p-2">{todi.l} x {todi.total_b} x {todi.h}</td>
                 <td className="p-2">{todi.total_gala_area}</td>
-                <td className="p-2">₹{todi.total_gala_cost}</td>
-                <td className="p-2">₹{todi.final_cost}</td>
+                <td className="p-2">₹{todi.total_gala_cost?.toLocaleString('en-IN') || '0'}</td>
+                <td className="p-2">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-2">
                   <Link href={`/block/gala/edit?id=${todi.id}`} className="text-blue-600 underline">
                     Edit
