@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import type { GroupField } from '../../types'
 import axios from 'axios'
+import { FormInput, FormSelect, FormDisplay, SummaryCard } from '../../components/FormSection'
 
 interface Vendor {
   id: number
@@ -60,6 +61,7 @@ interface TodiState {
   total_block_area: string;
   total_block_cost: string;
   group: Group[];
+  
 }
 
 export default function AddTodiPage() {
@@ -158,6 +160,7 @@ export default function AddTodiPage() {
       }, 0);
     }, 0).toFixed(2);
   };
+
 
   const handleInput = (e: any) => {
     const { name, value } = e.target;
@@ -357,172 +360,62 @@ export default function AddTodiPage() {
 
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 py-4 space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-7xl mx-auto p-6 py-4 space-y-6">
       <h1 className="text-xl font-bold">Add Todi</h1>
 
-      {/* Basic Fields */}
-      {/* Block Type Select */}
-      <div className="space-y-2">
-        <label htmlFor="BlockType" className="block font-medium capitalize">Block Type:</label>
-        <select
-          id="BlockType"
-          name="BlockType"
-          value={todi.BlockType}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        >
-          <option value="">Select Type</option>
-          <option value="White">White</option>
-          <option value="Brown">Brown</option>
-        </select>
-      </div>
-
-      <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Vendor
-                      </label>
-                      <select
-                        value={todi.vender_id}
-                        onChange={(e) => {
-                          const value = Number(e.target.value);
-                          handleInput({...e, target: { ...e.target, name: 'vender_id', value }})
-                        }}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        required
-                      >
-                        <option value="">Select vendor</option>
-                        {vendors.map((vendor) => (
-                          <option key={vendor.id} value={vendor.id}>
-                            {vendor.vendor}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+      <div className=" px-4 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-gray-50 dark:bg-black">
+  {/* Block Type */}
+  <FormSelect label="Block Type:" id="BlockType" name="BlockType" value={todi.BlockType} onChange={handleInput}>
+    <option value="">Select Type</option>
+    <option value="White">White</option>
+    <option value="Brown">Brown</option>
+  </FormSelect>
 
 
-      {/* Basic Fields */}
-      <div className="space-y-2">
-        <label htmlFor="munim" className="block font-medium capitalize">Munim:</label>
-        <input
-          type="text"
-          id="munim"
-          name="munim"
-          value={todi.munim}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        />
-      </div> 
-      <div className="space-y-2"> 
-        <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:(in meter)</label>
-        <input
-          type="text"
-          id="l"
-          name="l"
-          value={todi.l}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        />
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:(in meter)</label>
-        <input
-          type="text"
-          id="b"
-          name="b"
-          value={todi.b}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        />
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:(in meter)</label>
-        <input
-          type="text"
-          id="h"
-          name="h"
-          value={todi.h}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        />
-      </div>
+  {/* Vendor */}
+  <div className="flex flex-col gap-2">
+    <label className="font-semibold text-gray-800 dark:text-gray-200">Vendor</label>
+    <select
+      value={todi.vender_id}
+      onChange={(e) => {
+        const value = Number(e.target.value);
+        handleInput({ ...e, target: { ...e.target, name: 'vender_id', value } });
+      }}
+      className="p-2 border rounded-md dark:bg-gray-700 dark:text-white"
+    >
+      <option value="">Select vendor</option>
+      {vendors.map((vendor) => (
+        <option key={vendor.id} value={vendor.id}>{vendor.vendor}</option>
+      ))}
+    </select>
+  </div>
 
-      <div className="space-y-2"> 
-        <label htmlFor="todi_cost" className="block font-medium capitalize">Todi Cost:(in rupees)</label>
-        <input
-          type="text"
-          id="todi_cost"
-          name="todi_cost"
-          value={todi.todi_cost}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        />
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="hydra_cost" className="block font-medium capitalize">Hydra Cost:(in rupees)</label>
-        <input
-          type="text"
-          id="hydra_cost"
-          name="hydra_cost"
-          value={todi.hydra_cost}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        />
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="truck_cost" className="block font-medium capitalize">Truck Cost:(in rupees)</label>
-        <input
-          type="text"
-          id="truck_cost"
-          name="truck_cost"
-          value={todi.truck_cost}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        />
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="total_todi_area" className="block font-medium capitalize">Total Todi Area: (m³)</label>
-        <div
-          className="w-full border dark:bg-gray-700 p-2 "
-        >
-          {todi.total_todi_area}
-        </div>
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="total_todi_cost" className="block font-medium capitalize">Total Todi Cost:</label>
-        <div
-          className="w-full border dark:bg-gray-700 p-2 "
-        >
-          {Number(todi.total_todi_cost)?.toLocaleString('en-IN') || '0'}
-        </div>
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="estimate_cost" className="block font-medium capitalize">Estimate Cost:</label>
-        <div
-          className="w-full border dark:bg-gray-700 p-2 "
-        >
-          {Number(todi.estimate_cost)?.toLocaleString('en-IN') || '0'}
-        </div>
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="depreciation" className="block font-medium capitalize">Depreciation:</label>
-        <input
-          type="text"
-          id="depreciation"
-          name="depreciation"
-          value={todi.depreciation}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        />
-      </div>
-      <div className="space-y-2"> 
-        <label htmlFor="final_cost" className="block font-medium capitalize">Final Cost:</label>
-        <div
-          className="w-full border dark:bg-gray-700 p-2 "
-        >
-          {Number(todi.final_cost)?.toLocaleString('en-IN') || '0'}
-        </div>
-      </div>
+  {/* Munim */}
+  <FormInput label="Munim:" id="munim" name="munim" value={todi.munim} onChange={handleInput} />
+
+
+  {/* Length */}
+  <FormInput label="Length (L - लंबाई) [m]" id="l" name="l" value={todi.l} onChange={handleInput} />
+
+  {/* Height */}
+  <FormInput label="Height (H - ऊंचाई) [m]" id="h" name="h" value={todi.h} onChange={handleInput} />
+
+  {/* Breadth */}
+  <FormInput label="Breadth (B - चौड़ाई) [m]" id="b" name="b" value={todi.b} onChange={handleInput} />
+
+
+<FormInput label="Todi Cost" id="todi_cost" name="todi_cost" value={todi.todi_cost} onChange={handleInput} />
+<FormInput label="Hydra Cost" id="hydra_cost" name="hydra_cost" value={todi.hydra_cost} onChange={handleInput} />
+<FormInput label="Truck Cost" id="truck_cost" name="truck_cost" value={todi.truck_cost} onChange={handleInput} />
+<FormInput label="Depreciation" id="depreciation" name="depreciation" value={todi.depreciation} onChange={handleInput} />
+
+<FormInput label="Total Todi Area" id="total_todi_area" name="total_todi_area" value={Number(todi.total_todi_area)?.toLocaleString('en-IN')} onChange={handleInput} />
+<FormInput label="Total Todi Cost" id="total_todi_cost" name="total_todi_cost" value={Number(todi.total_todi_cost)?.toLocaleString('en-IN')} onChange={handleInput} />
+<FormInput label="Estimate Cost" id="estimate_cost" name="estimate_cost" value={Number(todi.estimate_cost)?.toLocaleString('en-IN')} onChange={handleInput} />
+<FormInput label="Final Cost" id="final_cost" name="final_cost" value={Number(todi.final_cost)?.toLocaleString('en-IN')} onChange={handleInput} />
+
+
+</div>
 
 
       {/* Groups */}
@@ -530,59 +423,66 @@ export default function AddTodiPage() {
         <h2 className="text-lg font-semibold">Groups</h2>
         {todi.group.map((group, gIdx) => (
           <div key={gIdx} className="border p-4  space-y-2">
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  {/* Hydra Cost */}
+  <div className="flex flex-col gap-1">
+    <label htmlFor="g_hydra_cost" className="text-sm font-medium text-gray-800 dark:text-gray-200">Hydra Cost (₹)</label>
+    <input
+      type="text"
+      id="g_hydra_cost"
+      name="g_hydra_cost"
+      value={group.g_hydra_cost}
+      onChange={(e) => {
+        handleNestedChange(e, gIdx);
 
-            <div className="space-y-2">
-              <label htmlFor="g_hydra_cost" className="block font-medium capitalize">Hydra Cost:</label>
-              <input
-                type="text"
-                id="g_hydra_cost"
-                name="g_hydra_cost"
-                value={group.g_hydra_cost}
-                onChange={(e) => {
-                  handleNestedChange(e, gIdx);
-                  // Calculate block cost when hydra cost changes
-                  const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
-                  const truckCost = parseFloat(group.g_truck_cost) || 0;
-                  const hydraCost = parseFloat(e.target.value) || 0;
-                  const todiCost = parseFloat(todi.todi_cost) || 0;
-                  const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
-                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
-                }}
-                className="w-full border dark:bg-gray-700 p-2 "
-              />
+        const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
+        const truckCost = parseFloat(group.g_truck_cost) || 0;
+        const hydraCost = parseFloat(e.target.value) || 0;
+        const todiCost = parseFloat(todi.todi_cost) || 0;
+        const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
 
-              <div className="space-y-2">
-                <label htmlFor="date" className="block font-medium capitalize">Date:</label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={group.date}
-                  onChange={(e) => handleNestedChange(e, gIdx)}
-                  className="w-full border dark:bg-gray-700 p-2 "
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="g_truck_cost" className="block font-medium capitalize">Truck Cost:</label>
-              <input
-                type="text"
-                id="g_truck_cost"
-                name="g_truck_cost"
-                value={group.g_truck_cost}
-                onChange={(e) => {
-                  handleNestedChange(e, gIdx);
-                  // Calculate block cost when truck cost changes
-                  const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
-                  const truckCost = parseFloat(e.target.value) || 0;
-                  const hydraCost = parseFloat(group.g_hydra_cost) || 0;
-                  const todiCost = parseFloat(todi.todi_cost) || 0;
-                  const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
-                  handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
-                }}
-                className="w-full border dark:bg-gray-700 p-2 "
-              />
-            </div>
+        handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
+      }}
+      className="p-2 border rounded-md dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+    />
+  </div>
+
+  {/* Truck Cost */}
+  <div className="flex flex-col gap-1">
+    <label htmlFor="g_truck_cost" className="text-sm font-medium text-gray-800 dark:text-gray-200">Truck Cost (₹)</label>
+    <input
+      type="text"
+      id="g_truck_cost"
+      name="g_truck_cost"
+      value={group.g_truck_cost}
+      onChange={(e) => {
+        handleNestedChange(e, gIdx);
+
+        const blockArea = parseFloat(group.block[0]?.addmeasures[0]?.block_area) || 0;
+        const truckCost = parseFloat(e.target.value) || 0;
+        const hydraCost = parseFloat(group.g_hydra_cost) || 0;
+        const todiCost = parseFloat(todi.todi_cost) || 0;
+        const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+
+        handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, 0, 0);
+      }}
+      className="p-2 border rounded-md dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+    />
+  </div>
+
+  {/* Date */}
+  <div className="flex flex-col gap-1">
+    <label htmlFor="date" className="text-sm font-medium text-gray-800 dark:text-gray-200">Date</label>
+    <input
+      type="date"
+      id="date"
+      name="date"
+      value={group.date}
+      onChange={(e) => handleNestedChange(e, gIdx)}
+      className="p-2 border rounded-md dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+    />
+  </div>
+</div>
 
 
 
@@ -600,98 +500,117 @@ export default function AddTodiPage() {
 
                 {/* Add Measures */}
                 {block.addmeasures.map((m, mIdx) => (
-                  <div key={mIdx} className="ml-4 mt-2 border p-2">
-                    <div className="space-y-2">
-                      <label htmlFor="l" className="block font-medium capitalize">L (लम्बाई) - Length:(in meter)</label>
-                      <input
-                        type="text"
-                        id="length"
-                        name="l"
-                        value={m.l}
-                        onChange={(e) => {
-                          handleNestedChange(e, gIdx, bIdx, mIdx);
-                          // Calculate block area when length changes
-                          const l = parseFloat(e.target.value) || 0;
-                          const b = parseFloat(m.b) || 0;
-                          const h = parseFloat(m.h) || 0;
-                          const blockArea = (l * b * h)/144;
-                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
-                        }}
-                        className="w-full border dark:bg-gray-700 p-2 "
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="b" className="block font-medium capitalize">B (चौड़ाई) - Breadth:(in meter)</label>
-                      <input
-                        type="text"
-                        id="breadth"
-                        name="b"
-                        value={m.b}
-                        onChange={(e) => {
-                          handleNestedChange(e, gIdx, bIdx, mIdx);
-                          // Calculate block area when breadth changes
-                          const l = parseFloat(m.l) || 0;
-                          const b = parseFloat(e.target.value) || 0;
-                          const h = parseFloat(m.h) || 0;
-                          const blockArea = (l * b * h)/144;
-                          handleNestedChange({ target: { name: 'block_area', value: blockArea } }, gIdx, bIdx, mIdx);
-                        }}
-                        className="w-full border dark:bg-gray-700 p-2 "
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="h" className="block font-medium capitalize">H (ऊंचाई) - Height:(in meter)</label>
-                      <input
-                        type="text"
-                        id="height"
-                        name="h"
-                        value={m.h}
-                        onChange={(e) => {
-                          handleNestedChange(e, gIdx, bIdx, mIdx);
-                          // Calculate block area when height changes
-                          const l = parseFloat(m.l) || 0;
-                          const b = parseFloat(m.b) || 0;
-                          const h = parseFloat(e.target.value) || 0;
-                          const blockArea = (l * b * h)/144;
-                          handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
-                        }}
-                        className="w-full border dark:bg-gray-700 p-2 "
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="block_area" className="block font-medium capitalize">Block Area: (m³)</label>
-                      <input
-                        type="text"
-                        id="blockArea"
-                        name="block_area"
-                        value={m.block_area}
-                        onChange={(e) => {
-                          handleNestedChange(e, gIdx, bIdx, mIdx);
-                          // Calculate block cost when block area changes
-                          const blockArea = parseFloat(e.target.value) || 0;
-                          const truckCost = parseFloat(group.g_truck_cost) || 0;
-                          const hydraCost = parseFloat(group.g_hydra_cost) || 0;
-                          const todiCost = parseFloat(todi.todi_cost) || 0;
-                          const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
-                          handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
-                        }}
-                        className="w-full border dark:bg-gray-700 p-2 "
-                        disabled
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="block_cost" className="block font-medium capitalize">Block Cost:</label>
-                      <input
-                        type="text"
-                        id="block_cost"
-                        name="block_cost"
-                        value={Number(m.block_cost)?.toLocaleString('en-IN') || '0'}
-                        className="w-full border dark:bg-gray-700 p-2 "
-                        disabled
-                      />
-                    </div>
-                  </div>
-                ))}
+  <div
+    key={mIdx}
+    className="ml-4 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white dark:bg-gray-900"
+  >
+    {/* Length */}
+    <div className="flex flex-col gap-1">
+      <label htmlFor="length" className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+        L (लम्बाई) - Length (m)
+      </label>
+      <input
+        type="text"
+        id="length"
+        name="l"
+        value={m.l}
+        onChange={(e) => {
+          handleNestedChange(e, gIdx, bIdx, mIdx);
+          const l = parseFloat(e.target.value) || 0;
+          const b = parseFloat(m.b) || 0;
+          const h = parseFloat(m.h) || 0;
+          const blockArea = (l * b * h) / 144;
+          handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
+        }}
+        className="p-2 border rounded-md dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* Breadth */}
+    <div className="flex flex-col gap-1">
+      <label htmlFor="breadth" className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+        B (चौड़ाई) - Breadth (m)
+      </label>
+      <input
+        type="text"
+        id="breadth"
+        name="b"
+        value={m.b}
+        onChange={(e) => {
+          handleNestedChange(e, gIdx, bIdx, mIdx);
+          const l = parseFloat(m.l) || 0;
+          const b = parseFloat(e.target.value) || 0;
+          const h = parseFloat(m.h) || 0;
+          const blockArea = (l * b * h) / 144;
+          handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
+        }}
+        className="p-2 border rounded-md dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* Height */}
+    <div className="flex flex-col gap-1">
+      <label htmlFor="height" className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+        H (ऊंचाई) - Height (m)
+      </label>
+      <input
+        type="text"
+        id="height"
+        name="h"
+        value={m.h}
+        onChange={(e) => {
+          handleNestedChange(e, gIdx, bIdx, mIdx);
+          const l = parseFloat(m.l) || 0;
+          const b = parseFloat(m.b) || 0;
+          const h = parseFloat(e.target.value) || 0;
+          const blockArea = (l * b * h) / 144;
+          handleNestedChange({ target: { name: 'block_area', value: blockArea.toFixed(2) } }, gIdx, bIdx, mIdx);
+        }}
+        className="p-2 border rounded-md dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* Block Area (disabled) */}
+    <div className="flex flex-col gap-1">
+      <label htmlFor="block_area" className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+        Block Area (m³)
+      </label>
+      <input
+        type="text"
+        id="block_area"
+        name="block_area"
+        value={m.block_area}
+        disabled
+        onChange={(e) => {
+          handleNestedChange(e, gIdx, bIdx, mIdx);
+          const blockArea = parseFloat(e.target.value) || 0;
+          const truckCost = parseFloat(group.g_truck_cost) || 0;
+          const hydraCost = parseFloat(group.g_hydra_cost) || 0;
+          const todiCost = parseFloat(todi.todi_cost) || 0;
+          const blockCost = (truckCost + hydraCost + todiCost) * blockArea;
+          handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } }, gIdx, bIdx, mIdx);
+        }}
+        className="p-2 border rounded-md bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 cursor-not-allowed"
+      />
+    </div>
+
+    {/* Block Cost (disabled) */}
+    <div className="flex flex-col gap-1">
+      <label htmlFor="block_cost" className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+        Block Cost (₹)
+      </label>
+      <input
+        type="text"
+        id="block_cost"
+        name="block_cost"
+        value={Number(m.block_cost)?.toLocaleString('en-IN') || '0'}
+        disabled
+        className="p-2 border rounded-md bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 cursor-not-allowed"
+      />
+    </div>
+  </div>
+))}
+
               </div>
             ))}
           </div>
@@ -703,93 +622,59 @@ export default function AddTodiPage() {
       </div>
 
 
-      <section className="bg-white dark:bg-gray-800 -lg shadow-md p-6 max-w-4xl mx-auto">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center sm:text-left">
-                  <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-3 py-1 -full inline-block">
-                    Summary
-                  </span>
-                </h3>
-      
-                
-                {/* Add individual block areas */}
-                <div className="mt-8">
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 
-                    <div
-                      className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
-                    >
-                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                        Total Block Area (m³)
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {todi.group.reduce((total, group) => {
-                          return total + group.block.reduce((groupTotal, block) => {
-                            return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
-                              return measureTotal + parseFloat(measure.block_area || '0');
-                            }, 0);
-                          }, 0);
-                        }, 0).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+      <section className="bg-white dark:bg-black border border-gray-200 dark:border-gray-600 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center sm:text-left">
+    <span className="text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-4 py-1 rounded-full inline-block">
+      Summary
+    </span>
+  </h3>
 
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    {/* Summary Card - Total Block Area */}
+    <SummaryCard
+      title="Total Block Area (m³)"
+      value={todi.group
+        .reduce((total, group) =>
+          total + group.block.reduce((groupTotal, block) =>
+            groupTotal + block.addmeasures.reduce((measureTotal, measure) =>
+              measureTotal + parseFloat(measure.block_area || '0'), 0
+            ), 0
+          ), 0
+        ).toFixed(2)}
+    />
 
+    {/* Summary Card - Total Block Cost */}
+    <SummaryCard
+      title="Total Block Cost (₹)"
+      value={todi.group
+        .reduce((total, group) =>
+          total + group.block.reduce((groupTotal, block) =>
+            groupTotal + block.addmeasures.reduce((measureTotal, measure) =>
+              measureTotal + parseFloat(measure.block_cost || '0'), 0
+            ), 0
+          ), 0
+        ).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+    />
 
+    {/* Summary Card - Remaining Amount */}
+    <SummaryCard
+      title="Remaining Amount (₹)"
+      value={(() => {
+        const finalCost = parseFloat(todi.final_cost || '0');
+        const totalBlockCost = todi.group.reduce((total, group) =>
+          total + group.block.reduce((groupTotal, block) =>
+            groupTotal + block.addmeasures.reduce((measureTotal, measure) =>
+              measureTotal + parseFloat(measure.block_cost || '0'), 0
+            ), 0
+          ), 0
+        );
+        const remaining = finalCost - totalBlockCost;
+        return remaining.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      })()}
+    />
+  </div>
+</section>
 
-                <div className="mt-8">
-              
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               
-                    <div
-                      className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
-                    >
-                      <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                        Total Block Cost (₹)
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                     {todi.group.reduce((total, group) => {
-                          return total + group.block.reduce((groupTotal, block) => {
-                            return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
-                              return measureTotal + parseFloat(measure.block_cost || '0');
-                            }, 0);
-                          }, 0);
-                        }, 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-
-                <div className="mt-8">
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-                <div
-                  className="p-4 bg-gray-50 dark:bg-gray-700 -lg border border-gray-200 dark:border-gray-600"
-                >
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                    Remaining Amount (₹)
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {(() => {
-                      const finalCost = parseFloat(todi.final_cost || '0');
-                      const totalBlockCost = todi.group.reduce((total: number, group) => {
-                        return total + group.block.reduce((groupTotal: number, block) => {
-                          return groupTotal + block.addmeasures.reduce((measureTotal: number, measure) => {
-                            return measureTotal + parseFloat(measure.block_cost || '0');
-                          }, 0);
-                        }, 0);
-                      }, 0);
-                      const remaining = finalCost - totalBlockCost;
-                      return remaining.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    })()}
-                  </div>
-                </div>
-              </div>
-            </div>
-              </section>
 
       <button type="submit" className="bg-green-600 text-white px-4 py-2  mt-6">Submit</button>
     </form>

@@ -495,3 +495,7 @@ export default function EditBlock() {
 }
 
 
+
+function setVendors(vendorsData: Vendor[]) {
+  throw new Error('Function not implemented.');
+}

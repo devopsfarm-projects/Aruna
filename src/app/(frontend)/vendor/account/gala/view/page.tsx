@@ -217,10 +217,7 @@ export default function EditBlock() {
   const calculateRemainingPayment = () => {
     const totalReceived = receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0)
     const remaining = Number(newBlock?.final_cost || 0) - totalReceived
-    return remaining.toLocaleString('en-IN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })
+    return remaining
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

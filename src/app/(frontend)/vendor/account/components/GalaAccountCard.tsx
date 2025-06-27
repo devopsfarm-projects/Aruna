@@ -96,14 +96,9 @@ export default function GalaAccountCard({ initialGalas, initialVendors, initialV
                   </td>
                   <td className="px-4 py-2">₹{gala.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">₹{gala.final_cost?.toLocaleString('en-IN') || '0'}</td>
-                  <td className="px-4 py-2">{gala.group?.[0]?.remaining_amount?.toLocaleString('en-IN') || '0'}</td>
+                  {/* <td className="px-4 py-2">₹{gala.group?.[0]?.remaining_amount?.toLocaleString('en-IN') || '0'}</td> */}
                   <td className="px-4 py-2">
-                    <Link
-                      href={`/vendor/account/gala/view?id=${gala.id}`}
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline"
-                    >
-                      View
-                    </Link>
+                    <Link href={`/vendor/account/gala/view?id=${gala.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  View  </Link>
                   </td>
                 </tr>
               ))
