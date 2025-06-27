@@ -59,17 +59,16 @@ type BlockType = {
   total_area: number
   munim: string
   todirate: string
-  total_todi_area: string
-  estimate_cost: string
-  depreciation: string
+  total_block_area: string
   final_cost: string
+  depreciation: string
   l: string
   b: string
   h: string
   todi_cost: string
   hydra_cost: string
   truck_cost: string
-  total_todi_cost: string
+  total_block_cost: string
   id: number | string
   BlockType: string
   date: string
@@ -125,6 +124,16 @@ export default function EditBlock() {
     date: string
     description: string
   }>>([])
+
+
+  // Helper function to format cost values with commas
+  const formatCost = (cost: string | number | null) => {
+    if (!cost) return ''
+    return Number(cost).toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
 
   // Update currentBlock when newBlock changes
   useEffect(() => {
@@ -218,7 +227,11 @@ export default function EditBlock() {
 
   const calculateRemainingPayment = () => {
     const totalReceived = receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0)
-    return Number(newBlock?.estimate_cost || 0) - totalReceived
+    const remaining = Number(newBlock?.final_cost || 0) - totalReceived
+    return remaining.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -259,7 +272,7 @@ export default function EditBlock() {
   }
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black pt-24">
+    <div className=" max-w-7xl mx-auto bg-gray-50 dark:bg-black ">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">View Todi</h1>
@@ -282,28 +295,28 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Todi Area
+                Total Block Area (m³)
               </label>
               <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_todi_area || ''}
+                {newBlock?.total_block_area || ''}
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Todi Cost
+                Total Block Cost
               </label>
               <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_todi_cost || ''}
+                {formatCost(newBlock?.total_block_cost ?? '')}
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Estimate Cost
+                Final Cost ₹
               </label>
               <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.estimate_cost || ''}
+                {formatCost(newBlock?.final_cost ?? '')}
               </div>
             </div>
 
@@ -447,18 +460,18 @@ export default function EditBlock() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    Total Received
+                    Total Received ₹
                   </label>
                   <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                    {receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0).toFixed(2)}
+                    {formatCost(receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0))}
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    Remaining Payment
+                    Remaining Payment ₹
                   </label>
                   <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                    {calculateRemainingPayment().toFixed(2)}
+                    {calculateRemainingPayment()}
                   </div>
                 </div>
               </div>
@@ -481,6 +494,4 @@ export default function EditBlock() {
   )
 }
 
-function setVendors(vendorsData: Vendor[]) {
-  throw new Error('Function not implemented.');
-}
+

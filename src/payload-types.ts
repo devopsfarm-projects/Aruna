@@ -335,11 +335,8 @@ export interface Gala {
   group?:
     | {
         date?: string | null;
-        hydra_cost?: number | null;
-        truck_cost?: number | null;
-        total_block_area?: number | null;
-        total_block_cost?: number | null;
-        remaining_amount?: number | null;
+        g_hydra_cost?: number | null;
+        g_truck_cost?: number | null;
         block?:
           | {
               addmeasures?:
@@ -684,11 +681,8 @@ export interface GalaSelect<T extends boolean = true> {
     | T
     | {
         date?: T;
-        hydra_cost?: T;
-        truck_cost?: T;
-        total_block_area?: T;
-        total_block_cost?: T;
-        remaining_amount?: T;
+        g_hydra_cost?: T;
+        g_truck_cost?: T;
         block?:
           | T
           | {

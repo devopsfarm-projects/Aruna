@@ -13,7 +13,7 @@ export default async function GalaListPage() {
   const todis = await getData()
 
   return (
-    <div className="p-4">
+    <div className="max-w-7xl mx-auto p-4">
       <h1 className="text-xl font-bold mb-4">Gala List</h1>
 
       <div className="overflow-x-auto">

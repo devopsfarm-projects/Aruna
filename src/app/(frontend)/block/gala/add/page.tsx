@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import type { GroupField, Vendor } from '../../types'
 import axios from 'axios'
+
 
 interface Block {
   id: string;
@@ -17,30 +18,34 @@ interface Block {
 }
 
 interface Group {
-  g_hydra_cost: string;
-  g_truck_cost: string;
-  total_block_area: string;
-  total_block_cost: string;
-  remaining_amount: string;
-  date: string;
-  block: Block[];
+  g_hydra_cost: string
+  g_truck_cost: string
+  date: string
+  block: Block[]
+  total_block_area: string
+  total_block_cost: string
+  [key: string]: string | Block[]
 }
 
 interface TodiState {
+  total_block_cost: ReactNode;
+  total_block_area: ReactNode;
+  total_gala_cost: ReactNode;
+  total_gala_area: ReactNode;
+  gala_cost: string | number | readonly string[] | undefined;
+  vender_id: string | number | readonly string[] | undefined;
   munim: string;
   GalaType: string;
   date: Date | string;
-  vender_id: string | number | readonly string[] | undefined;
   l: string;
   front_b: string;
   back_b: string;
   total_b: string;
   h: string;
-  total_todi_area: string;
   todi_cost: string;
   hydra_cost: string;
   truck_cost: string;
-  total_todi_cost: string;
+
   estimate_cost: string;
   depreciation: string;
   final_cost: string;
@@ -48,8 +53,8 @@ interface TodiState {
 }
 
 export default function AddTodiPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [, setIsLoading] = useState(false)
+  const [, setError] = useState<string | null>(null)
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [todi, setTodi] = useState<TodiState>({
     munim: '',
@@ -61,11 +66,12 @@ export default function AddTodiPage() {
     back_b: '',
     total_b: '',
     h: '',
-    total_todi_area: '',
+    total_gala_area: '',
     todi_cost: '',
     hydra_cost: '',
     truck_cost: '',
-    total_todi_cost: '',
+    total_gala_cost: '',
+    gala_cost: '',
     estimate_cost: '',
     depreciation: '',
     final_cost: '',
@@ -73,11 +79,10 @@ export default function AddTodiPage() {
       {
         g_hydra_cost: '',
         g_truck_cost: '',
-        total_block_area: '',
-        total_block_cost: '',
-        remaining_amount: '',
         date: new Date().toISOString(),
-        block: []
+        block: [],
+        total_block_area: '',
+        total_block_cost: ''
       }
     ]
   })
@@ -108,36 +113,55 @@ export default function AddTodiPage() {
     return ((est-((dep/100)*est))).toFixed(2);
   };
 
+  const calculateTotalBlockArea = (group: Group[]): string => {
+    return group.reduce((total, group) => {
+      return total + group.block.reduce((groupTotal, block) => {
+        return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+          return measureTotal + parseFloat(measure.block_area || '0');
+        }, 0);
+      }, 0);
+    }, 0).toFixed(2);
+  };
+
+  const calculateTotalBlockCost = (group: Group[]): string => {
+    return group.reduce((total, group) => {
+      return total + group.block.reduce((groupTotal, block) => {
+        return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+          return measureTotal + parseFloat(measure.block_cost || '0');
+        }, 0);
+      }, 0);
+    }, 0).toFixed(2);
+  };
+
   const handleInput = (e: any) => {
     const { name, value } = e.target;
-    
     // Update the state with the new value
     setTodi(prev => {
       const updatedTodi = { ...prev, [name]: value };
       
-      // If any dimension changes, recalculate total_todi_area
+      // If any dimension changes, recalculate total_gala_area
       if (name === 'l' || name === 'total_b' || name === 'h') {
-        updatedTodi.total_todi_area = calculateTotalTodiArea(
+        updatedTodi.total_gala_area = calculateTotalTodiArea(
           updatedTodi.l || '0',
           updatedTodi.total_b || '0',
           updatedTodi.h || '0'
         );
       }
 
-      // If any cost field changes, recalculate total_todi_cost
+      // If any cost field changes, recalculate total_gala_cost
       if (name === 'todi_cost' || name === 'hydra_cost' || name === 'truck_cost') {
-        updatedTodi.total_todi_cost = calculateTotalTodiCost(
+        updatedTodi.total_gala_cost = calculateTotalTodiCost(
           updatedTodi.todi_cost || '0',
           updatedTodi.hydra_cost || '0',
           updatedTodi.truck_cost || '0'
         );
       }
 
-      // Always recalculate estimate_cost if total_todi_area or total_todi_cost is available
-      if (updatedTodi.total_todi_area && updatedTodi.total_todi_cost) {
+      // Always recalculate estimate_cost if total_gala_area or total_gala_cost is available
+      if (updatedTodi.total_gala_area && updatedTodi.total_gala_cost) {
         updatedTodi.estimate_cost = calculateEstimateCost(
-          updatedTodi.total_todi_area,
-          updatedTodi.total_todi_cost
+          updatedTodi.total_gala_area,
+          updatedTodi.total_gala_cost
         );
       }
 
@@ -147,6 +171,12 @@ export default function AddTodiPage() {
           updatedTodi.estimate_cost,
           updatedTodi.depreciation
         );
+      }
+
+      // Recalculate total block area and cost whenever group data changes
+      if (name.startsWith('group.') || name.startsWith('block.') || name.startsWith('addmeasures.')) {
+        updatedTodi.total_block_area = calculateTotalBlockArea(updatedTodi.group);
+        updatedTodi.total_block_cost = calculateTotalBlockCost(updatedTodi.group);
       }
       
       return updatedTodi;
@@ -190,7 +220,13 @@ export default function AddTodiPage() {
       block_area: '',
       block_cost: ''
     })
-    setTodi({ ...todi, group: updatedGroups })
+    const updatedTodi = {
+      ...todi,
+      group: updatedGroups,
+      total_block_area: calculateTotalBlockArea(updatedGroups),
+      total_block_cost: calculateTotalBlockCost(updatedGroups)
+    };
+    setTodi(updatedTodi)
   }
 
   const handleNestedChange = (e: any, groupIdx: number, blockIdx?: number, measureIdx?: number) => {
@@ -244,32 +280,44 @@ export default function AddTodiPage() {
     setTodi(prev => ({ ...prev, group: updated }))
   }
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
+    // Validate GalaType
+    const validGalaTypes = ['Brown', 'White'];
+    if (!validGalaTypes.includes(todi.GalaType)) {
+      alert('Invalid Gala Type. Please select either "Brown" or "White"');
+      return;
+    }
+
     // Create a copy of the form data to modify dates
     const formData = { ...todi };
     
-
+    // Convert total_block_area and total_block_cost to numbers before sending
+    formData.total_block_area = parseFloat(todi.total_block_area as string);
+    formData.total_block_cost = parseFloat(todi.total_block_cost as string);
+    
     formData.vender_id = Number(todi.vender_id);
     // Format the main date field
     formData.date = formData.date || new Date().toISOString();
     
+    try {
+      const res = await fetch('/api/Gala', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    const res = await fetch('/api/Gala', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to create Gala');
+      }
 
-    if (res.ok) {
-      alert('Gala created!')
-    } else {
-      const err = await res.json()
-      alert('Error: ' + err.message)
+      alert('Gala created successfully!');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'An error occurred while creating Gala');
     }
   }
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -279,7 +327,7 @@ export default function AddTodiPage() {
         const [vendorsRes] = await Promise.all([axios.get<{ docs: Vendor[] }>('/api/vendor')])
         setVendors(vendorsRes.data.docs || [])
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.')
+        setError('Failed to load data. Please try again later.')
         console.error('Error fetching data:', error)
       } finally {
         setIsLoading(false)
@@ -289,19 +337,14 @@ export default function AddTodiPage() {
     fetchData()
   }, [setVendors, setIsLoading, setError])
 
+
+
+
+
+
   return (
     <form onSubmit={handleSubmit} className="p-6 py-4 space-y-6">
-      <h1 className="text-xl font-bold">Add Todi</h1>
-      {error && (
-        <div className="text-red-500 mb-4">
-          {error}
-        </div>
-      )}
-      {isLoading && (
-        <div className="text-gray-600 mb-4">
-          Loading vendors...
-        </div>
-      )}
+      <h1 className="text-xl font-bold">Add Gala</h1>
 
       {/* Basic Fields */}
       {/* Block Type Select */}
@@ -320,25 +363,31 @@ export default function AddTodiPage() {
         </select>
       </div>
 
-      {/* Vendor Select */}
-      <div className="space-y-2">
-        <label htmlFor="vender_id" className="block font-medium capitalize">Vendor:</label>
-        <select
-          id="vender_id"
-          name="vender_id"
-          value={todi.vender_id}
-          onChange={handleInput}
-          className="w-full border dark:bg-gray-700 p-2 "
-        >
-          <option value="">Select Vendor</option>
-          {vendors.map((vendor) => (
-            <option key={vendor.id} value={vendor.id}>
-              {vendor.vendor}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        Vendor
+                      </label>
+                      <select
+                        value={todi.vender_id}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          handleInput({...e, target: { ...e.target, name: 'vender_id', value }})
+                        }}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                        required
+                      >
+                        <option value="">Select vendor</option>
+                        {vendors.map((vendor) => (
+                          <option key={vendor.id} value={vendor.id}>
+                            {vendor.vendor}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
+
+      {/* Basic Fields */}
       <div className="space-y-2">
         <label htmlFor="munim" className="block font-medium capitalize">Munim:</label>
         <input
@@ -424,12 +473,12 @@ export default function AddTodiPage() {
       </div>
 
       <div className="space-y-2"> 
-        <label htmlFor="todi_cost" className="block font-medium capitalize">Todi Cost:</label>
+        <label htmlFor="gala_cost" className="block font-medium capitalize">Gala Cost:</label>
         <input
           type="text"
-          id="todi_cost"
-          name="todi_cost"
-          value={todi.todi_cost}
+          id="gala_cost"
+          name="gala_cost"
+          value={todi.gala_cost}
           onChange={handleInput}
           className="w-full border dark:bg-gray-700 p-2 "
         />
@@ -457,19 +506,19 @@ export default function AddTodiPage() {
         />
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="total_todi_area" className="block font-medium capitalize">Total Todi Area:</label>
+        <label htmlFor="total_gala_area" className="block font-medium capitalize">Total Gala Area:</label>
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.total_todi_area}
+          {todi.total_gala_area}
         </div>
       </div>
       <div className="space-y-2"> 
-        <label htmlFor="total_todi_cost" className="block font-medium capitalize">Total Todi Cost:</label>
+        <label htmlFor="total_gala_cost" className="block font-medium capitalize">Total Gala Cost:</label>
         <div
           className="w-full border dark:bg-gray-700 p-2 "
         >
-          {todi.total_todi_cost}
+          {todi.total_gala_cost}
         </div>
       </div>
       <div className="space-y-2"> 
@@ -699,7 +748,7 @@ export default function AddTodiPage() {
                         Total Block Area
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {todi.group.reduce((total, group) => {
+                      {todi.total_block_area} = {todi.group.reduce((total, group) => {
                           return total + group.block.reduce((groupTotal, block) => {
                             return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
                               return measureTotal + parseFloat(measure.block_area || '0');
@@ -725,7 +774,7 @@ export default function AddTodiPage() {
                         Total Block Cost
                       </div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {todi.group.reduce((total, group) => {
+                      {todi.total_block_cost} = {todi.group.reduce((total, group) => {
                           return total + group.block.reduce((groupTotal, block) => {
                             return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
                               return measureTotal + parseFloat(measure.block_cost || '0');

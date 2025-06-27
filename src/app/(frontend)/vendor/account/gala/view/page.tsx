@@ -53,20 +53,18 @@ type Vendor = {
 }
 
 type BlockType = {
-  total_cost: any
+  total_block_cost: any
   block: any
   vender_id: number | Vendor
-  total_area: number
+  total_block_area: number
   munim: string
   todirate: string
   total_todi_area: string
-  estimate_cost: string
-  depreciation: string
   final_cost: string
+  depreciation: string
   l: string
   b: string
   h: string
-  todi_cost: string
   hydra_cost: string
   truck_cost: string
   total_todi_cost: string
@@ -218,7 +216,11 @@ export default function EditBlock() {
 
   const calculateRemainingPayment = () => {
     const totalReceived = receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0)
-    return Number(newBlock?.estimate_cost || 0) - totalReceived
+    const remaining = Number(newBlock?.final_cost || 0) - totalReceived
+    return remaining.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -282,28 +284,28 @@ export default function EditBlock() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Gala Area
+                Total Block Area
               </label>
               <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_area || ''}
+                {newBlock?.total_block_area || ''}
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Gala Cost
+                Total Block Cost
               </label>
               <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_cost || ''}
+                {newBlock?.total_block_cost || ''}
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Estimate Cost
+                Final Cost
               </label>
               <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.estimate_cost || ''}
+                {newBlock?.final_cost || ''}
               </div>
             </div>
 

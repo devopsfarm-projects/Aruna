@@ -1,13 +1,15 @@
-// ❌ NO "use client" here
 import { getTodiData, getGalaData, getVendors } from './lib/getVendorAccounts'
-import ClientAccountPage from './ClientAccountPage' // the interactive component
-import type { PageProps } from '@/types/next-page'
+import ClientAccountPage from './ClientAccountPage'
 
-export default async function Page({ searchParams }: PageProps) {
-  const searchParamsResolved = await searchParams;
-  const vendorId = searchParamsResolved.get('vendor') || null
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const resolvedSearchParams = await searchParams
+  const vendorParam = resolvedSearchParams['vendor']
+  const vendorId = Array.isArray(vendorParam) ? vendorParam[0] : vendorParam || null
 
-  // ✅ Server-side fetching (safe to use fs, nodemailer, etc.)
   const [todis, galas, vendors] = await Promise.all([
     getTodiData(vendorId),
     getGalaData(vendorId),
