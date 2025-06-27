@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
-import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md'
+import { GiStonePile, GiStoneWall } from 'react-icons/gi'
+import { MdOutlineSupervisorAccount, MdAccountBalance, MdConstruction } from 'react-icons/md'
 
 
 interface CardProps {
@@ -9,8 +10,7 @@ interface CardProps {
   icon: React.ReactNode
   link: string
   description?: string
-  stats: string
-  count?: number
+
 }
 
 export default function DashboardPage() {
@@ -21,8 +21,7 @@ export default function DashboardPage() {
       icon: <MdOutlineSupervisorAccount size={28} className="text-white" />,
       link: '/block/todi',
       description: 'Add new block',
-      stats: 'Active Blocks',
-      count: 12
+     
     },
     {
       title: 'Gala Blocks',
@@ -30,8 +29,7 @@ export default function DashboardPage() {
       icon: <MdAccountBalance size={28} className="text-white" />,
       link: '/block/gala',
       description: 'Add new block',
-      stats: 'Updated Today',
-      count: 8
+     
     },
     // {
     //   title: 'Stone Blocks',
@@ -45,7 +43,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <main className=" bg-gray-100 py-4 dark:bg-black px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gray-100 py-4 dark:bg-black px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <section className="mb-12">
@@ -98,10 +96,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-3xl font-bold">{card.count}</span>
-                    <span className="text-sm text-white/90">{card.stats}</span>
-                  </div>
+                
                   <div className="flex justify-end">
                     <span className="text-sm font-medium group-hover:underline">View Details →</span>
                   </div>

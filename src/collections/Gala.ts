@@ -62,11 +62,8 @@ export const Gala: CollectionConfig = {
     { name: 'final_cost', label: 'Final Cost', type: 'number' },
     { name: 'group', label: 'Group Details', type: 'array', fields: [
       { name: 'date', label: 'Date', type: 'date', defaultValue: () => new Date(), },
-      { name: 'hydra_cost', label: 'Hydra Cost', type: 'number' },
-      { name: 'truck_cost', label: 'Truck Cost', type: 'number' },
-      { name: 'total_block_area', label: 'Total Block Area', type: 'number' },
-      { name: 'total_block_cost', label: 'Total Block Cost', type: 'number' },
-      { name: 'remaining_amount', label: 'Remaining Amount', type: 'number' },
+      { name: 'g_hydra_cost', label: 'Hydra Cost', type: 'number' },
+      { name: 'g_truck_cost', label: 'Truck Cost', type: 'number' },
       { name: 'block', label: 'Add Block', type: 'array', fields: [
         {
           name: 'addmeasures',

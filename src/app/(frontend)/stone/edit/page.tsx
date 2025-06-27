@@ -95,7 +95,7 @@ export default function EditStone() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black pt-20 px-4 sm:px-6 lg:px-8">
+    <div className=" bg-gray-50 dark:bg-black pt-20 px-4 sm:px-6 lg:px-8">
         {/* Success Modal */}
         {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

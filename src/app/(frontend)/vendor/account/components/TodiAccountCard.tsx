@@ -65,9 +65,9 @@ export default function TodiList({ initialTodis, initialVendors, initialVendorId
                     ? todi.vender_id.vendor
                     : 'N/A'}
                 </td>
-                <td className="px-4 py-2">₹{todi.estimate_cost}</td>
-                <td className="px-4 py-2">₹{todi.final_cost}</td>
-                <td className="px-4 py-2">{todi.partyRemainingPayment}</td>
+                <td className="px-4 py-2">₹{todi.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
+                <td className="px-4 py-2">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
+                <td className="px-4 py-2">{todi.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
                 <td className="px-4 py-2">
                   <Link
                     href={`/vendor/account/todi/view?id=${todi.id}`}

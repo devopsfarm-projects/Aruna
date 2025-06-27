@@ -136,7 +136,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
   } 
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black px-4 py-4 sm:py-4">
+    <div className=" bg-gray-100 dark:bg-black px-4 py-4 sm:py-4">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-gray-900 dark:text-white mb-10">
           <span className="text-indigo-600 dark:text-indigo-400">Vendor</span> Directory
@@ -157,7 +157,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               </div>
             </div>
           </div>
-
+{/* 
           <div className="bg-white dark:bg-gray-800 -lg shadow-sm p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -175,7 +175,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
                 {selectedVendor.size} selected
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Vendor Table - Desktop */}

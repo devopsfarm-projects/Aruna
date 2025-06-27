@@ -91,17 +91,17 @@ export function TableSection({
                 <td className="px-4 py-2">{type === 'Todi' ? item.total_todi_area : item.total_gala_area}</td>
 
                 {type === 'Todi' ? (
-                  <td className="px-4 py-2">₹{item.total_todi_cost}</td>
+                  <td className="px-4 py-2">₹{item.total_todi_cost?.toLocaleString('en-IN') || '0'}</td>
                 ) : (
                   <>
-                    <td className="px-4 py-2">₹{item.gala_cost}</td>
-                    <td className="px-4 py-2">₹{item.total_gala_cost}</td>
+                    <td className="px-4 py-2">₹{item.gala_cost?.toLocaleString('en-IN') || '0'}</td>
+                    <td className="px-4 py-2">₹{item.total_gala_cost?.toLocaleString('en-IN') || '0'}</td>
                   </>
                 )}
 
-                <td className="px-4 py-2">₹{item.estimate_cost}</td>
+                <td className="px-4 py-2">₹{item.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="px-4 py-2">{item.depreciation}%</td>
-                <td className="px-4 py-2">₹{item.final_cost}</td>
+                <td className="px-4 py-2">₹{item.final_cost?.toLocaleString('en-IN') || '0'}</td>
               </tr>
             ))}
           </tbody>

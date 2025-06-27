@@ -13,7 +13,7 @@ export default async function GalaListPage() {
   const todis = await getData()
 
   return (
-    <div className="p-4">
+    <div className="max-w-7xl mx-auto p-4">
       <h1 className="text-xl font-bold mb-4">Gala List</h1>
 
       <div className="overflow-x-auto">
@@ -42,8 +42,8 @@ export default async function GalaListPage() {
                 <td className="p-2">{todi.munim || '-'}</td>
                 <td className="p-2">{todi.l} x {todi.total_b} x {todi.h}</td>
                 <td className="p-2">{todi.total_gala_area}</td>
-                <td className="p-2">₹{todi.total_gala_cost}</td>
-                <td className="p-2">₹{todi.final_cost}</td>
+                <td className="p-2">₹{todi.total_gala_cost?.toLocaleString('en-IN') || '0'}</td>
+                <td className="p-2">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-2">
                   <Link href={`/block/gala/edit?id=${todi.id}`} className="text-blue-600 underline">
                     Edit

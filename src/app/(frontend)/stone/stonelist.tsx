@@ -82,10 +82,10 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
                   <td className="p-3">{stone.stoneType}</td>
                   <td className="p-3">{stone.munim}</td>
                   <td className="p-3">{stone.date ? new Date(stone.date).toLocaleDateString() : '-'}</td>
-                  <td className="p-3">{stone.rate}</td>
+                  <td className="p-3">{stone.rate?.toLocaleString('en-IN') || '0'}</td>
                   <td className="p-3">{stone.total_quantity ?? '-'}</td>
                   <td className="p-3">{stone.hydra_cost ?? '-'}</td>
-                  <td className="p-3">₹{stone.total_amount ?? '-'}</td>
+                  <td className="p-3">₹{stone.total_amount?.toLocaleString('en-IN') || '0'}</td>
                   <td className="p-3">
                     <div className="flex gap-2">
                       <Link href={`/stone/edit?id=${stone.id}`} className="text-blue-500">Edit</Link>
@@ -130,7 +130,7 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
         </div>
         <div className="flex justify-between items-center">
           <span className="text-gray-500 font-medium">Rate:</span>
-          <span className="font-semibold">₹{stone.rate ?? '-'}</span>
+          <span className="font-semibold">₹{stone.rate?.toLocaleString('en-IN') ?? '0'}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-gray-500 font-medium">Qty:</span>
@@ -142,7 +142,7 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
         </div>
         <div className="flex justify-between items-center">
           <span className="text-gray-500 font-medium">Amount:</span>
-          <span className="font-semibold">₹{stone.total_amount ?? '-'}</span>
+          <span className="font-semibold">₹{stone.total_amount?.toLocaleString('en-IN') || '0'}</span>
         </div>
       </div>
 
