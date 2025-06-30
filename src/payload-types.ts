@@ -271,22 +271,19 @@ export interface TodiRaskat {
   l: number;
   b?: number | null;
   h?: number | null;
-  todiraskat_cost?: number | null;
+  todi_cost?: number | null;
   hydra_cost?: number | null;
   truck_cost?: number | null;
-  total_todiraskat_area?: number | null;
-  total_todiraskat_cost?: number | null;
+  total_todi_area?: number | null;
+  total_todi_cost?: number | null;
   estimate_cost?: number | null;
   depreciation?: number | null;
   final_cost?: number | null;
   group?:
     | {
         date?: string | null;
-        hydra_cost?: number | null;
-        truck_cost?: number | null;
-        total_block_area?: number | null;
-        total_block_cost?: number | null;
-        remaining_amount?: number | null;
+        g_hydra_cost?: number | null;
+        g_truck_cost?: number | null;
         block?:
           | {
               addmeasures?:
@@ -305,6 +302,26 @@ export interface TodiRaskat {
         id?: string | null;
       }[]
     | null;
+  total_block_area?: number | null;
+  total_block_cost?: number | null;
+  delivered_block?:
+    | {
+        delivered_block_area?: number | null;
+        delivered_block_cost?: number | null;
+        date?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  received_amount?:
+    | {
+        amount: number;
+        date: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  partyRemainingPayment?: number | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -617,11 +634,11 @@ export interface TodiRaskatSelect<T extends boolean = true> {
   l?: T;
   b?: T;
   h?: T;
-  todiraskat_cost?: T;
+  todi_cost?: T;
   hydra_cost?: T;
   truck_cost?: T;
-  total_todiraskat_area?: T;
-  total_todiraskat_cost?: T;
+  total_todi_area?: T;
+  total_todi_cost?: T;
   estimate_cost?: T;
   depreciation?: T;
   final_cost?: T;
@@ -629,11 +646,8 @@ export interface TodiRaskatSelect<T extends boolean = true> {
     | T
     | {
         date?: T;
-        hydra_cost?: T;
-        truck_cost?: T;
-        total_block_area?: T;
-        total_block_cost?: T;
-        remaining_amount?: T;
+        g_hydra_cost?: T;
+        g_truck_cost?: T;
         block?:
           | T
           | {
@@ -651,6 +665,26 @@ export interface TodiRaskatSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  total_block_area?: T;
+  total_block_cost?: T;
+  delivered_block?:
+    | T
+    | {
+        delivered_block_area?: T;
+        delivered_block_cost?: T;
+        date?: T;
+        description?: T;
+        id?: T;
+      };
+  received_amount?:
+    | T
+    | {
+        amount?: T;
+        date?: T;
+        description?: T;
+        id?: T;
+      };
+  partyRemainingPayment?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;

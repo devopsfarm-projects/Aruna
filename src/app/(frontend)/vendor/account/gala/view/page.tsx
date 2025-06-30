@@ -101,6 +101,9 @@ type BlockType = {
   }>
 }
 
+// Define valid field names for delivered block
+export type DeliveredBlockField = 'delivered_block_area' | 'delivered_block_cost' | 'date' | 'description';
+
 
 export default function EditBlock() {
   const router = useRouter()
@@ -170,7 +173,7 @@ export default function EditBlock() {
     setReceivedAmounts(updatedAmounts)
   }
 
-  const handleDeliveredBlockChange = (index: number, field: keyof typeof deliveredBlock[0], value: any) => {
+  const handleDeliveredBlockChange = (index: number, field: DeliveredBlockField, value: any) => {
     const updatedBlocks = [...deliveredBlock]
     updatedBlocks[index] = {
       ...updatedBlocks[index],
@@ -258,225 +261,157 @@ export default function EditBlock() {
   }
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black pt-24">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">View Gala</h1>
-          <Link href="/vendor/account" className="text-gray-600 hover:text-gray-800">
-            ← Back to Blocks
-          </Link>
-        </div>
-
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 -2xl p-8 shadow-md">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Basic Block Info */}
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Vendor Name
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {typeof newBlock?.vender_id === 'object' && newBlock?.vender_id?.vendor ? newBlock?.vender_id.vendor : 'N/A'}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Block Area
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_block_area || ''}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Block Cost
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_block_cost || ''}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Final Cost
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.final_cost || ''}
-              </div>
-            </div>
-
-            {/* Delivered Blocks Section */}
-            <div className="col-span-4">
-              <h2 className="text-xl font-semibold mb-4">Delivered Blocks</h2>
-              <div className="space-y-4">
-                {deliveredBlock.map((block, index) => (
-                  <div key={block.id} className="bg-white dark:bg-gray-700 p-4 -lg">
-                    <div className="grid grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Area
-                        </label>
-                        <input
-                          type="number"
-                          value={block.delivered_block_area}
-                          onChange={(e) => handleDeliveredBlockChange(index, 'delivered_block_area', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Cost
-                        </label>
-                        <input
-                          type="number"
-                          value={block.delivered_block_cost}
-                          onChange={(e) => handleDeliveredBlockChange(index, 'delivered_block_cost', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Date
-                        </label>
-                        <input
-                          type="date"
-                          value={new Date(block.date).toISOString().split('T')[0]}
-                          onChange={(e) => handleDeliveredBlockChange(index, 'date', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Description
-                        </label>
-                        <input
-                          type="text"
-                          value={block.description}
-                          onChange={(e) => handleDeliveredBlockChange(index, 'description', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div className="flex items-end">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveDeliveredBlock(block.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={handleAddDeliveredBlock}
-                  className="bg-green-500 text-white px-2 border-2 border-green-100 py-2 -full hover:bg-green-600 transition flex items-center gap-2"
-                >
-                  <PlusIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Received Amounts Section */}
-            <div className="col-span-4">
-              <h2 className="text-xl font-semibold mb-4">Received Amounts</h2>
-              <div className="space-y-4">
-                {receivedAmounts.map((amount, index) => (
-                  <div key={amount.id} className="bg-white dark:bg-gray-700 p-4 -lg shadow">
-                    <div className="grid grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Amount
-                        </label>
-                        <input
-                          type="number"
-                          value={amount.amount}
-                          onChange={(e) => handleReceivedAmountChange(index, 'amount', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Date
-                        </label>
-                        <input
-                          type="date"
-                          value={new Date(amount.date).toISOString().split('T')[0]}
-                          onChange={(e) => handleReceivedAmountChange(index, 'date', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Description
-                        </label>
-                        <input
-                          type="text"
-                          value={amount.description}
-                          onChange={(e) => handleReceivedAmountChange(index, 'description', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div className="flex items-end">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveReceivedAmount(amount.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={handleAddReceivedAmount}
-                  className="bg-green-500 text-white px-2 border-2 border-green-100 py-2 -full hover:bg-green-600 transition flex items-center gap-2"
-                >
-                  <PlusIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Remaining Payment */}
-            <div className="col-span-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    Total Received
-                  </label>
-                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                    {receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0).toFixed(2)}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    Remaining Payment
-                  </label>
-                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                    {calculateRemainingPayment().toFixed(2)}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="col-span-4 mt-8">
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 -lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
-                disabled={!newBlock || isSubmitting}
-              >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </button>
+    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black pt-4 px-4 sm:px-6 lg:px-8">
+    <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">View Gala</h1>
+      <Link href="/vendor/account" className="text-gray-600 hover:text-gray-800 text-sm sm:text-base">
+        ← Back to Blocks
+      </Link>
+    </div>
+  
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800  p-6 shadow-md">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  
+        {/* Basic Info */}
+        {[
+          { label: 'Vendor Name', value: typeof newBlock?.vender_id === 'object' ? newBlock?.vender_id.vendor : 'N/A' },
+          { label: 'Total Block Area', value: newBlock?.total_block_area || '' },
+          { label: 'Total Block Cost', value: newBlock?.total_block_cost || '' },
+          { label: 'Final Cost', value: newBlock?.final_cost || '' }
+        ].map((item, idx) => (
+          <div key={idx}>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{item.label}</label>
+            <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600  bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              {item.value}
             </div>
           </div>
-        </form>
+        ))}
+  
+        {/* Delivered Blocks */}
+        <div className="col-span-1 sm:col-span-2 lg:col-span-4">
+          <h2 className="text-xl font-semibold mb-4">Delivered Blocks</h2>
+          <div className="space-y-4">
+            {deliveredBlock.map((block, index) => (
+              <div key={block.id} className="bg-white dark:bg-gray-700 p-4  shadow">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                  {[
+                    { name: 'delivered_block_area' as DeliveredBlockField, label: 'Area', type: 'number', value: block.delivered_block_area },
+                    { name: 'delivered_block_cost' as DeliveredBlockField, label: 'Cost', type: 'number', value: block.delivered_block_cost },
+                    { name: 'date' as DeliveredBlockField, label: 'Date', type: 'date', value: new Date(block.date).toISOString().split('T')[0] },
+                    { name: 'description' as DeliveredBlockField, label: 'Description', type: 'text', value: block.description }
+                  ].map((field, i) => (
+                    <div key={i}>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{field.label}</label>
+                      <input
+                        type={field.type}
+                        value={field.value}
+                        onChange={(e) =>
+                          handleDeliveredBlockChange(index, field.name as DeliveredBlockField, field.type === 'number' ? Number(e.target.value) : e.target.value)
+                        }
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600  bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                  ))}
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveDeliveredBlock(block.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={handleAddDeliveredBlock}
+              className="bg-green-500 text-white px-4 py-2  hover:bg-green-600 flex items-center gap-2"
+            >
+              <PlusIcon className="h-5 w-5" /> Add Delivered Block
+            </button>
+          </div>
+        </div>
+  
+        {/* Received Amounts */}
+        <div className="col-span-1 sm:col-span-2 lg:col-span-4 mt-6">
+          <h2 className="text-xl font-semibold mb-4">Received Amounts</h2>
+          <div className="space-y-4">
+            {receivedAmounts.map((amount, index) => (
+              <div key={amount.id} className="bg-white dark:bg-gray-700 p-4  shadow">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[
+                    { name: 'amount' as const, label: 'Amount', type: 'number', value: amount.amount },
+                    { name: 'date' as const, label: 'Date', type: 'date', value: new Date(amount.date).toISOString().split('T')[0] },
+                    { name: 'description' as const, label: 'Description', type: 'text', value: amount.description }
+                  ].map((field, i) => (
+                    <div key={i}>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{field.label}</label>
+                      <input
+                        type={field.type}
+                        value={field.value}
+                        onChange={(e) =>
+                          handleReceivedAmountChange(index, field.name as 'amount' | 'date' | 'description', field.type === 'number' ? Number(e.target.value) : e.target.value)
+                        }
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600  bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                  ))}
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveReceivedAmount(amount.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={handleAddReceivedAmount}
+              className="bg-green-500 text-white px-4 py-2  hover:bg-green-600 flex items-center gap-2"
+            >
+              <PlusIcon className="h-5 w-5" /> Add Received Amount
+            </button>
+          </div>
+        </div>
+  
+        {/* Summary Section */}
+        <div className="col-span-1 sm:col-span-2 lg:col-span-4 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { label: 'Total Received', value: receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0).toFixed(2) },
+              { label: 'Remaining Payment', value: calculateRemainingPayment().toFixed(2) }
+            ].map((item, i) => (
+              <div key={i}>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{item.label}</label>
+                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600  bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+  
+        {/* Submit Button */}
+        <div className="col-span-1 sm:col-span-2 lg:col-span-4 mt-8">
+          <button
+            type="submit"
+            disabled={!newBlock || isSubmitting}
+            className="w-full bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-3  hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
+          >
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+  
       </div>
-    </div>
+    </form>
+  </div>
+  
   )
 }
 
