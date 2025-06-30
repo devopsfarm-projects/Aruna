@@ -1,10 +1,10 @@
-import { Block, GalaState } from './type'
+import { Block, TodiState } from './type'
 import { calculateTotalBlockArea, calculateTotalBlockCost } from './calculate'
 import { Group } from './type'
 
 interface GroupProps {
-  todi: GalaState
-  setTodi: React.Dispatch<React.SetStateAction<GalaState>>
+  todi: TodiState
+  setTodi: React.Dispatch<React.SetStateAction<TodiState>>
 }
 
 export default function Groupfunction({ todi, setTodi }: GroupProps) {

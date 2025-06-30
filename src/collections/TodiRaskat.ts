@@ -22,6 +22,29 @@ export const TodiRaskat: CollectionConfig = {
       return false
     },
   },
+
+
+  hooks: {
+    beforeChange: [
+      async ({ data }) => {
+        // 1. Default final_cost = estimate_cost if depreciation not provided
+        if (!data.depreciation || data.depreciation === 0) {
+          data.final_cost = data.estimate_cost;
+        }
+  
+        // 2. Calculate partyRemainingPayment
+        const estimateCost = Number(data.estimate_cost || 0);
+        const received = Array.isArray(data.received_amount)
+          ? data.received_amount.reduce((sum, entry) => sum + Number(entry.amount || 0), 0)
+          : 0;
+  
+        data.partyRemainingPayment = estimateCost - received;
+  
+        return data;
+      },
+    ],
+  },
+
   fields: [
     { name: 'BlockType', label: 'Block Type', type: 'select', required: true, options: ['Brown', 'White'], },
     { name: 'date', label: 'Date', type: 'date', defaultValue: () => new Date(), },
@@ -30,21 +53,18 @@ export const TodiRaskat: CollectionConfig = {
     { name: 'l', label: 'Length (लम्बाई)', type: 'number', required: true, min: 1, },
     { name: 'b', label: 'Breadth (चौड़ाई)', type: 'number', min: 1, },
     { name: 'h', label: 'Height (ऊंचाई)', type: 'number', min: 1, },
-    { name: 'todiraskat_cost', label: 'Todi Raskat Cost', type: 'number' },
+    { name: 'todi_cost', label: 'Todi Raskat Cost', type: 'number' },
     { name: 'hydra_cost', label: 'Hydra Cost', type: 'number' },
     { name: 'truck_cost', label: 'Truck Cost', type: 'number' },
-    { name: 'total_todiraskat_area', label: 'Total Todi Raskat Area', type: 'number' },
-    { name: 'total_todiraskat_cost', label: 'Total Todi Raskat Cost', type: 'number' },
+    { name: 'total_todi_area', label: 'Total Todi Raskat Area', type: 'number' },
+    { name: 'total_todi_cost', label: 'Total Todi Raskat Cost', type: 'number' },
     { name: 'estimate_cost', label: 'Estimate Cost', type: 'number' },
     { name: 'depreciation', label: 'Depreciation', type: 'number' },
     { name: 'final_cost', label: 'Final Cost', type: 'number' },
     { name: 'group', label: 'Group Details', type: 'array', fields: [
       { name: 'date', label: 'Date', type: 'date', defaultValue: () => new Date(), },
-      { name: 'hydra_cost', label: 'Hydra Cost', type: 'number' },
-      { name: 'truck_cost', label: 'Truck Cost', type: 'number' },
-      { name: 'total_block_area', label: 'Total Block Area', type: 'number' },
-      { name: 'total_block_cost', label: 'Total Block Cost', type: 'number' },
-      { name: 'remaining_amount', label: 'Remaining Amount', type: 'number' },
+      { name: 'g_hydra_cost', label: 'Hydra Cost', type: 'number' },
+      { name: 'g_truck_cost', label: 'Truck Cost', type: 'number' },
       { name: 'block', label: 'Add Block', type: 'array', fields: [
         {
           name: 'addmeasures',
@@ -61,6 +81,49 @@ export const TodiRaskat: CollectionConfig = {
       ],
       },
     ],
+    },
+
+
+    {name:'total_block_area',label:'Total Block Area',type:'number'},
+    {name:'total_block_cost',label:'Total Block Cost',type:'number'},
+   
+   
+    {name:'delivered_block',label:'Delivered Block',type:'array',
+      fields:[
+        {name:'delivered_block_area',label:'Delivered Block Area',type:'number'},
+        {name:'delivered_block_cost',label:'Delivered Block Cost',type:'number'},
+        {name:'date',label:'Date',type:'date'},
+        {name:'description',label:'Description',type:'textarea'},
+      ]
+    },
+
+   
+    {
+      name: 'received_amount',
+      type: 'array',
+      label: 'Received Amounts',
+      fields: [
+        {
+          name: 'amount',
+          type: 'number',
+          required: true,
+        },
+        {
+          name: 'date',
+          type: 'date',
+          required: true,
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+        },
+      ],
+    },
+
+    {
+      name: 'partyRemainingPayment',
+      label: 'Party Remaining Payment',
+      type: 'number',
     },
 
     { name: 'createdBy', label: 'Created By (Client)', type: 'relationship', relationTo: 'users',

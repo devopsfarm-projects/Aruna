@@ -272,225 +272,155 @@ export default function EditBlock() {
   }
 
   return (
-    <div className=" max-w-7xl mx-auto bg-gray-50 dark:bg-black ">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">View Todi</h1>
-          <Link href="/vendor/account" className="text-gray-600 hover:text-gray-800">
-            ← Back to Blocks
-          </Link>
-        </div>
-
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 -2xl p-8 shadow-md">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Basic Block Info */}
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Vendor Name
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {typeof newBlock?.vender_id === 'object' && newBlock?.vender_id?.vendor ? newBlock?.vender_id.vendor : 'N/A'}
+    <div className="max-w-7xl mx-auto bg-gray-50 dark:bg-black min-h-screen">
+    <div className="px-4 py-8 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">View Todi</h1>
+        <Link href="/vendor/account" className="text-gray-600 hover:text-gray-800 text-sm sm:text-base">
+          ← Back to Blocks
+        </Link>
+      </div>
+  
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 p-6 sm:p-8 shadow-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  
+          {/* Block Info */}
+          {[
+            { label: 'Vendor Name', value: typeof newBlock?.vender_id === 'object' ? newBlock?.vender_id.vendor : 'N/A' },
+            { label: 'Total Block Area (m³)', value: newBlock?.total_block_area || '' },
+            { label: 'Total Block Cost', value: formatCost(newBlock?.total_block_cost ?? '') },
+            { label: 'Final Cost ₹', value: formatCost(newBlock?.final_cost ?? '') }
+          ].map((field, i) => (
+            <div key={i}>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{field.label}</label>
+              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600  bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                {field.value}
               </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Block Area (m³)
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {newBlock?.total_block_area || ''}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Total Block Cost
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {formatCost(newBlock?.total_block_cost ?? '')}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                Final Cost ₹
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                {formatCost(newBlock?.final_cost ?? '')}
-              </div>
-            </div>
-
-            {/* Delivered Blocks Section */}
-            <div className="col-span-4">
-              <h2 className="text-xl font-semibold mb-4">Delivered Blocks</h2>
-              <div className="space-y-4">
-                {deliveredBlock.map((block, index) => (
-                  <div key={block.id} className="bg-white dark:bg-gray-700 p-4 -lg">
-                    <div className="grid grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Area
-                        </label>
+          ))}
+  
+          {/* Delivered Blocks */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-4">
+            <h2 className="text-xl font-semibold mb-4">Delivered Blocks</h2>
+            <div className="space-y-4">
+              {deliveredBlock.map((block, index) => (
+                <div key={block.id} className="bg-white dark:bg-gray-700 p-4  shadow">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    {[
+                      { label: 'Area', name: 'delivered_block_area', type: 'number', value: block.delivered_block_area },
+                      { label: 'Cost', name: 'delivered_block_cost', type: 'number', value: block.delivered_block_cost },
+                      { label: 'Date', name: 'date', type: 'date', value: new Date(block.date).toISOString().split('T')[0] },
+                      { label: 'Description', name: 'description', type: 'text', value: block.description }
+                    ].map((input, i) => (
+                      <div key={i}>
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{input.label}</label>
                         <input
-                          type="number"
-                          value={block.delivered_block_area}
-                          onChange={(e) => handleDeliveredBlockChange(index, 'delivered_block_area', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          type={input.type}
+                          value={input.value}
+                          onChange={(e) => handleDeliveredBlockChange(index, input.name as 'date' | 'delivered_block_area' | 'delivered_block_cost' | 'description', input.type === 'number' ? Number(e.target.value) : e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600  bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Cost
-                        </label>
-                        <input
-                          type="number"
-                          value={block.delivered_block_cost}
-                          onChange={(e) => handleDeliveredBlockChange(index, 'delivered_block_cost', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Date
-                        </label>
-                        <input
-                          type="date"
-                          value={new Date(block.date).toISOString().split('T')[0]}
-                          onChange={(e) => handleDeliveredBlockChange(index, 'date', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Description
-                        </label>
-                        <input
-                          type="text"
-                          value={block.description}
-                          onChange={(e) => handleDeliveredBlockChange(index, 'description', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div className="flex items-end">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveDeliveredBlock(block.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      </div>
+                    ))}
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveDeliveredBlock(block.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        Remove
+                      </button>
                     </div>
                   </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={handleAddDeliveredBlock}
-                  className="bg-green-500 text-white px-2 border-2 border-green-100 py-2 -full hover:bg-green-600 transition flex items-center gap-2"
-                >
-                  <PlusIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Received Amounts Section */}
-            <div className="col-span-4">
-              <h2 className="text-xl font-semibold mb-4">Received Amounts</h2>
-              <div className="space-y-4">
-                {receivedAmounts.map((amount, index) => (
-                  <div key={amount.id} className="bg-white dark:bg-gray-700 p-4 -lg shadow">
-                    <div className="grid grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Amount
-                        </label>
-                        <input
-                          type="number"
-                          value={amount.amount}
-                          onChange={(e) => handleReceivedAmountChange(index, 'amount', Number(e.target.value))}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Date
-                        </label>
-                        <input
-                          type="date"
-                          value={new Date(amount.date).toISOString().split('T')[0]}
-                          onChange={(e) => handleReceivedAmountChange(index, 'date', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          Description
-                        </label>
-                        <input
-                          type="text"
-                          value={amount.description}
-                          onChange={(e) => handleReceivedAmountChange(index, 'description', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-                      <div className="flex items-end">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveReceivedAmount(amount.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={handleAddReceivedAmount}
-                  className="bg-green-500 text-white px-2 border-2 border-green-100 py-2 -full hover:bg-green-600 transition flex items-center gap-2"
-                >
-                  <PlusIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Remaining Payment */}
-            <div className="col-span-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    Total Received ₹
-                  </label>
-                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                    {formatCost(receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0))}
-                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                    Remaining Payment ₹
-                  </label>
-                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 -lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
-                    {calculateRemainingPayment()}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="col-span-4 mt-8">
+              ))}
               <button
-                type="submit"
-                className="w-full bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 -lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
-                disabled={!newBlock || isSubmitting}
+                type="button"
+                onClick={handleAddDeliveredBlock}
+                className="bg-green-500 text-white px-4 py-2  hover:bg-green-600 flex items-center gap-2"
               >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
+                <PlusIcon className="h-5 w-5" /> Add Delivered Block
               </button>
             </div>
           </div>
-        </form>
-      </div>
+  
+          {/* Received Amounts */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-6">
+            <h2 className="text-xl font-semibold mb-4">Received Amounts</h2>
+            <div className="space-y-4">
+              {receivedAmounts.map((amount, index) => (
+                <div key={amount.id} className="bg-white dark:bg-gray-700 p-4  shadow">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      { label: 'Amount', name: 'amount', type: 'number', value: amount.amount },
+                      { label: 'Date', name: 'date', type: 'date', value: new Date(amount.date).toISOString().split('T')[0] },
+                      { label: 'Description', name: 'description', type: 'text', value: amount.description }
+                    ].map((input, i) => (
+                      <div key={i}>
+                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{input.label}</label>
+                        <input
+                          type={input.type}
+                          value={input.value}
+                          onChange={(e) => handleReceivedAmountChange(index, input.name as 'date' | 'description' | 'amount', input.type === 'number' ? Number(e.target.value) : e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600  bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                    ))}
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveReceivedAmount(amount.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={handleAddReceivedAmount}
+                className="bg-green-500 text-white px-4 py-2  hover:bg-green-600 flex items-center gap-2"
+              >
+                <PlusIcon className="h-5 w-5" /> Add Received Amount
+              </button>
+            </div>
+          </div>
+  
+          {/* Payment Summary */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { label: 'Total Received ₹', value: formatCost(receivedAmounts.reduce((sum, amt) => sum + amt.amount, 0)) },
+                { label: 'Remaining Payment ₹', value: calculateRemainingPayment() }
+              ].map((summary, i) => (
+                <div key={i}>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{summary.label}</label>
+                  <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600  bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                    {summary.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+  
+          {/* Submit Button */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-6">
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-3  hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
+              disabled={!newBlock || isSubmitting}
+            >
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+  
+        </div>
+      </form>
     </div>
+  </div>
+  
   )
 }
 

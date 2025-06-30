@@ -51,37 +51,40 @@ const calculateTotalTodiArea = (l: string, b: string, h: string): string => {
     setTodi((prev: any) => {
       const updatedTodi = { ...prev, [name]: value };
       
-      // If any dimension changes, recalculate total_gala_area
-      if (name === 'l' || name === 'total_b' || name === 'h') {
-        updatedTodi.total_gala_area = calculateTotalTodiArea(
+      // If any dimension changes, recalculate total_todi_area
+      if (name === 'l' || name === 'b' || name === 'h') {
+        updatedTodi.total_todi_area = calculateTotalTodiArea(
           updatedTodi.l || '0',
-          updatedTodi.total_b || '0',
+          updatedTodi.b || '0',
           updatedTodi.h || '0'
         );
       }
 
-      // If any cost field changes, recalculate total_gala_cost
-      if (name === 'gala_cost' || name === 'hydra_cost' || name === 'truck_cost') {
-        updatedTodi.total_gala_cost = calculateTotalTodiCost(
-          updatedTodi.gala_cost || '0',
+      // If any cost field changes, recalculate total_todi_cost
+      if (name === 'todi_cost' || name === 'hydra_cost' || name === 'truck_cost') {
+        // Convert input value to number and back to string
+        const todiNum = parseFloat(updatedTodi.todi_cost || '0');
+        updatedTodi.todi_cost = todiNum.toFixed(2);
+        
+        updatedTodi.total_todi_cost = calculateTotalTodiCost(
+          updatedTodi.todi_cost || '0',
           updatedTodi.hydra_cost || '0',
           updatedTodi.truck_cost || '0'
         );
       }
 
       // Always recalculate estimate_cost if total_gala_area or total_gala_cost is available
-      if (updatedTodi.total_gala_area && typeof updatedTodi.total_gala_area === 'string' &&
-          updatedTodi.total_gala_cost && typeof updatedTodi.total_gala_cost === 'string') {
-        const area = parseFloat(updatedTodi.total_gala_area);
-        const cost = parseFloat(updatedTodi.total_gala_cost);
+      if (updatedTodi.total_todi_area && typeof updatedTodi.total_todi_area === 'string' &&
+          updatedTodi.total_todi_cost && typeof updatedTodi.total_todi_cost === 'string') {
+        const area = parseFloat(updatedTodi.total_todi_area);
+        const cost = parseFloat(updatedTodi.total_todi_cost);
         if (area > 0 && cost > 0) {
           updatedTodi.estimate_cost = calculateEstimateCost(
-            updatedTodi.total_gala_area,
-            updatedTodi.total_gala_cost
+            updatedTodi.total_todi_area,
+            updatedTodi.total_todi_cost
           );
         }
       }
-
 
       // Always recalculate final_cost if estimate_cost is available
       if (updatedTodi.estimate_cost) {
@@ -96,7 +99,6 @@ const calculateTotalTodiArea = (l: string, b: string, h: string): string => {
           updatedTodi.final_cost = updatedTodi.estimate_cost;
         }
       }
-
 
       // Recalculate total block area and cost whenever group data changes
       if (name.startsWith('group.') || name.startsWith('block.') || name.startsWith('addmeasures.')) {

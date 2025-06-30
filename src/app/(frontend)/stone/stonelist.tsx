@@ -60,11 +60,11 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
         <h1 className="text-2xl font-bold mb-4 text-indigo-600">Stone Inventory</h1>
 
         {/* Table */}
-        <div className="hidden md:block overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-800 text-white">
+        <div className="hidden md:block overflow-x-auto bg-white dark:bg-black  shadow">
+          <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600 text-sm">
+            <thead className="bg-white dark:bg-black border-b dark:border-gray-600 text-white">
               <tr>
-                <th className="p-3"><input type="checkbox" checked={selectAll} onChange={handleSelectAll} /></th>
+                <th className="p-3 text-left"><input type="checkbox" checked={selectAll} onChange={handleSelectAll} /></th>
                 <th className="p-3 text-left">Stone</th>
                 <th className="p-3 text-left">Munim</th>
                 <th className="p-3 text-left">Date</th>
@@ -175,9 +175,9 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
             </button>
           )}
           <Link href="/stone/addstone">
-            <button className="bg-indigo-600 p-3 text-white rounded-full shadow">
-              ➕
-            </button>
+          <button className="bg-indigo-600 text-white p-3 rounded-full shadow hover:bg-indigo-700">
+            +
+          </button>
           </Link>
         </div>
       </div>

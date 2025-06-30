@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const cards: CardProps[] = [
     {
       title: 'Todi Blocks',
-      color: 'bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700',
+      color: 'bg-gradient-to-br from-gray-700 to-gray-800 dark:from-gray-800 dark:to-gray-900',
       icon: <MdOutlineSupervisorAccount size={28} className="text-white" />,
       link: '/block/todi',
       description: 'Add new block',
@@ -31,15 +31,13 @@ export default function DashboardPage() {
       description: 'Add new block',
      
     },
-    // {
-    //   title: 'Stone Blocks',
-    //   color: 'bg-gradient-to-br from-gray-700 to-gray-800 dark:from-gray-800 dark:to-gray-900',
-    //   icon: <GiStonePile size={28} className="text-white" />,
-    //   link: '/block/stone',
-    //   description: 'Add new stone block',
-    //   stats: 'Available Stones',
-    //   count: 24
-    // }
+    {
+      title: 'Todi Rocks',
+      color: 'bg-gradient-to-br from-gray-700 to-gray-800 dark:from-gray-800 dark:to-gray-900',
+      icon: <GiStonePile size={28} className="text-white" />,
+      link: '/block/todi(raskat)',
+      description: 'Add new stone block',
+    }
   ]
 
   return (

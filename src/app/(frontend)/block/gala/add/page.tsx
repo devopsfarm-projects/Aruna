@@ -1,13 +1,13 @@
 'use client'
 import { useState } from 'react'
 import { FormInput, FormSelect, FormDisplay } from '../../components/FormSection'
-import { TodiState } from '../../components/type'
+import { GalaState } from '../../components/type'
 import { handleInput } from '../../components/calculate'
 import FetchVendor from '../../components/FetchVendor'
 import Summary from '../../components/Summary'
 import Group from '../../components/Group'
 export default function AddTodiPage() {
-  const [todi, setTodi] = useState<TodiState>({
+  const [todi, setTodi] = useState<GalaState>({
     id: '',
     total_block_cost: '',
     total_block_area: '',
@@ -28,6 +28,7 @@ export default function AddTodiPage() {
     estimate_cost: '',
     depreciation: '',
     final_cost: '',
+    todi_cost: (todi_cost: any) => {}, // Added the missing function property
     group: [
       {
         g_hydra_cost: '',
