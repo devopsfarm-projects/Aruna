@@ -32,7 +32,7 @@ export default function DashboardPage() {
      
     },
     {
-      title: 'Todi Rocks',
+      title: 'Todi Raskat',
       color: 'bg-gradient-to-br from-gray-700 to-gray-800 dark:from-gray-800 dark:to-gray-900',
       icon: <GiStonePile size={28} className="text-white" />,
       link: '/block/todi(raskat)',
@@ -52,7 +52,7 @@ export default function DashboardPage() {
               backgroundSize: 'cover',
               backgroundPosition: 'center'
             }}></div>
-            <div className="relative max-w-2xl mx-auto p-8">
+            <div className="relative max-w-3xl mx-auto p-8">
               <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
                 Block Management Dashboard
               </h1>
@@ -62,15 +62,21 @@ export default function DashboardPage() {
               <div className="mt-6 flex gap-4">
                 <Link
                   href="/block/todi/add"
-                  className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-medium  shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Add New Todi Block
                 </Link>
                 <Link
                   href="/block/gala/add"
-                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-medium  hover:bg-white/20 transition-all duration-300"
                 >
                   Add New Gala Block
+                </Link>
+                <Link
+                  href="/block/todi(raskat)/add"
+                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-medium  hover:bg-white/20 transition-all duration-300"
+                >
+                  Add New Todi Raskat Block
                 </Link>
               </div>
             </div>

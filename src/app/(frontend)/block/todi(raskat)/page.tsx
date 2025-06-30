@@ -49,7 +49,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                 <td className="p-3">₹{todi.total_todi_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-3">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-3">
-                  <Link href={`/block/todi/edit?id=${todi.id}`} className="text-blue-600 hover:underline">Edit</Link>
+                  <Link href={`/block/todi(raskat)/edit?id=${todi.id}`} className="text-blue-600 hover:underline">Edit</Link>
                 </td>
               </tr>
             ))}

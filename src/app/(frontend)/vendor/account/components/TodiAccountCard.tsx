@@ -11,20 +11,36 @@ interface Props {
   initialVendorId: string | null
 }
 
-export default function TodiList({ initialTodis, initialVendors, initialVendorId }: Props) {
+export default function TodiAccountCard({ initialTodis, initialVendors, initialVendorId }: Props) {
   const [todis, setTodis] = useState(initialTodis)
   const [vendors, setVendors] = useState(initialVendors)
   const [selectedVendor, setSelectedVendor] = useState(initialVendorId)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const router = useRouter()
 
   const handleVendorChange = async (vendorId: string | null) => {
     setSelectedVendor(vendorId)
+    setIsLoading(true)
+    setError(null)
 
-    const res = await fetch(`/api/todi?vendor=${vendorId || ''}`)
-    const data = await res.json()
-
-    setTodis(data.todis)
+    try {
+      // Filter galas based on vendor
+      const filteredTodis = initialTodis.filter(todi => {
+        if (!vendorId) return true;
+        if (!todi.vender_id) return false;
+        return typeof todi.vender_id === 'object' 
+          ? String(todi.vender_id.id) === vendorId
+          : String(todi.vender_id) === vendorId;
+      });
+      setTodis(filteredTodis)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+      setTodis([])
+    } finally {
+      setIsLoading(false)
+    }
     router.push(`/vendor/account?vendor=${vendorId || ''}`)
   }
 
@@ -46,6 +62,12 @@ export default function TodiList({ initialTodis, initialVendors, initialVendorId
         </select>
       </div>
 
+      {error && (
+        <div className="text-red-500 mb-4">
+          Error: {error}
+        </div>
+      )}
+
       <div className="bg-white dark:bg-gray-800 rounded shadow overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-100 dark:bg-gray-700 text-left text-gray-600 dark:text-gray-300">
@@ -58,27 +80,29 @@ export default function TodiList({ initialTodis, initialVendors, initialVendorId
             </tr>
           </thead>
           <tbody>
-            {todis.map((todi) => (
-              <tr key={todi.id} className="border-t dark:border-gray-700">
-                <td className="px-4 py-2">
-                  {typeof todi.vender_id === 'object' && todi.vender_id?.vendor
-                    ? todi.vender_id.vendor
-                    : 'N/A'}
-                </td>
-                <td className="px-4 py-2">₹{todi.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
-                <td className="px-4 py-2">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
-                <td className="px-4 py-2">{todi.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
-                <td className="px-4 py-2">
-                  <Link
-                    href={`/vendor/account/todi/view?id=${todi.id}`}
-                    className="text-indigo-600 dark:text-indigo-400 hover:underline"
-                  >
-                    View
-                  </Link>
+            {isLoading ? (
+              <tr>
+                <td colSpan={5} className="text-center px-4 py-4 text-gray-500 dark:text-gray-400">
+                  Loading...
                 </td>
               </tr>
-            ))}
-            {todis.length === 0 && (
+            ) : todis?.length > 0 ? (
+              todis.map((todi) => (
+                <tr key={todi.id} className="border-t dark:border-gray-700">
+                  <td className="px-4 py-2">
+                    {typeof todi.vender_id === 'object' && todi.vender_id?.vendor
+                      ? todi.vender_id.vendor
+                      : 'N/A'}
+                  </td>
+                  <td className="px-4 py-2">₹{todi.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
+                  <td className="px-4 py-2">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
+                  <td className="px-4 py-2">₹{todi.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
+                  <td className="px-4 py-2">
+                    <Link href={`/vendor/account/todi/view?id=${todi.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  View  </Link>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
                 <td colSpan={5} className="text-center px-4 py-4 text-gray-500 dark:text-gray-400">
                   No Todi records found.

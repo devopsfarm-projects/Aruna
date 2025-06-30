@@ -1,17 +1,3 @@
-export interface ApiResponse<T> {
-  docs: T[]
-  totalDocs: number
-  limit: number
-  page: number
-  totalPages: number
-  hasNextPage: boolean
-  hasPrevPage: boolean
-  pagingCounter: number
-  prevPage?: number
-  nextPage?: number
-}
-
-
 
 export interface Measure {
   l: string
@@ -25,6 +11,7 @@ export interface Measure {
 export interface Block {
   addmeasures: Measure[]
   block_cost: string
+  todi_cost?: string
 }
 
 export interface Group {
@@ -35,8 +22,7 @@ export interface Group {
   [key: string]: string | Block[];
 }
 
-// Define valid field names for each level
-export type GroupField = keyof Group
+
 
 export type Vendor = {
   id: number
@@ -47,24 +33,28 @@ export type Vendor = {
 
 export type BlockType = {
   total_cost: any
+  GalaType: string
   block: any
   vender_id: number
-  total_block_cost?: string
-  total_block_area?: string
+  todi_cost: string
   total_area: number
   munim: string
   todirate: string
-  total_todi_area: string
+  total_gala_area: string
+  total_block_area: string
+  total_block_cost: string
   estimate_cost: string
   depreciation: string
   final_cost: string
   l: string
-  b: string
+  front_b: string
+  back_b: string
+  total_b: string
   h: string
-  todi_cost: string
+  gala_cost: string
   hydra_cost: string
   truck_cost: string
-  total_todi_cost: string
+  total_gala_cost: string
   id: number | string
   BlockType: string
   date: string

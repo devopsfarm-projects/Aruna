@@ -6,6 +6,7 @@ import { handleInput } from '../../components/calculatetodi'
 import FetchVendor from '../../components/FetchVendor'
 import Summary from '../../components/Summary'
 import Group from '../../components/Grouptodi'
+import router from 'next/router'
 export default function AddTodiPage() {
   const [todi, setTodi] = useState<TodiState>({
     id: '',
@@ -38,7 +39,7 @@ export default function AddTodiPage() {
       }
     ]
   })
-
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   todi.total_block_cost = todi.group.reduce((total, group) => {
     return total + group.block.reduce((groupTotal, block) => {
@@ -103,11 +104,38 @@ export default function AddTodiPage() {
         throw new Error(errorData.message || 'Failed to create Todi');
       }
 
-      alert('Todi created successfully!');
+      setShowSuccessMessage(true);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'An error occurred while creating Todi');
     }
   }
+
+
+    if (showSuccessMessage) {
+      return (
+        <div className="fixed inset-0 dark:bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg">
+            <div className="flex items-center mb-4">
+              <svg className="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <h2 className="text-xl font-bold">Success!</h2>
+            </div>
+            <p className="mb-4">Todi has been updated successfully.</p>
+            <button
+              onClick={() => {
+                setShowSuccessMessage(false);
+                router.push('/block/gala');
+              }}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )
+    }
+  
 
 
   return (

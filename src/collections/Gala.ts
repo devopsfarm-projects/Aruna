@@ -31,12 +31,12 @@ export const Gala: CollectionConfig = {
         }
   
         // 2. Calculate partyRemainingPayment
-        const estimateCost = Number(data.estimate_cost || 0);
+        const finalCost = Number(data.final_cost || 0);
         const received = Array.isArray(data.received_amount)
           ? data.received_amount.reduce((sum, amt) => sum + (amt.amount || 0), 0)
           : 0;
   
-        data.partyRemainingPayment = estimateCost - received;
+        data.partyRemainingPayment = finalCost - received;
   
         return data;
       },

@@ -4,6 +4,7 @@ import { Bars3Icon, BellIcon, XMarkIcon, SunIcon, MoonIcon } from '@heroicons/re
 import { useDarkMode } from './DarkModeProvider'
 import { useEffect, useState } from 'react'
 import RouteProgress from '../components/RouteProgress.jsx'
+import Link from 'next/link'
 
 const navigation = [
   { name: 'Home', href: '/', current: false },
@@ -82,13 +83,14 @@ export default function Navbar() {
             </DisclosureButton>
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex shrink-0 items-center">
+          <Link href="/">
+          <div className="flex shrink-0 items-center">
               <img
                 alt="Your Company"
                 src="/image.png"
                 className="h-8 w-auto"
               />
-            </div>
+            </div></Link>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {navigation.map((item) => (

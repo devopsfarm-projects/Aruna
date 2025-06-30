@@ -22,6 +22,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 
 
+
 export default function EditBlock() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -121,7 +122,7 @@ export default function EditBlock() {
       if (!id) return
 
       try {
-        const blockRes = await axios.get<BlockType>(`/api/Todi/${id}`)
+        const blockRes = await axios.get<BlockType>(`/api/TodiRaskat/${id}`)
         const blockData = blockRes.data
         const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
         const vendorsData = vendorsRes.data.docs
@@ -168,7 +169,7 @@ export default function EditBlock() {
         delivered_block: deliveredBlock
       }
 
-      await axios.patch(`/api/Todi/${id}`, updatedBlock)
+      await axios.patch(`/api/TodiRaskat/${id}`, updatedBlock)
       setShowSuccessModal(true)
       router.push('/vendor/account')
     } catch (error) {
