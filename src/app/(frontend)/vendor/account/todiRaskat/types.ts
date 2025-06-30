@@ -12,7 +12,6 @@ export interface ApiResponse<T> {
 }
 
 
-
 export interface Measure {
   l: string
   b: string
@@ -48,23 +47,20 @@ export type Vendor = {
 export type BlockType = {
   total_cost: any
   block: any
-  vender_id: number
-  total_block_cost?: string
-  total_block_area?: string
+  vender_id: number | Vendor
   total_area: number
   munim: string
   todirate: string
-  total_todi_area: string
-  estimate_cost: string
-  depreciation: string
+  total_block_area: string
   final_cost: string
+  depreciation: string
   l: string
   b: string
   h: string
   todi_cost: string
   hydra_cost: string
   truck_cost: string
-  total_todi_cost: string
+  total_block_cost: string
   id: number | string
   BlockType: string
   date: string
@@ -84,4 +80,16 @@ export type BlockType = {
   vehicle_cost: number | null
   vehicle_number: string | null
   group: Group[]
+  delivered_block: Array<{
+    delivered_block_area: number
+    delivered_block_cost: number
+    date: string
+    description: string
+  }>
+  received_amount: Array<{
+    id: string
+    amount: number
+    date: string
+    description: string
+  }>
 }

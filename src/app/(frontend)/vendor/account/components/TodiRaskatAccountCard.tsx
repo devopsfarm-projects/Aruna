@@ -3,16 +3,17 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Vendor, Gala } from '@/payload-types'
+import { Vendor, TodiRaskat } from '@/payload-types'
+
 
 interface Props {
-  initialGalas: Gala[]
+  initialTodiRaskats: TodiRaskat[]
   initialVendors: Vendor[]
   initialVendorId: string | null
 }
 
-export default function GalaAccountCard({ initialGalas, initialVendors, initialVendorId }: Props) {
-  const [galas, setGalas] = useState(initialGalas)
+export default function TodiRaskatAccountCard({ initialTodiRaskats, initialVendors, initialVendorId }: Props) {
+  const [todis, setTodis] = useState(initialTodiRaskats)
   const [vendors, setVendors] = useState(initialVendors)
   const [selectedVendor, setSelectedVendor] = useState(initialVendorId)
   const [isLoading, setIsLoading] = useState(false)
@@ -27,27 +28,29 @@ export default function GalaAccountCard({ initialGalas, initialVendors, initialV
 
     try {
       // Filter galas based on vendor
-      const filteredGalas = initialGalas.filter(gala => {
+      const filteredTodis = initialTodiRaskats.filter((todi: TodiRaskat) => {
         if (!vendorId) return true;
-        if (!gala.vender_id) return false;
-        return typeof gala.vender_id === 'object' 
-          ? String(gala.vender_id.id) === vendorId
-          : String(gala.vender_id) === vendorId;
+        if (!todi.vender_id) return false;
+        return typeof todi.vender_id === 'object' 
+          ? String(todi.vender_id.id) === vendorId
+          : String(todi.vender_id) === vendorId;
       });
-      setGalas(filteredGalas)
+      setTodis(filteredTodis)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
-      setGalas([])
+      setTodis([])
     } finally {
       setIsLoading(false)
     }
     router.push(`/vendor/account?vendor=${vendorId || ''}`)
   }
 
+  console.log(todis)
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Gala List</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Todi Raskat List</h1>
         <select
           value={selectedVendor || ''}
           onChange={(e) => handleVendorChange(e.target.value || null)}
@@ -86,26 +89,26 @@ export default function GalaAccountCard({ initialGalas, initialVendors, initialV
                   Loading...
                 </td>
               </tr>
-            ) : galas?.length > 0 ? (
-              galas.map((gala) => (
-                <tr key={gala.id} className="border-t dark:border-gray-700">
+            ) : todis?.length > 0 ? (
+              todis.map((todi) => (
+                <tr key={todi.id} className="border-t dark:border-gray-700">
                   <td className="px-4 py-2">
-                    {typeof gala.vender_id === 'object' && gala.vender_id?.vendor
-                      ? gala.vender_id.vendor
+                    {typeof todi.vender_id === 'object' && todi.vender_id?.vendor
+                      ? todi.vender_id.vendor
                       : 'N/A'}
                   </td>
-                  <td className="px-4 py-2">₹{gala.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
-                  <td className="px-4 py-2">₹{gala.final_cost?.toLocaleString('en-IN') || '0'}</td>
-                  <td className="px-4 py-2">₹{gala.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
+                  <td className="px-4 py-2">₹{todi.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
+                  <td className="px-4 py-2">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
+                  <td className="px-4 py-2">₹{todi.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">
-                    <Link href={`/vendor/account/gala/view?id=${gala.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  View  </Link>
+                    <Link href={`/vendor/account/todiRaskat/view?id=${todi.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  View  </Link>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td colSpan={5} className="text-center px-4 py-4 text-gray-500 dark:text-gray-400">
-                  No Gala records found.
+                  No Todi Raskat records found.
                 </td>
               </tr>
             )}

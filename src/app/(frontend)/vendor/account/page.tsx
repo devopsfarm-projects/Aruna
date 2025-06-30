@@ -1,4 +1,4 @@
-import { getTodiData, getGalaData, getVendors } from './lib/getVendorAccounts'
+import { getTodiData, getGalaData, getTodiRaskatData, getVendors } from './lib/getVendorAccounts'
 import ClientAccountPage from './ClientAccountPage'
 
 export default async function Page({
@@ -10,9 +10,10 @@ export default async function Page({
   const vendorParam = resolvedSearchParams['vendor']
   const vendorId = Array.isArray(vendorParam) ? vendorParam[0] : vendorParam || null
 
-  const [todis, galas, vendors] = await Promise.all([
+  const [todis, galas, todiRaskats, vendors] = await Promise.all([
     getTodiData(vendorId),
     getGalaData(vendorId),
+    getTodiRaskatData(vendorId),
     getVendors(),
   ])
 
@@ -20,6 +21,7 @@ export default async function Page({
     <ClientAccountPage
       initialTodis={todis}
       initialGalas={galas}
+      initialTodiRaskats={todiRaskats}
       initialVendors={vendors}
       initialVendorId={vendorId}
     />

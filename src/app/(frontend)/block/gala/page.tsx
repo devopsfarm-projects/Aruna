@@ -34,11 +34,11 @@ export default async function GalaListPage() {
           </thead>
           <tbody>
             {todis.map((todi: any) => (
-              <tr key={todi.id} className="border-t">
+              <tr key={todi.id} className="border-t text-center">
                 <td className="p-2">{todi.id}</td>
                 <td className="p-2">{todi.GalaType}</td>
                 <td className="p-2">{todi.date ? new Date(todi.date).toLocaleDateString() : '-'}</td>
-                <td className="p-2">{typeof todi.vender_id === 'object' ? todi.vender_id?.id : todi.vender_id}</td>
+                <td className="p-2">{typeof todi.vender_id === 'object' ? todi.vender_id?.vendor : todi.vender_id}</td>
                 <td className="p-2">{todi.munim || '-'}</td>
                 <td className="p-2">{todi.l} x {todi.total_b} x {todi.h}</td>
                 <td className="p-2">{todi.total_gala_area}</td>
