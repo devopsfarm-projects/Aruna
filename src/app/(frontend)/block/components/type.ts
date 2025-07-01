@@ -48,13 +48,13 @@ export interface GalaState {
 
 
 export interface TodiState {
+  total_cost: string;
   todi_cost: string;
   id: string;
   total_todi_cost: string;
   total_todi_area: string;
   total_block_cost: string;
   total_block_area: string;
-  total_gala_cost: string;
   vender_id: string | number | readonly string[] | undefined;
   munim: string;
   BlockType: string;

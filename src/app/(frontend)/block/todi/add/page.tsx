@@ -11,11 +11,11 @@ export default function AddTodiPage() {
   const [todi, setTodi] = useState<TodiState>({
     todi_cost: '',
     id: '',
+    total_cost: '',
     total_todi_cost: '',
     total_todi_area: '',
     total_block_cost: '',
     total_block_area: '',
-    total_gala_cost: '',
     vender_id: '',
     munim: '',
     BlockType: '',
