@@ -54,6 +54,7 @@ export interface TodiState {
   total_todi_area: string;
   total_block_cost: string;
   total_block_area: string;
+  total_gala_cost: string;
   vender_id: string | number | readonly string[] | undefined;
   munim: string;
   BlockType: string;
@@ -64,7 +65,6 @@ export interface TodiState {
   gala_cost: string;
   hydra_cost: string;
   truck_cost: string;
-
   estimate_cost: string;
   depreciation: string;
   final_cost: string;

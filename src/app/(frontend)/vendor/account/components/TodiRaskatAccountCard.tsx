@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Vendor, TodiRaskat } from '@/payload-types'
 
 
@@ -20,32 +20,35 @@ export default function TodiRaskatAccountCard({ initialTodiRaskats, initialVendo
   const [error, setError] = useState<string | null>(null)
 
   const router = useRouter()
+const searchParams = useSearchParams()
 
-  const handleVendorChange = async (vendorId: string | null) => {
-    setSelectedVendor(vendorId)
-    setIsLoading(true)
-    setError(null)
+useEffect(() => {
+  const vendorId = searchParams.get('vendor') ?? ''
+  setSelectedVendor(vendorId)
 
-    try {
-      // Filter galas based on vendor
-      const filteredTodis = initialTodiRaskats.filter((todi: TodiRaskat) => {
-        if (!vendorId) return true;
-        if (!todi.vender_id) return false;
-        return typeof todi.vender_id === 'object' 
-          ? String(todi.vender_id.id) === vendorId
-          : String(todi.vender_id) === vendorId;
-      });
-      setTodis(filteredTodis)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-      setTodis([])
-    } finally {
-      setIsLoading(false)
-    }
-    router.push(`/vendor/account?vendor=${vendorId || ''}`)
+  setIsLoading(true)
+  setError(null)
+
+  try {
+    const filtered = vendorId
+      ? initialTodiRaskats.filter((todi) => {
+          const id = typeof todi.vender_id === 'object' ? todi.vender_id?.id : todi.vender_id
+          return String(id) === vendorId
+        })
+      : initialTodiRaskats
+
+    setTodis(filtered)
+  } catch (err) {
+    setError('Error filtering Todi Raskats')
+    setTodis([])
+  } finally {
+    setIsLoading(false)
   }
+}, [searchParams, initialTodiRaskats])
 
-  console.log(todis)
+const handleVendorChange = (vendorId: string) => {
+  router.push(`/vendor/account?vendor=${vendorId}`)
+}
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -53,7 +56,7 @@ export default function TodiRaskatAccountCard({ initialTodiRaskats, initialVendo
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">Todi Raskat List</h1>
         <select
           value={selectedVendor || ''}
-          onChange={(e) => handleVendorChange(e.target.value || null)}
+          onChange={(e) => handleVendorChange(e.target.value)}
           className="px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
           <option value="">All Vendors</option>

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Vendor, Todi } from '@/payload-types'
 
 interface Props {
@@ -11,37 +11,47 @@ interface Props {
   initialVendorId: string | null
 }
 
-export default function TodiAccountCard({ initialTodis, initialVendors, initialVendorId }: Props) {
-  const [todis, setTodis] = useState(initialTodis)
-  const [vendors, setVendors] = useState(initialVendors)
-  const [selectedVendor, setSelectedVendor] = useState(initialVendorId)
+export default function TodiAccountCard({
+  initialTodis,
+  initialVendors,
+}: Props) {
+  const [todis, setTodis] = useState<Todi[]>(initialTodis)
+  const [vendors] = useState(initialVendors)
+  const [selectedVendor, setSelectedVendor] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const router = useRouter()
+  const searchParams = useSearchParams()
 
-  const handleVendorChange = async (vendorId: string | null) => {
+  // 🔁 React to URL vendor param change
+  useEffect(() => {
+    const vendorId = searchParams.get('vendor') ?? ''
     setSelectedVendor(vendorId)
+
     setIsLoading(true)
     setError(null)
 
     try {
-      // Filter galas based on vendor
-      const filteredTodis = initialTodis.filter(todi => {
-        if (!vendorId) return true;
-        if (!todi.vender_id) return false;
-        return typeof todi.vender_id === 'object' 
-          ? String(todi.vender_id.id) === vendorId
-          : String(todi.vender_id) === vendorId;
-      });
-      setTodis(filteredTodis)
+      const filtered = vendorId
+        ? initialTodis.filter((todi) => {
+            const id = typeof todi.vender_id === 'object' ? todi.vender_id?.id : todi.vender_id
+            return String(id) === vendorId
+          })
+        : initialTodis
+
+      setTodis(filtered)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError('Error filtering Todis')
       setTodis([])
     } finally {
       setIsLoading(false)
     }
-    router.push(`/vendor/account?vendor=${vendorId || ''}`)
+  }, [searchParams, initialTodis])
+
+  // 🔄 When user changes dropdown
+  const handleVendorChange = (vendorId: string) => {
+    router.push(`/vendor/account?vendor=${vendorId}`)
   }
 
   return (
@@ -49,24 +59,20 @@ export default function TodiAccountCard({ initialTodis, initialVendors, initialV
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">Todi List</h1>
         <select
-          value={selectedVendor || ''}
-          onChange={(e) => handleVendorChange(e.target.value || null)}
+          value={selectedVendor}
+          onChange={(e) => handleVendorChange(e.target.value)}
           className="px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
           <option value="">All Vendors</option>
           {vendors.map((v) => (
-            <option key={v.id} value={v.id}>
+            <option key={v.id} value={String(v.id)}>
               {v.vendor}
             </option>
           ))}
         </select>
       </div>
 
-      {error && (
-        <div className="text-red-500 mb-4">
-          Error: {error}
-        </div>
-      )}
+      {error && <div className="text-red-500 mb-4">Error: {error}</div>}
 
       <div className="bg-white dark:bg-gray-800 rounded shadow overflow-x-auto">
         <table className="w-full text-sm">
@@ -86,19 +92,30 @@ export default function TodiAccountCard({ initialTodis, initialVendors, initialV
                   Loading...
                 </td>
               </tr>
-            ) : todis?.length > 0 ? (
+            ) : todis.length > 0 ? (
               todis.map((todi) => (
                 <tr key={todi.id} className="border-t dark:border-gray-700">
                   <td className="px-4 py-2">
-                    {typeof todi.vender_id === 'object' && todi.vender_id?.vendor
-                      ? todi.vender_id.vendor
+                    {typeof todi.vender_id === 'object'
+                      ? todi.vender_id?.vendor || 'N/A'
                       : 'N/A'}
                   </td>
-                  <td className="px-4 py-2">₹{todi.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
-                  <td className="px-4 py-2">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
-                  <td className="px-4 py-2">₹{todi.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">
-                    <Link href={`/vendor/account/todi/view?id=${todi.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  View  </Link>
+                    ₹{todi.estimate_cost?.toLocaleString('en-IN') || '0'}
+                  </td>
+                  <td className="px-4 py-2">
+                    ₹{todi.final_cost?.toLocaleString('en-IN') || '0'}
+                  </td>
+                  <td className="px-4 py-2">
+                    ₹{todi.partyRemainingPayment?.toLocaleString('en-IN') || '0'}
+                  </td>
+                  <td className="px-4 py-2">
+                    <Link
+                      href={`/vendor/account/todi/view?id=${todi.id}`}
+                      className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                    >
+                      View
+                    </Link>
                   </td>
                 </tr>
               ))

@@ -183,17 +183,19 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
           {selected.size > 0 && (
             <button
               onClick={handleBulkDelete}
-              className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 shadow-md"
+              className="bg-red-600 text-white p-3  hover:bg-red-700 shadow-md"
               title={`Delete ${selected.size} selected items`}
             >
               🗑
             </button>
           )}
+         
           <Link href="/stone/addstone">
-            <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700">
-              ➕
+          <button className="bg-indigo-600 text-white p-3 px-4 shadow hover:bg-indigo-700">
+              +
             </button>
           </Link>
+       
         </div>
       </div>
     </div>
