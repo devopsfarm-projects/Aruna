@@ -70,7 +70,7 @@ export default function LoginForm() {
                     <input
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                        className="border rounded w-full py-2 px-3 text-gray-700 dark:text-black leading-tight focus:outline-none focus:shadow-outline"
                         id="email" type="email" placeholder="Enter your email address" />
                 </div>
                 <div className="mb-4">
@@ -80,7 +80,7 @@ export default function LoginForm() {
                     <input
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        className="border rounded w-full py-2 px-3 text-gray-700 dark:text-black mb-3 leading-tight focus:outline-none focus:shadow-outline"
                         id="password" type="password" placeholder="Enter your password" />
                     
                 </div>

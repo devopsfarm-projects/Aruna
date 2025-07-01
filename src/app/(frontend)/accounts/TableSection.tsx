@@ -7,11 +7,11 @@ export function TableSection({
   type,
 }: {
   data: any[]
-  type: 'Todi' | 'Gala' | 'Stone'
+  type: 'Todi' | 'Gala' | 'Stone' | 'TodiRaskat'
 }) {
   const commonHeaders = [
     'ID', 'Type', 'Date', 'Vendor', 'Munim', 'Dimensions',
-    'Area', ...(type === 'Todi' ? ['Total Cost'] : ['Todi Cost', 'Total Cost']),
+    'Area', ...(type === 'Todi' ? ['Total Cost'] : type === 'TodiRaskat' ? ['Total Cost'] : ['Todi Cost', 'Total Cost']),
     'Estimate Cost', 'Depreciation', 'Final Cost',
   ]
 
@@ -79,7 +79,7 @@ export function TableSection({
             {currentItems.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td className="px-4 py-2">{item.id}</td>
-                <td className="px-4 py-2">{type === 'Todi' ? item.BlockType : item.GalaType}</td>
+                <td className="px-4 py-2">{type === 'Todi' || type === 'TodiRaskat' ? item.BlockType : item.GalaType}</td>
                 <td className="px-4 py-2">{item.date ? new Date(item.date).toLocaleDateString() : 'N/A'}</td>
                 <td className="px-4 py-2">
                   {typeof item.vender_id === 'object' ? item.vender_id?.id || 'N/A' : item.vender_id || 'N/A'}
@@ -88,9 +88,9 @@ export function TableSection({
                 <td className="px-4 py-2">
                   {item.l} x {type === 'Gala' ? item.total_b : item.b} x {item.h}
                 </td>
-                <td className="px-4 py-2">{type === 'Todi' ? item.total_todi_area : item.total_gala_area}</td>
+                <td className="px-4 py-2">{type === 'Todi' || type === 'TodiRaskat' ? item.total_todi_area : item.total_gala_area}</td>
 
-                {type === 'Todi' ? (
+                {type === 'Todi' || type === 'TodiRaskat' ? (
                   <td className="px-4 py-2">₹{item.total_todi_cost?.toLocaleString('en-IN') || '0'}</td>
                 ) : (
                   <>
