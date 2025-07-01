@@ -18,6 +18,8 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
   const [stones, setStones] = useState<Stone[]>(initialStones)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [selectAll, setSelectAll] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [stoneToDelete, setStoneToDelete] = useState<string | null>(null)
 
   const handleSelect = (id: string) => {
     const updated = new Set(selected)
@@ -31,18 +33,21 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
   }
 
   const handleSelectAll = () => {
-    const newSet = selectAll 
-      ? new Set<string>() 
-      : new Set<string>(stones.map(s => s.id.toString()))
+    const newSet = selectAll ? new Set<string>() : new Set<string>(stones.map(s => s.id.toString()))
     setSelected(newSet)
     setSelectAll(!selectAll)
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('Delete this stone?')) {
-      await fetch(`/api/stone/${id}`, { method: 'DELETE' })
-      setStones(prev => prev.filter(s => s.id.toString() !== id))
-    }
+    await fetch(`/api/stone/${id}`, { method: 'DELETE' })
+    setStones(prev => prev.filter(s => s.id.toString() !== id))
+    setSelected(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(id)
+      return newSet
+    })
+    setStoneToDelete(null)
+    setDeleteModalOpen(false)
   }
 
   const handleBulkDelete = async () => {
@@ -54,17 +59,55 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
     }
   }
 
+  const openDeleteModal = (id: string) => {
+    setStoneToDelete(id)
+    setDeleteModalOpen(true)
+  }
+
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false)
+    setStoneToDelete(null)
+  }
+
   return (
     <div className="min-h-screen pt-24 px-4 md:px-8 bg-gray-50 dark:bg-black">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-indigo-600">Stone Inventory</h1>
 
-        {/* Table */}
-        <div className="hidden md:block overflow-x-auto bg-white dark:bg-black  shadow">
+        {/* Delete Confirmation Modal */}
+        {deleteModalOpen && stoneToDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Confirm Deletion</h2>
+              <p className="mb-6 text-gray-600 dark:text-gray-300">
+                Are you sure you want to delete this stone?
+              </p>
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={closeDeleteModal}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDelete(stoneToDelete)}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto bg-white dark:bg-black shadow">
           <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600 text-sm">
             <thead className="bg-white dark:bg-black border-b dark:border-gray-600 text-white">
               <tr>
-                <th className="p-3 text-left"><input type="checkbox" checked={selectAll} onChange={handleSelectAll} /></th>
+                <th className="p-3 text-left">
+                  <input type="checkbox" checked={selectAll} onChange={handleSelectAll} />
+                </th>
                 <th className="p-3 text-left">Stone</th>
                 <th className="p-3 text-left">Munim</th>
                 <th className="p-3 text-left">Date</th>
@@ -76,9 +119,15 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
               </tr>
             </thead>
             <tbody>
-              {stones.map((stone, i) => (
+              {stones.map(stone => (
                 <tr key={stone.id} className="border-b dark:border-gray-600">
-                  <td className="p-3"><input type="checkbox" checked={selected.has(stone.id.toString())} onChange={() => handleSelect(stone.id.toString())} /></td>
+                  <td className="p-3">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(stone.id.toString())}
+                      onChange={() => handleSelect(stone.id.toString())}
+                    />
+                  </td>
                   <td className="p-3">{stone.stoneType}</td>
                   <td className="p-3">{stone.munim}</td>
                   <td className="p-3">{stone.date ? new Date(stone.date).toLocaleDateString() : '-'}</td>
@@ -89,7 +138,7 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
                   <td className="p-3">
                     <div className="flex gap-2">
                       <Link href={`/stone/edit?id=${stone.id}`} className="text-blue-500">Edit</Link>
-                      <button onClick={() => handleDelete(stone.id.toString())} className="text-red-500">Delete</button>
+                      <button onClick={() => openDeleteModal(stone.id.toString())} className="text-red-500">Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -98,86 +147,52 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
           </table>
         </div>
 
-        {/* Mobile card view */}
-<div className="space-y-4 md:hidden">
-  {stones.map((stone) => (
-    <div
-      key={stone.id}
-      className="bg-white dark:bg-gray-800  overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-[1.02]"
-    >
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 ">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold">{stone.stoneType}</h2>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              checked={selected.has(stone.id.toString())}
-              onChange={() => handleSelect(stone.id.toString())}
-              className="w-5 h-5 text-blue-500 bg-gray-100 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        {/* Mobile Cards */}
+        <div className="space-y-4 md:hidden">
+          {stones.map(stone => (
+            <div key={stone.id} className="bg-white dark:bg-gray-800 shadow-lg hover:scale-[1.02] transform transition-all duration-300">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold">{stone.stoneType}</h2>
+                  <input
+                    type="checkbox"
+                    checked={selected.has(stone.id.toString())}
+                    onChange={() => handleSelect(stone.id.toString())}
+                    className="w-5 h-5"
+                  />
+                </div>
+              </div>
+              <div className="p-4 space-y-2 text-sm">
+                <div className="flex justify-between"><span>Munim:</span><span>{stone.munim || '-'}</span></div>
+                <div className="flex justify-between"><span>Date:</span><span>{stone.date ? new Date(stone.date).toLocaleDateString() : '-'}</span></div>
+                <div className="flex justify-between"><span>Rate:</span><span>₹{stone.rate?.toLocaleString('en-IN') ?? '0'}</span></div>
+                <div className="flex justify-between"><span>Qty:</span><span>{stone.total_quantity ?? '-'}</span></div>
+                <div className="flex justify-between"><span>Hydra:</span><span>{stone.hydra_cost ?? '-'}</span></div>
+                <div className="flex justify-between"><span>Amount:</span><span>₹{stone.total_amount?.toLocaleString('en-IN') || '0'}</span></div>
+              </div>
+              <div className="p-4 border-t border-gray-300 flex justify-end gap-4">
+                <Link href={`/stone/edit?id=${stone.id}`} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Edit</Link>
+                <button onClick={() => openDeleteModal(stone.id.toString())} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete</button>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-      
-      <div className="p-4 space-y-3">
-        <div className="flex justify-between items-center">
-          <span className="text-gray-500 font-medium">Munim:</span>
-          <span className="font-semibold">{stone.munim || '-'}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-500 font-medium">Date:</span>
-          <span className="font-semibold">{stone.date ? new Date(stone.date).toLocaleDateString() : '-'}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-500 font-medium">Rate:</span>
-          <span className="font-semibold">₹{stone.rate?.toLocaleString('en-IN') ?? '0'}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-500 font-medium">Qty:</span>
-          <span className="font-semibold">{stone.total_quantity ?? '-'}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-500 font-medium">Hydra:</span>
-          <span className="font-semibold">{stone.hydra_cost ?? '-'}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-500 font-medium">Amount:</span>
-          <span className="font-semibold">₹{stone.total_amount?.toLocaleString('en-IN') || '0'}</span>
-        </div>
-      </div>
 
-      <div className="border-t border-gray-200 dark:border-gray-600 p-4">
-        <div className="flex justify-end gap-4">
-          <Link 
-            href={`/stone/edit?id=${stone.id}`} 
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            Edit
-          </Link>
-          <button 
-            onClick={() => handleDelete(stone.id.toString())} 
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-
-
-        {/* FABs */}
-        <div className="fixed bottom-20 right-4 z-50 space-y-2">
+        {/* Floating Buttons */}
+        <div className="fixed bottom-20 right-4 z-50 flex flex-col items-end space-y-2">
           {selected.size > 0 && (
-            <button onClick={handleBulkDelete} className="bg-red-600 p-3 text-white rounded-full shadow">
-              🗑️
+            <button
+              onClick={handleBulkDelete}
+              className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 shadow-md"
+              title={`Delete ${selected.size} selected items`}
+            >
+              🗑
             </button>
           )}
           <Link href="/stone/addstone">
-          <button className="bg-indigo-600 text-white p-3 rounded-full shadow hover:bg-indigo-700">
-            +
-          </button>
+            <button className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700">
+              ➕
+            </button>
           </Link>
         </div>
       </div>

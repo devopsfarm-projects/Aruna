@@ -81,7 +81,7 @@ export default function DashboardPage() {
                 </Link>
                 <Link
                   href="/block"
-                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-medium rounded-lg hover:bg-white/20 transition-all duration-300"
                 >
                   Add New Block
                 </Link>

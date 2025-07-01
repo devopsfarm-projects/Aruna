@@ -5,7 +5,7 @@ export default function StoneTable({ stones }: { stones: any[] }) {
   return (
     <div className="space-y-4">
       <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Stone List</h2>
-      <div className="hidden md:block overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
+      <div className=" md:block overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-800 text-white">
             <tr>
