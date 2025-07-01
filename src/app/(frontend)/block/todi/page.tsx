@@ -73,7 +73,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       {/* Add Button */}
       <div className="fixed bottom-20 right-4 z-50">
         <Link href="/block/todi/add">
-          <button className="bg-indigo-600 text-white p-3 rounded-full shadow hover:bg-indigo-700">
+          <button className="bg-indigo-600 text-white px-4 p-3  shadow hover:bg-indigo-700">
             +
           </button>
         </Link>

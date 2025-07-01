@@ -113,8 +113,8 @@ export default function Groupfunction({ todi, setTodi }: GroupProps) {
 
         const truckCost = parseFloat(updated[groupIdx].g_truck_cost) || 0
         const hydraCost = parseFloat(updated[groupIdx].g_hydra_cost) || 0
-        const galaCost = parseFloat(todi.gala_cost) || 0
-        const blockCost = (truckCost + hydraCost + galaCost) * blockArea
+        const totalGalaCost = parseFloat(todi.total_gala_cost) || 0
+        const blockCost = (truckCost + hydraCost + totalGalaCost) * blockArea
         measure.block_cost = blockCost.toFixed(2)
       }
     }

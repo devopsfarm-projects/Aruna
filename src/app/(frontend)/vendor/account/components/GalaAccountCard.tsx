@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Vendor, Gala } from '@/payload-types'
 
 interface Props {
@@ -19,30 +19,35 @@ export default function GalaAccountCard({ initialGalas, initialVendors, initialV
   const [error, setError] = useState<string | null>(null)
 
   const router = useRouter()
+const searchParams = useSearchParams()
 
-  const handleVendorChange = async (vendorId: string | null) => {
-    setSelectedVendor(vendorId)
-    setIsLoading(true)
-    setError(null)
+useEffect(() => {
+  const vendorId = searchParams.get('vendor') ?? ''
+  setSelectedVendor(vendorId)
 
-    try {
-      // Filter galas based on vendor
-      const filteredGalas = initialGalas.filter(gala => {
-        if (!vendorId) return true;
-        if (!gala.vender_id) return false;
-        return typeof gala.vender_id === 'object' 
-          ? String(gala.vender_id.id) === vendorId
-          : String(gala.vender_id) === vendorId;
-      });
-      setGalas(filteredGalas)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-      setGalas([])
-    } finally {
-      setIsLoading(false)
-    }
-    router.push(`/vendor/account?vendor=${vendorId || ''}`)
+  setIsLoading(true)
+  setError(null)
+
+  try {
+    const filtered = vendorId
+      ? initialGalas.filter((gala) => {
+          const id = typeof gala.vender_id === 'object' ? gala.vender_id?.id : gala.vender_id
+          return String(id) === vendorId
+        })
+      : initialGalas
+
+    setGalas(filtered)
+  } catch (err) {
+    setError('Error filtering Galas')
+    setGalas([])
+  } finally {
+    setIsLoading(false)
   }
+}, [searchParams, initialGalas])
+
+const handleVendorChange = (vendorId: string) => {
+  router.push(`/vendor/account?vendor=${vendorId}`)
+}
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -50,7 +55,7 @@ export default function GalaAccountCard({ initialGalas, initialVendors, initialV
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">Gala List</h1>
         <select
           value={selectedVendor || ''}
-          onChange={(e) => handleVendorChange(e.target.value || null)}
+          onChange={(e) => handleVendorChange(e.target.value)}
           className="px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
           <option value="">All Vendors</option>
