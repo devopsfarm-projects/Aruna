@@ -2,13 +2,24 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { BlockType } from './type'
-
 export default function EditBlock() {
+  const [pdfLib, setPdfLib] = useState<typeof import('jspdf').default | null>(null)
+  const [html2canvasLib, setHtml2canvasLib] = useState<typeof import('html2canvas').default | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      import('jspdf').then(({ default: jsPDF }) => {
+        setPdfLib(jsPDF)
+      })
+      import('html2canvas').then(html2canvas => {
+        setHtml2canvasLib(html2canvas.default)
+      })
+    }
+  }, [])
+
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
   const [block, setBlock] = useState<BlockType | null>(null)
@@ -27,59 +38,60 @@ export default function EditBlock() {
     fetchBlock()
   }, [id])
 
-  const handleDownloadPDF = async () => {
-    if (!formRef.current) return;
 
-    // Create PDF with custom settings
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(16);
-    
+
+  const handleDownloadPDF = async () => {
+    if (!pdfLib || !html2canvasLib || !formRef.current) {
+      console.error('Required dependencies not initialized')
+      return
+    }
+
+    const pdf = new pdfLib({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+    const form = formRef.current
+
     // Add title page
-    pdf.addPage();
-    pdf.setFontSize(24);
-    pdf.text('Todi Block Report', 105, 30, { align: 'center' });
-    pdf.setFontSize(12);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`Block Type: ${block?.BlockType || 'N/A'}`, 105, 45, { align: 'center' });
-    pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 55, { align: 'center' });
+    pdf.addPage()
+    pdf.setFontSize(24)
+    pdf.text('Todi Raskat Block Report', 105, 30, { align: 'center' })
+    pdf.setFontSize(12)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`Block Type: ${block?.BlockType || 'N/A'}`, 105, 45, { align: 'center' })
+    pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 55, { align: 'center' })
     
-    // Add main content
-    const elements = Array.from(formRef.current.querySelectorAll('.pdf-page')) as HTMLElement[];
+    const elements = Array.from(form.querySelectorAll('.pdf-page')) as HTMLElement[]
     
     for (let i = 0; i < elements.length; i++) {
-      const el = elements[i];
-      const canvas = await html2canvas(el, {
+      const el = elements[i]
+      const canvas = await html2canvasLib(el, {
         scale: 2,
         backgroundColor: '#ffffff',
         useCORS: true,
         logging: false
-      });
+      })
 
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const imgData = canvas.toDataURL('image/jpeg', 1.0)
+      const imgWidth = 210
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-      if (i !== 0) pdf.addPage();
+      if (i !== 0) pdf.addPage()
       
       // Add page header
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(14);
-      pdf.text('Block Details', 10, 15);
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(14)
+      pdf.text('Block Details', 10, 15)
       
       // Add content
-      pdf.addImage(imgData, 'JPEG', 0, 20, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'JPEG', 0, 20, imgWidth, imgHeight)
       
       // Add page footer
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(10);
-      pdf.setTextColor(100);
       pdf.text(`Page ${i + 1} of ${elements.length}`, 10, 290);
     }
   
     // Add metadata
     pdf.setProperties({
-      title: `Todi Block Report - ${block?.BlockType || 'Block'}`,
+      title: `Todi Raskat Block Report - ${block?.BlockType || 'Block'}`,
       subject: 'Block Details',
       author: 'Aruna Block Management System',
       keywords: 'block, gala, report, pdf',
@@ -87,7 +99,7 @@ export default function EditBlock() {
     });
 
     // Save the PDF
-    const filename = `Todi-${block?.BlockType || 'Block'}-${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `TodiRaskat-${block?.BlockType || 'Block'}-${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(filename);
   };
   
@@ -102,7 +114,7 @@ export default function EditBlock() {
     <div className="mx-auto bg-white py-2 px-4 text-black">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Block PDF</h1>
-        <Link href="/block/gala" className="text-blue-600 hover:underline">← Back</Link>
+        <Link href="/block/todi" className="text-blue-600 hover:underline">← Back</Link>
       </div>
 
       <div ref={formRef}>
