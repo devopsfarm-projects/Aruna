@@ -74,7 +74,6 @@ export interface Config {
     Todi: Todi;
     TodiRaskat: TodiRaskat;
     Gala: Gala;
-    vendorAccount: VendorAccount;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -88,7 +87,6 @@ export interface Config {
     Todi: TodiSelect<false> | TodiSelect<true>;
     TodiRaskat: TodiRaskatSelect<false> | TodiRaskatSelect<true>;
     Gala: GalaSelect<false> | GalaSelect<true>;
-    vendorAccount: VendorAccountSelect<false> | VendorAccountSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -133,7 +131,7 @@ export interface User {
   id: number;
   name: string;
   phone?: string | null;
-  role: 'owner' | 'client' | 'sites-visitor';
+  role: 'admin' | 'manager' | 'user';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -398,24 +396,6 @@ export interface Gala {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "vendorAccount".
- */
-export interface VendorAccount {
-  id: number;
-  todi?: (number | null) | Todi;
-  received_amount?:
-    | {
-        amount: number;
-        date: string;
-        description?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -448,10 +428,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'Gala';
         value: number | Gala;
-      } | null)
-    | ({
-        relationTo: 'vendorAccount';
-        value: number | VendorAccount;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -755,23 +731,6 @@ export interface GalaSelect<T extends boolean = true> {
       };
   partyRemainingPayment?: T;
   createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "vendorAccount_select".
- */
-export interface VendorAccountSelect<T extends boolean = true> {
-  todi?: T;
-  received_amount?:
-    | T
-    | {
-        amount?: T;
-        date?: T;
-        description?: T;
-        id?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }

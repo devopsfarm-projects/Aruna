@@ -91,7 +91,7 @@ export default function Groupfunction({ todi, setTodi }: GroupProps) {
           const blockArea = parseFloat(measure.block_area) || 0
           const truckCost = parseFloat(updated[groupIdx].g_truck_cost) || 0
           const hydraCost = parseFloat(updated[groupIdx].g_hydra_cost) || 0
-          const todiCost = parseFloat(todi.total_todi_cost) || 0
+          const todiCost = parseFloat(todi.todi_cost) || 0
           const blockCost = (truckCost + hydraCost + todiCost) * blockArea
           measure.block_cost = blockCost.toFixed(2)
         })
@@ -113,8 +113,8 @@ export default function Groupfunction({ todi, setTodi }: GroupProps) {
 
         const truckCost = parseFloat(updated[groupIdx].g_truck_cost) || 0
         const hydraCost = parseFloat(updated[groupIdx].g_hydra_cost) || 0
-        const total_todi_cost = parseFloat(todi.total_todi_cost) || 0
-        const blockCost = (truckCost + hydraCost + total_todi_cost) * blockArea
+        const todi_cost = parseFloat(todi.todi_cost) || 0
+        const blockCost = (truckCost + hydraCost + todi_cost) * blockArea
         measure.block_cost = blockCost.toFixed(2)
       }
     }

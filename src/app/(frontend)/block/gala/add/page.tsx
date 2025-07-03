@@ -6,8 +6,9 @@ import { handleInput } from '../../components/calculate'
 import FetchVendor from '../../components/FetchVendor'
 import Summary from '../../components/Summary'
 import Group from '../../components/Group'
-import router from 'next/router'
+import { useRouter } from 'next/navigation'
 export default function AddTodiPage() {
+  const router = useRouter();
   const [todi, setTodi] = useState<GalaState>({
     id: '',
     total_block_cost: '',
@@ -42,6 +43,7 @@ export default function AddTodiPage() {
     ]
   })
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   todi.total_block_cost = todi.group.reduce((total, group) => {
     return total + group.block.reduce((groupTotal, block) => {
@@ -123,11 +125,11 @@ export default function AddTodiPage() {
             </svg>
             <h2 className="text-xl font-bold">Success!</h2>
           </div>
-          <p className="mb-4">Gala has been updated successfully.</p>
+          <p className="mb-4">Gala has been added successfully.</p>
           <button
-            onClick={() => {
+            onClick={async () => {
               setShowSuccessMessage(false);
-              router.push('/block/gala');
+              await router.push('/block/gala');
             }}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
           >
@@ -196,9 +198,15 @@ export default function AddTodiPage() {
   remainingAmount={(parseFloat(todi.final_cost || '0') - parseFloat(todi.total_block_cost)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
 />
 
-      <button type="submit" className="bg-green-600 text-white px-4 py-2  mt-6">Submit</button>
+      <button 
+        type="submit" 
+        className="bg-green-600 text-white px-4 py-2  mt-6 disabled:opacity-50 disabled:cursor-not-allowed" 
+        disabled={isLoading}
+      >
+        {isLoading ? 'Submitting...' : 'Submit'}
+      </button>
     </form>
   )
+
+
 }
-
-

@@ -59,7 +59,7 @@ export default function LoginForm() {
     <div className="h-screen flex justify-center items-center">
         <div className="bg-white dark:bg-gray-800 mx-4 p-8 rounded shadow-md w-full md:w-1/2 lg:w-1/3">
             <div className="flex justify-center mb-6">
-    <img src="/image.png" alt="Payload Logo" className="w-32 sm:w-32" />
+    <img src="/png.png" alt="Payload Logo" className="w-32 sm:w-32" />
 </div>
             
             <form>

@@ -7,13 +7,13 @@ export const Users: CollectionConfig = {
   },
   auth: true,
   access: {
-    create: ({ req: { user } }) => user?.role === 'owner',
+    create: ({ req: { user } }) => user?.role === 'admin',
 
-    delete: ({ req: { user } }) => user?.role === 'owner',
+    delete: ({ req: { user } }) => user?.role === 'admin',
 
     read: ({ req: { user } }) => {
       if (!user) return false;
-      return user.role === 'owner' || {
+      return user.role === 'admin' || {
         id: {
           equals: user.id,
         },
@@ -22,7 +22,7 @@ export const Users: CollectionConfig = {
 
     update: ({ req: { user } }) => {
       if (!user) return false;
-      return user.role === 'owner' || {
+      return user.role === 'admin' || {
         id: {
           equals: user.id,
         },
@@ -31,30 +31,30 @@ export const Users: CollectionConfig = {
   },
 
   fields: [
-    { name: 'name', type: 'text', defaultValue: "trilok", required: true },
-    { name: 'phone', type: 'text', defaultValue: "1111111111" },
+    { name: 'name', type: 'text', defaultValue: "", required: true },
+    { name: 'phone', type: 'text', defaultValue: "" },
     {
       saveToJWT: true,
       name: 'role',
       type: 'select',
       required: true,
-      defaultValue: 'client',
+      defaultValue: 'user',
       options: [
         {
-          label: 'Owner',
-          value: 'owner',
+          label: 'admin',
+          value: 'admin',
         },
         {
-          label: 'Client',
-          value: 'client',
+          label: 'manager',
+          value: 'manager',
         },
         {
-          label: 'Sites Visitor',
-          value: 'sites-visitor',
+          label: 'user',
+          value: 'user',
         },
       ],
       access: {
-        update: ({ req: { user } }) => user?.role === 'owner',
+        update: ({ req: { user } }) => user?.role === 'admin',
       },
     },
   ],

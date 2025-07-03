@@ -6,9 +6,10 @@ import { handleInput } from '../../components/calculatetodi'
 import FetchVendor from '../../components/FetchVendor'
 import Summary from '../../components/Summary'
 import Group from '../../components/Grouptodi'
-import router from 'next/router'
+import { useRouter } from 'next/navigation'
 
 export default function AddTodiPage() {
+  const router = useRouter();
   const [todi, setTodi] = useState<TodiState>({
     id: '',
     total_block_cost: '',
@@ -124,11 +125,11 @@ export default function AddTodiPage() {
             </svg>
             <h2 className="text-xl font-bold">Success!</h2>
           </div>
-          <p className="mb-4">Todi Raskat has been updated successfully.</p>
+          <p className="mb-4">Todi Raskat has been added successfully.</p>
           <button
-            onClick={() => {
+            onClick={async () => {
               setShowSuccessMessage(false);
-              router.push('/block/todi(raskat)');
+              await router.push('/block/todi(raskat)');
             }}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
           >
@@ -163,17 +164,13 @@ export default function AddTodiPage() {
   <FormInput label="Depreciation (%):" id="depreciation" name="depreciation" value={todi.depreciation} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} />
   <FormDisplay label="Final Cost (₹):" value={todi.final_cost} />
 </div>
-
-
 <Group todi={todi} setTodi={setTodi} />
-
 <Summary 
   title="Summary"
   totalBlockArea={todi.total_block_area}
   totalBlockCost={todi.total_block_cost}
   remainingAmount={(parseFloat(todi.final_cost || '0') - parseFloat(todi.total_block_cost)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
 />
-
       <button type="submit" className="bg-green-600 text-white px-4 py-2  mt-6">Submit</button>
     </form>
   )

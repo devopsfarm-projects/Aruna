@@ -13,7 +13,6 @@ import { Stone } from './collections/Stone'
 import { Todi } from './collections/Todi'
 import { TodiRaskat } from './collections/TodiRaskat'
 import { Gala } from './collections/Gala'
-import { VendorAccount } from './collections/VendorAccount'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -32,7 +31,6 @@ export default buildConfig({
     Todi,
     TodiRaskat,
     Gala,
-    VendorAccount,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

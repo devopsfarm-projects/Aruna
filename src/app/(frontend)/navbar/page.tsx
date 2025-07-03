@@ -87,7 +87,7 @@ export default function Navbar() {
           <div className="flex shrink-0 items-center">
               <img
                 alt="Your Company"
-                src="/image.png"
+                src="/png.png"
                 className="h-8 w-auto"
               />
             </div></Link>
