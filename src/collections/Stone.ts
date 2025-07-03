@@ -24,13 +24,13 @@ export const Stone: CollectionConfig = {
     useAsTitle: 'munim',
   },
   access: {
-    create: ({ req: { user } }) => user?.role === 'owner' || user?.role === 'sites-visitor',
-    delete: ({ req: { user } }) => user?.role === 'owner',
-    update: ({ req: { user } }) => user?.role === 'owner' || user?.role === 'sites-visitor',
+    create: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager',
+    delete: ({ req: { user } }) => user?.role === 'admin',
+    update: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager',
     read: async ({ req: { user } }) => {
       if (!user) return false
-      if (user.role === 'owner' || user.role === 'sites-visitor') return true
-      if (user.role === 'client') {
+      if (user.role === 'admin' || user.role === 'manager') return true
+      if (user.role === 'user') {
         return {
           createdBy: {
             equals: user.id,
@@ -65,10 +65,10 @@ export const Stone: CollectionConfig = {
       relationTo: 'users',
       access: {
         create: () => true,
-        update: ({ req: { user } }) => user?.role === 'owner',
+        update: ({ req: { user } }) => user?.role === 'admin',
       },
       admin: {
-        condition: ({ user }) => user?.role === 'owner' || user?.role === 'sites-visitor',
+        condition: ({ user }) => user?.role === 'admin' || user?.role === 'sites-visitor',
       },
     },
   ],

@@ -48,6 +48,9 @@ export default async function GalaListPage() {
                   <Link href={`/block/gala/edit?id=${todi.id}`} className="text-blue-600 underline">
                     Edit
                   </Link>
+                  <Link href={`/block/gala/view?id=${todi.id}`} className="text-blue-600 ml-2 underline">
+                    View
+                  </Link>
                 </td>
               </tr>
             ))}

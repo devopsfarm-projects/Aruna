@@ -50,6 +50,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                 <td className="p-3">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-3">
                   <Link href={`/block/todi(raskat)/edit?id=${todi.id}`} className="text-blue-600 hover:underline">Edit</Link>
+                  <Link href={`/block/todi(raskat)/view?id=${todi.id}`} className="text-blue-600 ml-2 hover:underline">
+                    View
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -72,7 +75,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
       {/* Add Button */}
       <div className="fixed bottom-20 right-4 z-50">
-        <Link href="/block/todi/add">
+        <Link href="/block/todi(raskat)/add">
           <button className="bg-indigo-600 text-white px-4 p-3  shadow hover:bg-indigo-700">
             +
           </button>
