@@ -2,12 +2,18 @@
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
 import type { Vendor as PayloadVendor } from '../../../payload-types'
+import { EditButton } from '../components/Button'
+import { DeleteButton } from '../components/Button'
 
 export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }) {
   const [searchVendor, setSearchVendor] = useState('')
   const [filteredVendor, setFilteredVendor] = useState<PayloadVendor[]>([])
   const [vendorLoading, ] = useState(false)
   const [vendorError,   ] = useState<string | null>(null)
+const [isAdmin, setIsAdmin] = useState(false)
+
+
+
 
   useEffect(() => {
     const filtered = VendorItems.filter((vendor) => {
@@ -157,25 +163,7 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
               </div>
             </div>
           </div>
-{/* 
-          <div className="bg-white dark:bg-gray-800 -lg shadow-sm p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={isSelectAllVendor}
-                  onChange={handleSelectAllVendor}
-                  className=" h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                />
-                <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Select All
-                </label>
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {selectedVendor.size} selected
-              </div>
-            </div>
-          </div> */}
+
         </div>
 
         {/* Vendor Table - Desktop */}
@@ -207,15 +195,8 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
 
                   <td className="p-4">
                     <div className="flex gap-3">
-                      <Link href={`/vendor/edit?id=${item.id}`} className="text-blue-600">
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(String(item.id))}
-                        className="text-red-600"
-                      >
-                        Delete
-                      </button>
+                      <EditButton href={`/vendor/edit?id=${item.id}`} />
+                      <DeleteButton onClick={() => handleDelete(String(item.id))} />
                     </div>
                   </td>
                 </tr>
@@ -383,13 +364,13 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
                 </svg>
               </button>
             )}
-            <Link href="/vendor/account">
-              <button className="bg-blue-600 text-white p-3 -full shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-              </button>
+        
+            <Link href="/vendor/account" className="bg-blue-600 text-white p-3 -full shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
             </Link>
+       
             <Link href="/vendor/addvendor">
               <button className="bg-indigo-600 text-white p-3 -full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

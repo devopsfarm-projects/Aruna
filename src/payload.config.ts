@@ -7,7 +7,6 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { Users } from './collections/Users'
-import { Accounts } from './collections/Accounts'
 import { Vendor } from './collections/Vendor'
 import { Stone } from './collections/Stone'
 import { Todi } from './collections/Todi'
@@ -25,7 +24,6 @@ export default buildConfig({
   },
   collections: [
     Users,
-    Accounts,
     Vendor,
     Stone,
     Todi,

@@ -206,8 +206,8 @@ export default function EditBlock() {
           {/* Block Info */}
           {[
             { label: 'Vendor Name', value: typeof newBlock?.vender_id === 'object' ? newBlock?.vender_id.vendor : 'N/A' },
-            { label: 'Total Block Area (m³)', value: newBlock?.total_block_area || '' },
-            { label: 'Total Block Cost', value: formatCost(newBlock?.total_block_cost ?? '') },
+            { label: 'Total Todi Area (m³)', value: newBlock?.total_todi_area || '' },
+            { label: 'Total Todi Cost', value: formatCost(newBlock?.total_todi_cost ?? '') },
             { label: 'Final Cost ₹', value: formatCost(newBlock?.final_cost ?? '') }
           ].map((field, i) => (
             <div key={i}>

@@ -24,12 +24,12 @@ export const Stone: CollectionConfig = {
     useAsTitle: 'munim',
   },
   access: {
-    create: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager',
+    create: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager' || user?.role === 'user',
     delete: ({ req: { user } }) => user?.role === 'admin',
     update: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager',
     read: async ({ req: { user } }) => {
       if (!user) return false
-      if (user.role === 'admin' || user.role === 'manager') return true
+      if (user.role === 'admin' || user.role === 'manager' || user.role === 'user') return true
       if (user.role === 'user') {
         return {
           createdBy: {

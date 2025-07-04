@@ -43,7 +43,7 @@ export default function AddTodiPage() {
     ]
   })
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   todi.total_block_cost = todi.group.reduce((total, group) => {
     return total + group.block.reduce((groupTotal, block) => {
@@ -64,10 +64,11 @@ export default function AddTodiPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    
+    setIsSubmitting(true);
     const validGalaTypes = ['Brown', 'White'];
     if (!validGalaTypes.includes(todi.GalaType)) {
       alert('Invalid Gala Type. Please select either "Brown" or "White"');
+      setIsSubmitting(false);
       return;
     }
 
@@ -108,8 +109,10 @@ export default function AddTodiPage() {
         throw new Error(errorData.message || 'Failed to create Gala');
       }
       setShowSuccessMessage(true);
+      setIsSubmitting(false);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'An error occurred while creating Gala');
+      setIsSubmitting(false);
     }
   }
 
@@ -198,12 +201,12 @@ export default function AddTodiPage() {
   remainingAmount={(parseFloat(todi.final_cost || '0') - parseFloat(todi.total_block_cost)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
 />
 
-      <button 
+<button 
         type="submit" 
-        className="bg-green-600 text-white px-4 py-2  mt-6 disabled:opacity-50 disabled:cursor-not-allowed" 
-        disabled={isLoading}
+        className="bg-green-600 text-white px-4 py-2 mt-6"
+        disabled={isSubmitting}
       >
-        {isLoading ? 'Submitting...' : 'Submit'}
+        {isSubmitting ? 'Submitting...' : 'Submit'}
       </button>
     </form>
   )

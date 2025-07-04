@@ -6,19 +6,12 @@ export const Gala: CollectionConfig = {
     useAsTitle: 'GalaType',
   },
   access: {
-    create: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager',
+    create: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager' || user?.role === 'user',
     delete: ({ req: { user } }) => user?.role === 'admin',
     update: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'manager',
     read: async ({ req: { user } }) => {
       if (!user) return false
-      if (user.role === 'admin' || user.role === 'manager') return true
-      if (user.role === 'user') {
-        return {
-          createdBy: {
-            equals: user.id,
-          },
-        }
-      }
+      if (user.role === 'admin' || user.role === 'manager' || user.role === 'user') return true
       return false
     },
   },
@@ -86,6 +79,11 @@ export const Gala: CollectionConfig = {
     {name:'total_block_cost',label:'Total Block Cost',type:'number'},
 
     {name:'delivered_block',label:'Delivered Block',type:'array',
+      access: {
+        create: ({ req }) => req?.user?.role === 'admin',
+        read: ({ req }) => req?.user?.role === 'admin',
+        update: ({ req }) => req?.user?.role === 'admin',
+      },
       fields:[
         {name:'delivered_block_area',label:'Delivered Block Area',type:'number'},
         {name:'delivered_block_cost',label:'Delivered Block Cost',type:'number'},
@@ -95,32 +93,24 @@ export const Gala: CollectionConfig = {
     },
 
    
-    {
-      name: 'received_amount',
-      type: 'array',
-      label: 'Received Amounts',
+    {name: 'received_amount',type: 'array',label: 'Received Amounts',
+      access: {
+        create: ({ req }) => req?.user?.role === 'admin',
+        read: ({ req }) => req?.user?.role === 'admin',
+        update: ({ req }) => req?.user?.role === 'admin',
+      },
       fields: [
-        {
-          name: 'amount',
-          type: 'number',
-          required: true,
-        },
-        {
-          name: 'date',
-          type: 'date',
-          required: true,
-        },
-        {
-          name: 'description',
-          type: 'textarea',
-        },
-      ],
-    },
+        {name: 'amount',type: 'number',required: true,},
+        {name: 'date',type: 'date',required: true,},
+        {name: 'description',type: 'textarea',},
+      ]},
 
-    {
-      name: 'partyRemainingPayment',
-      label: 'Party Remaining Payment',
-      type: 'number',
+    {name: 'partyRemainingPayment',label: 'Party Remaining Payment',type: 'number',
+      access: {
+        create: ({ req }) => req?.user?.role === 'admin',
+        read: ({ req }) => req?.user?.role === 'admin',
+        update: ({ req }) => req?.user?.role === 'admin',
+      },
     },
 
 
