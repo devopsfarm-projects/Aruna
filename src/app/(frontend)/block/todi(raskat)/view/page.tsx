@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { BlockType } from './type'
 import * as jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
+import { GroupBlock } from './GroupBlock'
 
 export default function EditBlock() {
   const searchParams = useSearchParams()
@@ -107,69 +108,50 @@ export default function EditBlock() {
         </div>
 
         <div ref={formRef}>
-          <div className="pdf-page bg-white p-6 mb-6 border border-gray-200" style={{ width: '1200px', height: '1600px' }}>
-            <section className="grid grid-cols-6 gap-4">
-              <Info label="Block Type" value={block.BlockType} />
-              <Info label="Vendor" value={typeof block.vender_id === 'object' ? block.vender_id.vendor : block.vender_id} />
-              <Info label="Munim" value={block.munim} />
-              <Info label="Date" value={new Date(block.date).toLocaleDateString()} />
-              <Info label="Hydra Cost" value={block.hydra_cost} />
-              <Info label="Truck Cost" value={block.truck_cost} />
-              <Info label="Length (m)" value={block.l} />
-              <Info label="Breadth (m)" value={block.b} />
-              <Info label="Height (m)" value={block.h} />
-              <Info label="Total Groups" value={block.group.length} />
-              <Info label="Total Measures" value={block.group.reduce((total, group) => total + group.block.reduce((bT, b) => bT + b.addmeasures.length, 0), 0)} />
-              <Info label="Total Blocks" value={block.group.reduce((total, group) => total + group.block.length, 0)} />
-              <Info label="Total Todi Cost (₹)" value={Number(block.total_todi_cost).toLocaleString('en-IN')} />
-              <Info label="Total Todi Area (m³)" value={Number(block.total_todi_area).toLocaleString('en-IN')} />
-              <Info label="Estimate Cost (₹)" value={Number(block.estimate_cost).toLocaleString('en-IN')} />
-              <Info label="Depreciation" value={block.depreciation} />
-              <Info label="Final Cost (₹)" value={Number(block.final_cost).toLocaleString('en-IN')} />
-            </section>
-          </div>
+  {/* PAGE 1: Summary + Group 1 */}
+  <div className="pdf-page bg-white p-6 mb-6 border border-gray-200" style={{ width: '1200px', height: '1600px' }}>
+    <section className="grid grid-cols-6 gap-4 mb-6">
+      <Info label="Block Type" value={block.BlockType} />
+      <Info label="Vendor" value={typeof block.vender_id === 'object' ? block.vender_id.vendor : block.vender_id} />
+      <Info label="Munim" value={block.munim} />
+      <Info label="Date" value={new Date(block.date).toLocaleDateString()} />
+      <Info label="Hydra Cost" value={block.hydra_cost} />
+      <Info label="Truck Cost" value={block.truck_cost} />
+      <Info label="Length (m)" value={block.l} />
+      <Info label="Breadth (m)" value={block.b} />
+      <Info label="Height (m)" value={block.h} />
+      <Info label="Total Groups" value={block.group.length} />
+      <Info label="Total Measures" value={block.group.reduce((total, group) => total + group.block.reduce((bT, b) => bT + b.addmeasures.length, 0), 0)} />
+      <Info label="Total Blocks" value={block.group.reduce((total, group) => total + group.block.length, 0)} />
+      <Info label="Total Todi Cost (₹)" value={Number(block.total_todi_cost).toLocaleString('en-IN')} />
+      <Info label="Total Todi Area (m³)" value={Number(block.total_todi_area).toLocaleString('en-IN')} />
+      <Info label="Estimate Cost (₹)" value={Number(block.estimate_cost).toLocaleString('en-IN')} />
+      <Info label="Depreciation" value={block.depreciation} />
+      <Info label="Final Cost (₹)" value={Number(block.final_cost).toLocaleString('en-IN')} />
+    </section>
 
-          {block.group.map((group, groupIndex) => (
-            <div key={groupIndex} className="pdf-page bg-white p-6 mb-6 border border-gray-200" style={{ width: '1200px', height: '1600px' }}>
-              <section className="border-t pt-4">
-                <h2 className="text-lg font-semibold mb-2">Group {groupIndex + 1}</h2>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <Info label="Hydra Cost" value={group.g_hydra_cost} />
-                  <Info label="Truck Cost" value={group.g_truck_cost} />
-                  <Info label="Date" value={new Date(group.date).toLocaleDateString()} />
-                </div>
+    {/* Group 1 inside page 1 */}
+    <GroupBlock group={block.group[0]} groupIndex={0}  />
+  </div>
 
-                <div className="grid gap-4">
-                  {group.block.map((blockItem, blockIndex) => (
-                    <div key={blockIndex} className="border rounded p-4 bg-gray-50">
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-medium">Block {blockIndex + 1}</h3>
-                      </div>
+  {/* PAGE 2+ : Remaining groups start from index 1 */}
+  {block.group.slice(1).map((group, index) => (
+    <div
+      key={index + 1}
+      className="pdf-page bg-white p-6 mb-6 border border-gray-200"
+      style={{ width: '1200px', height: '1600px' }}
+    >
+      <GroupBlock group={group} groupIndex={index + 1} />
+    </div>
+  ))}
+</div>
 
-                      {blockItem.addmeasures?.length > 0 && (
-                        <div className="mt-4">
-                          <h4 className="text-sm font-medium mb-2">Measurements</h4>
-                          <div className="grid grid-cols-4 gap-2">
-                            {blockItem.addmeasures.map((measure, measureIndex) => (
-                              <div key={measureIndex} className="bg-white border rounded p-2">
-                                <div className="text-xs font-medium mb-1">Measurement {measureIndex + 1}</div>
-                                <Info label="L" value={measure.l} />
-                                <Info label="B" value={measure.b} />
-                                <Info label="H" value={measure.h} />
-                                <Info label="Area" value={measure.block_area} />
-                                <Info label="Cost" value={measure.block_cost} />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
-          ))}
-        </div>
+
+
+
+
+
+
       </div>
 
       <div className="mt-6">
