@@ -130,6 +130,12 @@ export default function TodiAccountCard({
               value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
               onChange={(e) => {
                 const date = e.target.value ? parse(e.target.value, 'yyyy-MM-dd', new Date()) : null
+                
+                // Reset end date if start date is after end date
+                if (date && endDate && date > endDate) {
+                  setEndDate(null)
+                }
+                
                 setStartDate(date)
                 handleDateChange()
               }}
@@ -141,6 +147,12 @@ export default function TodiAccountCard({
               value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
               onChange={(e) => {
                 const date = e.target.value ? parse(e.target.value, 'yyyy-MM-dd', new Date()) : null
+                
+                // Reset start date if end date is before start date
+                if (date && startDate && date < startDate) {
+                  setStartDate(null)
+                }
+                
                 setEndDate(date)
                 handleDateChange()
               }}
@@ -196,7 +208,7 @@ export default function TodiAccountCard({
                       href={`/vendor/account/todi/view?id=${todi.id}`}
                       className="text-indigo-600 dark:text-indigo-400 hover:underline"
                     >
-                      View
+                      Edit
                     </Link>
                   </td>
                 </tr>

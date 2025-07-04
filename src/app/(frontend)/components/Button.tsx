@@ -10,7 +10,7 @@ export function EditButton({ href }: { href: string }) {
     const userStr = localStorage.getItem('user')
     try {
       const user = userStr ? JSON.parse(userStr) : {}
-      setIsAdmin(user?.role === 'admin')
+      setIsAdmin(user?.role === 'admin'|| user?.role === 'manager')
     } catch (err) {
       console.error('Failed to parse user from localStorage', err)
     }
@@ -69,7 +69,7 @@ export function ActionHeader() {
     const userStr = localStorage.getItem('user')
     try {
       const user = userStr ? JSON.parse(userStr) : {}
-      setIsAdmin(user?.role === 'admin')
+      setIsAdmin(user?.role === 'admin'|| user?.role === 'manager')
     } catch (err) {
       console.error('Failed to parse user from localStorage', err)
     }

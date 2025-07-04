@@ -111,6 +111,12 @@ const handleDateChange = () => {
               value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
               onChange={(e) => {
                 const date = e.target.value ? parse(e.target.value, 'yyyy-MM-dd', new Date()) : null
+                
+                // Reset end date if start date is after end date
+                if (date && endDate && date > endDate) {
+                  setEndDate(null)
+                }
+                
                 setStartDate(date)
                 handleDateChange()
               }}
@@ -122,6 +128,12 @@ const handleDateChange = () => {
               value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
               onChange={(e) => {
                 const date = e.target.value ? parse(e.target.value, 'yyyy-MM-dd', new Date()) : null
+                
+                // Reset start date if end date is before start date
+                if (date && startDate && date < startDate) {
+                  setStartDate(null)
+                }
+                
                 setEndDate(date)
                 handleDateChange()
               }}
@@ -167,7 +179,7 @@ const handleDateChange = () => {
                   <td className="px-4 py-2">₹{gala.final_cost?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">₹{gala.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">
-                    <Link href={`/vendor/account/gala/view?id=${gala.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  View  </Link>
+                    <Link href={`/vendor/account/gala/view?id=${gala.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  Edit  </Link>
                   </td>
                 </tr>
               ))
