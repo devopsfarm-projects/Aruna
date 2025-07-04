@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  const payload = await getPayload({ config })
-  const id = params.id
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const payload = await getPayload({ config })
+    const id = (await params).id
 
   try {
     const result = await payload.delete({
