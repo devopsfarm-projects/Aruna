@@ -2,7 +2,7 @@ import React from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
-import { EditButtonForBlock } from '../../components/ButtonForBlock'
+import { EditButtonForBlock ,DeleteButtonForBlock} from '../../components/ButtonForBlock'
 
 async function getData(page = 1) {
   const payload = await getPayload({ config })
@@ -54,6 +54,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                   <Link href={`/block/gala/view?id=${todi.id}`} className="text-blue-600 ml-2 hover:underline">
                     View
                   </Link>
+                  <DeleteButtonForBlock id={todi.id} name="gala" />
                 </td>
               </tr>
             ))}

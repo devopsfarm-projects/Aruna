@@ -10,7 +10,7 @@ export function EditButton({ href }: { href: string }) {
     const userStr = localStorage.getItem('user')
     try {
       const user = userStr ? JSON.parse(userStr) : {}
-      setIsAdmin(user?.role === 'admin')
+      setIsAdmin(user?.role === 'admin'|| user?.role === 'manager')
     } catch (err) {
       console.error('Failed to parse user from localStorage', err)
     }
@@ -51,7 +51,7 @@ export function DeleteButton({ onClick }: { onClick: () => void }) {
       {isAdmin && (
         <button 
           onClick={onClick} 
-          className="px-4 p-2 text-red-600 hover:text-red-700"
+        className="ml-2 text-red-600 hover:underline disabled:opacity-50"
         >
           Delete
         </button>
@@ -69,7 +69,7 @@ export function ActionHeader() {
     const userStr = localStorage.getItem('user')
     try {
       const user = userStr ? JSON.parse(userStr) : {}
-      setIsAdmin(user?.role === 'admin')
+      setIsAdmin(user?.role === 'admin'|| user?.role === 'manager')
     } catch (err) {
       console.error('Failed to parse user from localStorage', err)
     }

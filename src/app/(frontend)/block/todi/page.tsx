@@ -3,7 +3,7 @@ import React from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
-import { EditButtonForBlock } from '../../components/ButtonForBlock'
+import { EditButtonForBlock,DeleteButtonForBlock } from '../../components/ButtonForBlock'
 
 async function getData(page = 1) {
   const payload = await getPayload({ config })
@@ -51,10 +51,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                 <td className="p-3">₹{todi.total_todi_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-3">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-3">
-                  <EditButtonForBlock href={`/block/todi/edit?id=${todi.id}`} />
-                  <Link href={`/block/todi/view?id=${todi.id}`} className="text-blue-600 ml-2 hover:underline">
-                    View
-                  </Link>
+                  <div className="flex items-center space-x-2">
+                    <EditButtonForBlock href={`/block/todi/edit?id=${todi.id}`} />
+                    <Link href={`/block/todi/view?id=${todi.id}`} className="text-blue-600 hover:underline">
+                      View
+                    </Link>
+                    <DeleteButtonForBlock id={todi.id} name="todi" />
+                  </div>
+
                 </td>
               </tr>
             ))}

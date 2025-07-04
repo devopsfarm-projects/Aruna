@@ -13,6 +13,10 @@ export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }
 const [isAdmin, setIsAdmin] = useState(false)
 
 
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  setIsAdmin(user?.role === 'admin')
+}, [])
 
 
   useEffect(() => {
@@ -175,7 +179,7 @@ const [isAdmin, setIsAdmin] = useState(false)
                 <th className="p-4">Vendor</th>
                 <th className="p-4">Address</th>
                 <th className="p-4">Mobile No.</th>
-                <th className="p-4">Actions</th>
+                {isAdmin && <th className="p-4">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -365,11 +369,11 @@ const [isAdmin, setIsAdmin] = useState(false)
               </button>
             )}
         
-            <Link href="/vendor/account" className="bg-blue-600 text-white p-3 -full shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center">
+            {isAdmin && <Link href="/vendor/account" className="bg-blue-600 text-white p-3 -full shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
-            </Link>
+            </Link>}
        
             <Link href="/vendor/addvendor">
               <button className="bg-indigo-600 text-white p-3 -full shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center">
