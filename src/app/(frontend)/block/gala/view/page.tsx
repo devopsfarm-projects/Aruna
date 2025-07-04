@@ -22,7 +22,7 @@ export default function EditBlock() {
     const fetchBlock = async () => {
       if (!id) return
       try {
-        const res = await axios.get(`/api/Gala/${id}`)
+        const res = await axios.get(`/api/gala/${id}`)
         setBlock(res.data as BlockType)
       } catch (error) {
         console.error('Failed to fetch block', error)
