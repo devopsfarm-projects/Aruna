@@ -12,7 +12,7 @@ export default function EditBlock() {
   const searchParams = useSearchParams()
   const [currentBlock, setCurrentBlock] = useState<BlockType | null>(null)
   const [newBlock, setNewBlock] = useState<BlockType | null>(null)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [munims, setMunims] = useState<string[]>([])
   const [vendors, setVendors] = useState<Vendor[]>([])
@@ -126,7 +126,7 @@ export default function EditBlock() {
 
       try {
         // Fetch block data
-        const blockRes = await axios.get<BlockType>(`/api/TodiRaskat/${id}`)
+        const blockRes = await axios.get<BlockType>(`/api/Todi/${id}`)
         const blockData = blockRes.data
 
         // Fetch vendors
@@ -271,21 +271,24 @@ export default function EditBlock() {
   }
 
    const handleSubmit = async (e: React.FormEvent) => {
-     e.preventDefault()
-     if (!newBlock || !id) return
- 
- 
-     try {
-       setIsSubmitting(true)
-       await axios.patch(`/api/TodiRaskat/${id}`, newBlock)
-       setShowSuccessMessage(true)
-     } catch (error) {
-       console.error('Error updating block:', error)
-     } finally {
-       setIsSubmitting(false)
-     }
-   }
+    e.preventDefault()
+    if (!newBlock || !id) return
 
+    try {
+      setIsSubmitting(true)
+      await axios.patch(`/api/Todi/${id}`, newBlock)
+      setShowSuccessMessage(true)
+    } catch (error) {
+      console.error('Error updating block:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Prevent form submission when adding/removing groups or blocks
+  const preventFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+  }
 
    if (loading || loadingData) {
     return (
@@ -297,7 +300,6 @@ export default function EditBlock() {
       </div>
     )
   }
-
 
   if (showSuccessMessage) {
     return (
@@ -313,7 +315,7 @@ export default function EditBlock() {
           <button
             onClick={() => {
               setShowSuccessMessage(false);
-              router.push('/block/todi(raskat)');
+              router.push('/block/todi');
             }}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
           >
@@ -329,7 +331,7 @@ export default function EditBlock() {
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
-          <Link href="/block/todi(raskat)" className="text-gray-600 hover:text-gray-800">
+          <Link href="/block/todi" className="text-gray-600 hover:text-gray-800">
             ← Back to block List
           </Link>
         </div>
@@ -349,12 +351,12 @@ export default function EditBlock() {
     { label: 'todi_cost', key: 'todi_cost' },
     { label: 'hydra_cost', key: 'hydra_cost' },
     { label: 'truck_cost', key: 'truck_cost' },
-    { label: 'total_todi_area', key: 'total_todi_area' },
-    { label: 'total_todi_cost', key: 'total_todi_cost' },
-    { label: 'estimate_cost', key: 'estimate_cost' },
+    { label: 'total_todi_area', key: 'total_todi_area', editable: "disabled" },
+    { label: 'total_todi_cost', key: 'total_todi_cost', editable: "disabled" },
+    { label: 'estimate_cost', key: 'estimate_cost', editable: "disabled" },
     { label: 'depreciation', key: 'depreciation' },
-    { label: 'final_cost', key: 'final_cost' },
-  ].map(({ label, key, type, options }) => (
+    { label: 'final_cost', key: 'final_cost', editable: "disabled" },
+  ].map(({ label, key, type, options, editable }) => (
     <div key={key}>
       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
         {label}
@@ -415,6 +417,7 @@ export default function EditBlock() {
               prev ? { ...prev, [key]: e.target.value } : prev
             )
           }
+          disabled={editable === 'disabled'}
           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       )}
@@ -442,6 +445,7 @@ export default function EditBlock() {
             name={name}
             value={value}
             onChange={(e) => {
+              e.preventDefault(); // Prevent form submission
               handleNestedChange(e, name, gIdx)
               // Calculate group total area and cost
               const groupTotalArea = group.block?.reduce((sum, block) => {
@@ -495,15 +499,24 @@ export default function EditBlock() {
           type="date"
           name="date"
           value={group.date}
-          onChange={(e) => handleNestedChange(e, 'date', gIdx)}
+          onChange={(e) => {
+            e.preventDefault(); // Prevent form submission
+            handleNestedChange(e, 'date', gIdx)
+          }}
           className="w-full p-2 border dark:bg-gray-700"
         />
       </div>
 
       <div className="flex justify-between items-center mb-4">
-        <button onClick={() => addBlock(gIdx)} className="text-sm text-blue-600">+ Add Block</button>
+        <button onClick={(e) => {
+          e.preventDefault(); // Prevent form submission
+          addBlock(gIdx)
+        }} className="text-sm text-blue-600">+ Add Block</button>
         <button 
-          onClick={() => removeGroup(gIdx)} 
+          onClick={(e) => {
+            e.preventDefault(); // Prevent form submission
+            removeGroup(gIdx)
+          }} 
           className="text-sm text-red-600 hover:text-red-800"
         >
           × Remove Group
@@ -514,7 +527,10 @@ export default function EditBlock() {
       {group.block.map((block, bIdx) => (
         <div key={bIdx} className="ml-4 mt-2 border p-3 bg-white dark:bg-gray-800 rounded-md relative">
           <div className="flex justify-between items-center mb-4">
-            <button onClick={() => addMeasure(gIdx, bIdx)} className="text-sm text-green-600">+ Add Measure</button>
+            <button onClick={(e) => {
+              e.preventDefault(); // Prevent form submission
+              addMeasure(gIdx, bIdx)
+            }} className="text-sm text-green-600">+ Add Measure</button>
             <button 
               onClick={() => removeBlock(gIdx, bIdx)} 
               className="text-sm text-red-600 hover:text-red-800"
@@ -544,7 +560,7 @@ export default function EditBlock() {
                       const l = name === 'l' ? parseFloat(e.target.value) : parseFloat(m.l) || 0
                       const b = name === 'b' ? parseFloat(e.target.value) : parseFloat(m.b) || 0
                       const h = name === 'h' ? parseFloat(e.target.value) : parseFloat(m.h) || 0
-                      const area = l * b * h
+                      const area = (l * b * h) / 144
                       handleNestedChange({ target: { name: 'block_area', value: area.toFixed(2) } } as any, 'block_area', gIdx, bIdx, mIdx)
                       
                       // Calculate group total area and cost
@@ -554,18 +570,31 @@ export default function EditBlock() {
                         }, 0)
                       }, 0) || 0
 
-                      const truck = parseFloat(group.g_truck_cost) || 0
-                      const hydra = parseFloat(group.g_hydra_cost) || 0
-                      const todi = parseFloat(newBlock?.todi_cost || '0')
+                      const truck = parseFloat(group.g_truck_cost || '0') || 0
+                      const hydra = parseFloat(group.g_hydra_cost || '0') || 0
+                      const todi = parseFloat(newBlock?.todi_cost || '0') || 0
                       
                       // Update group total cost
                       const groupTotalCost = groupTotalArea * (truck + hydra + todi)
-                      
+                      console.log(groupTotalCost)
                       // Update block costs in the group
                       group.block?.forEach((block, blockIdx) => {
-                        const blockArea = block.addmeasures.reduce((sum, measure) => sum + (parseFloat(measure.block_area) || 0), 0)
+                        // Calculate individual block area
+                        const blockArea = block.addmeasures.reduce((sum, measure) => 
+                          sum + (parseFloat(measure.block_area) || 0), 0)
+                        
+                        // Calculate individual block cost
                         const blockCost = blockArea * (truck + hydra + todi)
-                        handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as any, 'block_cost', gIdx, blockIdx, 0)
+                        
+                        // Update the block cost
+                        if (!isNaN(blockCost)) {
+                          handleNestedChange({ 
+                            target: { 
+                              name: 'block_cost', 
+                              value: blockCost.toFixed(2)
+                            } 
+                          } as any, 'block_cost', gIdx, blockIdx, 0)
+                        }
                       })
 
                       // Update total block area and cost
@@ -576,7 +605,12 @@ export default function EditBlock() {
                         }, 0) || 0)
                       }, 0) || 0
 
-                      const totalBlockCost = totalBlockArea * (truck + hydra + todi)
+                      // Calculate total cost using individual block costs
+                      const totalBlockCost = group.block?.reduce((sum, block) => {
+                        const blockArea = block.addmeasures.reduce((sum, measure) => 
+                          sum + (parseFloat(measure.block_area) || 0), 0)
+                        return sum + (blockArea * (truck + hydra + todi))
+                      }, 0) || 0
                       
                       // Update the state
                       setNewBlock((prev) => {
@@ -584,7 +618,7 @@ export default function EditBlock() {
                         return {
                           ...prev,
                           total_block_area: totalBlockArea.toString(),
-                          total_block_cost: totalBlockCost.toFixed(2)
+                          total_block_cost: totalBlockCost.toString()
                         }
                       })
                     }}
@@ -593,20 +627,10 @@ export default function EditBlock() {
                 </div>
               ))}
 
-              <div className="flex justify-between items-center">
-                <div>
-                  <label className="block font-medium">Block Area:</label>
-                </div>
-                <button 
-                  onClick={() => removeMeasure(gIdx, bIdx, mIdx)} 
-                  className="text-sm text-red-600 hover:text-red-800"
-                >
-                  × Remove Measure
-                </button>
-              </div>
+           
 
               <div>
-                <label className="block font-medium">Block Cost:</label>
+                <label className="block font-medium">Block Area:</label>
                 <input
                   type="text"
                   name="block_area"

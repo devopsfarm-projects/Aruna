@@ -5,6 +5,7 @@ import config from '@payload-config'
 import Link from 'next/link'
 import { EditButtonForBlock ,DeleteButtonForBlock} from '../../components/ButtonForBlock'
 
+
 async function getData(page = 1) {
   const payload = await getPayload({ config })
   const { docs, totalDocs, totalPages, page: currentPage } = await payload.find({
