@@ -68,13 +68,13 @@ export default function DashboardPage() {
                 </Link>
                 <Link
                   href="/block/gala/add"
-                  className="inline-flex items-center w-full justify-center px-6 py-3 bg-white text-indigo-600 font-medium  hover:bg-white/20 transition-all duration-300"
+                  className="inline-flex items-center w-full justify-center px-6 py-3 bg-white text-indigo-600 font-medium  shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Add New Gala Block
                 </Link>
                 <Link
                   href="/block/todi(raskat)/add"
-                  className="inline-flex items-center w-full justify-center px-6 py-3 bg-white text-indigo-600 font-medium  hover:bg-white/20 transition-all duration-300"
+                  className="inline-flex items-center w-full justify-center px-6 py-3 bg-white text-indigo-600 font-medium  shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Add New Todi Raskat Block
                 </Link>

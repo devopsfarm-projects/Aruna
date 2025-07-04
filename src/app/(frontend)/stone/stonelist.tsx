@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { ActionHeader, CheckBox, DeleteButton, EditButton, FloatButton } from '../components/Button'
 
 type Stone = {
   id: number
@@ -70,7 +71,7 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
   }
 
   return (
-    <div className="min-h-screen pt-24 px-4 md:px-8 bg-gray-50 dark:bg-black">
+    <div className=" pt-4 px-4 md:px-8 bg-gray-50 dark:bg-black">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-indigo-600">Stone Inventory</h1>
 
@@ -105,9 +106,9 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
           <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600 text-sm">
             <thead className="bg-white dark:bg-black border-b dark:border-gray-600 text-white">
               <tr>
-                <th className="p-3 text-left">
+                {/* <th className="p-3 text-left">
                   <input type="checkbox" checked={selectAll} onChange={handleSelectAll} />
-                </th>
+                </th> */}
                 <th className="p-3 text-left">Stone</th>
                 <th className="p-3 text-left">Munim</th>
                 <th className="p-3 text-left">Date</th>
@@ -115,19 +116,19 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
                 <th className="p-3 text-left">Qty</th>
                 <th className="p-3 text-left">Hydra</th>
                 <th className="p-3 text-left">Amount</th>
-                <th className="p-3 text-left">Actions</th>
+                <ActionHeader />
               </tr>
             </thead>
             <tbody>
               {stones.map(stone => (
                 <tr key={stone.id} className="border-b dark:border-gray-600">
-                  <td className="p-3">
+                  {/* <td className="p-3">
                     <input
                       type="checkbox"
                       checked={selected.has(stone.id.toString())}
                       onChange={() => handleSelect(stone.id.toString())}
                     />
-                  </td>
+                  </td> */}
                   <td className="p-3">{stone.stoneType}</td>
                   <td className="p-3">{stone.munim}</td>
                   <td className="p-3">{stone.date ? new Date(stone.date).toLocaleDateString() : '-'}</td>
@@ -137,8 +138,8 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
                   <td className="p-3">₹{stone.total_amount?.toLocaleString('en-IN') || '0'}</td>
                   <td className="p-3">
                     <div className="flex gap-2">
-                      <Link href={`/stone/edit?id=${stone.id}`} className="text-blue-500">Edit</Link>
-                      <button onClick={() => openDeleteModal(stone.id.toString())} className="text-red-500">Delete</button>
+                     <EditButton href={`/stone/edit?id=${stone.id}`} />
+                     <DeleteButton onClick={() => handleDelete(stone.id.toString())} />
                     </div>
                   </td>
                 </tr>
@@ -154,12 +155,15 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
               <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-bold">{stone.stoneType}</h2>
-                  <input
+                  {/* <input
                     type="checkbox"
                     checked={selected.has(stone.id.toString())}
                     onChange={() => handleSelect(stone.id.toString())}
                     className="w-5 h-5"
-                  />
+                  /> */}
+
+
+                  <CheckBox checked={selected.has(stone.id.toString())} handleSelect={() => handleSelect(stone.id.toString())} />
                 </div>
               </div>
               <div className="p-4 space-y-2 text-sm">
@@ -171,32 +175,15 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
                 <div className="flex justify-between"><span>Amount:</span><span>₹{stone.total_amount?.toLocaleString('en-IN') || '0'}</span></div>
               </div>
               <div className="p-4 border-t border-gray-300 flex justify-end gap-4">
-                <Link href={`/stone/edit?id=${stone.id}`} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Edit</Link>
-                <button onClick={() => openDeleteModal(stone.id.toString())} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete</button>
+                <EditButton href={`/stone/edit?id=${stone.id}`} />
+                <DeleteButton onClick={() => openDeleteModal(stone.id.toString())} />
               </div>
             </div>
           ))}
         </div>
 
         {/* Floating Buttons */}
-        <div className="fixed bottom-20 right-4 z-50 flex flex-col items-end space-y-2">
-          {selected.size > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              className="bg-red-600 text-white p-3  hover:bg-red-700 shadow-md"
-              title={`Delete ${selected.size} selected items`}
-            >
-              🗑
-            </button>
-          )}
-         
-          <Link href="/stone/addstone">
-          <button className="bg-indigo-600 text-white p-3 px-4 shadow hover:bg-indigo-700">
-              +
-            </button>
-          </Link>
-       
-        </div>
+        <FloatButton selected={selected} handleBulkDelete={handleBulkDelete} link="/stone/addstone" title={`Delete ${selected.size} selected items`} />
       </div>
     </div>
   )

@@ -1,8 +1,8 @@
 'use client'
 import Link from 'next/link'
 import { GiStonePile, GiStoneWall } from 'react-icons/gi'
-import { MdOutlineSupervisorAccount, MdAccountBalance, MdConstruction } from 'react-icons/md'
-import { FaChartLine, FaUsers, FaMoneyBillWave, FaCube } from 'react-icons/fa'
+import { MdOutlineSupervisorAccount, MdAccountBalance } from 'react-icons/md'
+import { useState, useEffect } from 'react'
 
 interface CardProps {
   title: string
@@ -15,16 +15,15 @@ interface CardProps {
 }
 
 export default function DashboardPage() {
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    setIsAdmin(user?.role === 'admin')
+  }, [])
+
   const cards: CardProps[] = [
-    {
-      title: 'Vendor Accounts',
-      color: 'bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700',
-      icon: <MdOutlineSupervisorAccount size={32} className="text-white" />,
-      link: '/vendor/account',
-      description: 'Manage your vendor relationships',
-      stats: 'Active Vendors',
-      count: 12
-    },
+
     {
       title: 'Account',
       color: 'bg-gradient-to-br from-gray-700 to-gray-800 dark:from-gray-800 dark:to-gray-900',
@@ -51,7 +50,18 @@ export default function DashboardPage() {
       description: 'Manage block categories and inventory',
       stats: 'Total Blocks',
       count: 150
-    }
+    },
+    ...(isAdmin ? [
+      {
+        title: 'Vendor Accounts',
+        color: 'bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700',
+        icon: <MdOutlineSupervisorAccount size={32} className="text-white" />,
+        link: '/vendor/account',
+        description: 'Manage your vendor relationships',
+        stats: 'Active Vendors',
+        count: 12
+      }
+    ] : []),
   ]
 
   return (

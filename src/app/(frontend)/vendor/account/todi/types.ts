@@ -45,10 +45,10 @@ export type Vendor = {
 }
 
 export type BlockType = {
-  total_cost: any
+  total_todi_cost: any
   block: any
   vender_id: number | Vendor
-  total_area: number
+  total_todi_area: number
   munim: string
   todirate: string
   total_block_area: string

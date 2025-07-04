@@ -68,7 +68,6 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
-    accounts: Account;
     vendor: Vendor;
     stone: Stone;
     Todi: Todi;
@@ -81,7 +80,6 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
-    accounts: AccountsSelect<false> | AccountsSelect<true>;
     vendor: VendorSelect<false> | VendorSelect<true>;
     stone: StoneSelect<false> | StoneSelect<true>;
     Todi: TodiSelect<false> | TodiSelect<true>;
@@ -142,20 +140,6 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "accounts".
- */
-export interface Account {
-  id: number;
-  name: string;
-  type?: ('clinet' | 'vendor') | null;
-  opening_balance?: number | null;
-  current_balance?: number | null;
-  is_locked?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -406,10 +390,6 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
-        relationTo: 'accounts';
-        value: number | Account;
-      } | null)
-    | ({
         relationTo: 'vendor';
         value: number | Vendor;
       } | null)
@@ -488,19 +468,6 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "accounts_select".
- */
-export interface AccountsSelect<T extends boolean = true> {
-  name?: T;
-  type?: T;
-  opening_balance?: T;
-  current_balance?: T;
-  is_locked?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

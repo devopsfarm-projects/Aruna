@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Vendor, TodiRaskat } from '@/payload-types'
-
+import { format, parse } from 'date-fns'
 
 interface Props {
   initialTodiRaskats: TodiRaskat[]
@@ -16,6 +16,8 @@ export default function TodiRaskatAccountCard({ initialTodiRaskats, initialVendo
   const [todis, setTodis] = useState(initialTodiRaskats)
   const [vendors, setVendors] = useState(initialVendors)
   const [selectedVendor, setSelectedVendor] = useState(initialVendorId)
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -50,10 +52,45 @@ const handleVendorChange = (vendorId: string) => {
   router.push(`/vendor/account?vendor=${vendorId}`)
 }
 
+const handleDateChange = () => {
+  setIsLoading(true)
+  setError(null)
+
+  try {
+    // First filter by vendor if selected
+    let filtered = selectedVendor
+      ? initialTodiRaskats.filter((todi) => {
+          const id = typeof todi.vender_id === 'object' ? todi.vender_id?.id : todi.vender_id
+          return String(id) === selectedVendor
+        })
+      : initialTodiRaskats
+
+    // Then filter by date range if dates are selected
+    if (startDate || endDate) {
+      filtered = filtered.filter((todi) => {
+        if (!todi.date) return false
+        const todiDate = new Date(todi.date)
+        const start = startDate ? startDate : new Date(0)
+        const end = endDate ? endDate : new Date()
+        return todiDate >= start && todiDate <= end
+      })
+    }
+
+    setTodis(filtered)
+  } catch (err) {
+    setError('Error filtering Todi Raskats')
+    setTodis([])
+  } finally {
+    setIsLoading(false)
+  }
+}
+
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">Todi Raskat List</h1>
+        <div className="flex gap-4">
         <select
           value={selectedVendor || ''}
           onChange={(e) => handleVendorChange(e.target.value)}
@@ -66,6 +103,30 @@ const handleVendorChange = (vendorId: string) => {
             </option>
           ))}
         </select>
+        <div className="flex gap-2">
+            <input
+              type="date"
+              value={startDate ? format(startDate, 'yyyy-MM-dd') : ''}
+              onChange={(e) => {
+                const date = e.target.value ? parse(e.target.value, 'yyyy-MM-dd', new Date()) : null
+                setStartDate(date)
+                handleDateChange()
+              }}
+              className="px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+            <span className="text-gray-500 dark:text-gray-400">to</span>
+            <input
+              type="date"
+              value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
+              onChange={(e) => {
+                const date = e.target.value ? parse(e.target.value, 'yyyy-MM-dd', new Date()) : null
+                setEndDate(date)
+                handleDateChange()
+              }}
+              className="px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+        </div>
       </div>
 
       {error && (
