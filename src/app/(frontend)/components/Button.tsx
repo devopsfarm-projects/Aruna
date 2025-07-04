@@ -51,7 +51,7 @@ export function DeleteButton({ onClick }: { onClick: () => void }) {
       {isAdmin && (
         <button 
           onClick={onClick} 
-          className="px-4 p-2 text-red-600 hover:text-red-700"
+        className="ml-2 text-red-600 hover:underline disabled:opacity-50"
         >
           Delete
         </button>
