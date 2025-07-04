@@ -32,82 +32,87 @@ export default function EditBlock() {
   }, [id])
 
   const handleDownloadPDF = async () => {
-    if (!formRef.current || !block) {
-      console.error('Required dependencies not initialized:', {
-        formRef: !!formRef.current,
-        block: !!block
-      })
-      return
-    }
-
+    if (!formRef.current || !block) return;
+  
     try {
-      console.log('Creating PDF instance...')
-      const pdf = new jsPDF.jsPDF('p', 'mm', 'a4')
-
-      pdf.setFontSize(24)
-      pdf.text('Todi Raskat Block Report', 105, 30, { align: 'center' })
-      pdf.setFontSize(12)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(`Block Type: ${block.BlockType || 'N/A'}`, 105, 45, { align: 'center' })
-      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 55, { align: 'center' })
-
-      const elements = Array.from(formRef.current.querySelectorAll('.pdf-page')) as HTMLElement[]
-
-      for (let i = 0; i < elements.length; i++) {
-        const el = elements[i]
-        const canvas = await html2canvasLib(el, {
+      // Set a fixed width and remove responsive classes temporarily
+      const originalStyle = formRef.current.getAttribute('style');
+      formRef.current.style.width = '1200px';
+      formRef.current.style.maxWidth = 'unset';
+  
+      // Force all `.pdf-page` to a fixed size
+      const pages = formRef.current.querySelectorAll('.pdf-page');
+      pages.forEach(page => {
+        const pageEl = page as HTMLElement;
+        pageEl.style.width = '1200px';
+        pageEl.style.height = '1600px';
+        pageEl.style.maxWidth = 'unset';
+      });
+  
+      const pdf = new jsPDF.jsPDF('p', 'mm', 'a4');
+      pdf.setFontSize(24);
+      pdf.text('Todi Raskat Block Report', 105, 30, { align: 'center' });
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Block Type: ${block.BlockType || 'N/A'}`, 105, 45, { align: 'center' });
+      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 55, { align: 'center' });
+  
+      for (let i = 0; i < pages.length; i++) {
+        const el = pages[i] as HTMLElement;
+        const canvas = await html2canvas(el, {
           scale: 2,
           backgroundColor: '#ffffff',
           useCORS: true,
-          logging: false
-        })
-
-        const imgData = canvas.toDataURL('image/jpeg', 1.0)
-        const imgWidth = 210
-        const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-        if (i !== 0) pdf.addPage()
-
-        pdf.setFont('helvetica', 'bold')
-        pdf.setFontSize(14)
-        pdf.text('Block Details', 10, 15)
-        pdf.addImage(imgData, 'JPEG', 0, 20, imgWidth, imgHeight)
-        pdf.setFont('helvetica', 'normal')
-        pdf.setFontSize(10)
-        pdf.text(`Page ${i + 1} of ${elements.length}`, 10, 290)
+          logging: false,
+          width: 1200,
+          height: 1600
+        });
+  
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+        if (i !== 0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, 20, imgWidth, imgHeight);
+        pdf.text(`Page ${i + 1} of ${pages.length}`, 10, 290);
       }
-
-      const filename = `TodiRaskat-${block.BlockType || 'Block'}-${new Date().toISOString().split('T')[0]}.pdf`
-      pdf.setProperties({
-        title: `Todi Raskat Block Report - ${block.BlockType || 'Block'}`,
-        subject: 'Block Details',
-        author: 'Aruna Block Management System',
-        keywords: 'block, gala, report, pdf',
-        creator: 'Aruna Block Management System'
-      })
-
-      console.log('Saving PDF with filename:', filename)
-      pdf.save(filename)
-    } catch (error) {
-      console.error('Failed to generate PDF:', error)
-      throw error // Re-throw the error to make it more visible
+  
+      pdf.save(`TodiRaskat-${block.BlockType}-${new Date().toISOString().split('T')[0]}.pdf`);
+  
+      // Reset original style
+      if (originalStyle) {
+        formRef.current.setAttribute('style', originalStyle);
+      } else {
+        formRef.current.removeAttribute('style');
+      }
+    } catch (err) {
+      console.error('Error generating PDF', err);
     }
-  }
+  };
+  
 
   if (!block) {
     return <div className="flex justify-center items-center h-screen text-gray-600">Loading...</div>
   }
 
   return (
-    <div className="mx-auto bg-white py-2 px-4 text-black">
+    <div className="max-w-7xl mx-auto bg-white py-2 px-4 text-black">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Block PDF</h1>
-        <Link href="/block/todi" className="text-blue-600 hover:underline">← Back</Link>
+        <Link href="/block/todi(raskat)" className="text-blue-600 hover:underline">← Back</Link>
       </div>
 
       <div ref={formRef}>
-        <div className="pdf-page bg-white p-6 mb-6 border border-gray-200">
-          <section className="grid grid-cols-6 gap-4">
+        <div className="pdf-page bg-white p-6 mb-6 border border-gray-200" style={{
+          width: '1200px',
+          height: '1600px',
+          maxWidth: '100%',
+          overflow: 'hidden'
+        }}>
+          <section className="grid grid-cols-6 gap-4" style={{
+            width: '100%',
+            maxWidth: '1200px'
+          }}>
             <Info label="Block Type" value={block.BlockType} />
             <Info label="Vendor" value={typeof block.vender_id === 'object' ? block.vender_id.vendor : block.vender_id} />
             <Info label="Munim" value={block.munim} />
@@ -132,7 +137,10 @@ export default function EditBlock() {
           <div key={groupIndex} className="pdf-page bg-white p-6 mb-6 border border-gray-200">
             <section className="border-t pt-4">
               <h2 className="text-lg font-semibold mb-2">Group {groupIndex + 1}</h2>
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-3 gap-4 mb-4" style={{
+                width: '100%',
+                maxWidth: '1200px'
+              }}>
                 <Info label="Hydra Cost" value={group.g_hydra_cost} />
                 <Info label="Truck Cost" value={group.g_truck_cost} />
                 <Info label="Date" value={new Date(group.date).toLocaleDateString()} />
@@ -148,7 +156,10 @@ export default function EditBlock() {
                     {blockItem.addmeasures?.length > 0 && (
                       <div className="mt-4">
                         <h4 className="text-sm font-medium mb-2">Measurements</h4>
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-4 gap-2" style={{
+                          width: '100%',
+                          maxWidth: '1200px'
+                        }}>
                           {blockItem.addmeasures.map((measure, measureIndex) => (
                             <div key={measureIndex} className="bg-white border rounded p-2">
                               <div className="text-xs font-medium mb-1">Measurement {measureIndex + 1}</div>
