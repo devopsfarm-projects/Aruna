@@ -14,7 +14,6 @@ export default function EditBlock() {
   const [block, setBlock] = useState<BlockType | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
 
-  // Initialize PDF libraries directly
   const pdfLib = jsPDF.jsPDF
   const html2canvasLib = html2canvas
 
@@ -32,33 +31,31 @@ export default function EditBlock() {
   }, [id])
 
   const handleDownloadPDF = async () => {
-    if (!formRef.current || !block) return;
-  
+    if (!formRef.current || !block) return
+
     try {
-      // Set a fixed width and remove responsive classes temporarily
-      const originalStyle = formRef.current.getAttribute('style');
-      formRef.current.style.width = '1200px';
-      formRef.current.style.maxWidth = 'unset';
-  
-      // Force all `.pdf-page` to a fixed size
-      const pages = formRef.current.querySelectorAll('.pdf-page');
+      const originalStyle = formRef.current.getAttribute('style')
+      formRef.current.style.width = '1200px'
+      formRef.current.style.maxWidth = 'unset'
+
+      const pages = formRef.current.querySelectorAll('.pdf-page')
       pages.forEach(page => {
-        const pageEl = page as HTMLElement;
-        pageEl.style.width = '1200px';
-        pageEl.style.height = '1600px';
-        pageEl.style.maxWidth = 'unset';
-      });
-  
-      const pdf = new jsPDF.jsPDF('p', 'mm', 'a4');
-      pdf.setFontSize(24);
-      pdf.text('Todi Raskat Block Report', 105, 30, { align: 'center' });
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Block Type: ${block.BlockType || 'N/A'}`, 105, 45, { align: 'center' });
-      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 55, { align: 'center' });
-  
+        const el = page as HTMLElement
+        el.style.width = '1200px'
+        el.style.height = '1600px'
+        el.style.maxWidth = 'unset'
+      })
+
+      const pdf = new jsPDF.jsPDF('p', 'mm', 'a4')
+      pdf.setFontSize(24)
+      pdf.text('Todi Raskat Block Report', 105, 30, { align: 'center' })
+      pdf.setFontSize(12)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text(`Block Type: ${block.BlockType || 'N/A'}`, 105, 45, { align: 'center' })
+      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 55, { align: 'center' })
+
       for (let i = 0; i < pages.length; i++) {
-        const el = pages[i] as HTMLElement;
+        const el = pages[i] as HTMLElement
         const canvas = await html2canvas(el, {
           scale: 2,
           backgroundColor: '#ffffff',
@@ -66,119 +63,113 @@ export default function EditBlock() {
           logging: false,
           width: 1200,
           height: 1600
-        });
-  
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  
-        if (i !== 0) pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, 20, imgWidth, imgHeight);
-        pdf.text(`Page ${i + 1} of ${pages.length}`, 10, 290);
+        })
+
+        const imgData = canvas.toDataURL('image/jpeg', 1.0)
+        const imgWidth = 210
+        const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+        if (i !== 0) pdf.addPage()
+        pdf.addImage(imgData, 'JPEG', 0, 20, imgWidth, imgHeight)
+        pdf.text(`Page ${i + 1} of ${pages.length}`, 10, 290)
       }
-  
-      pdf.save(`TodiRaskat-${block.BlockType}-${new Date().toISOString().split('T')[0]}.pdf`);
-  
-      // Reset original style
+
+      const filename = `TodiRaskat-${block.BlockType}-${new Date().toISOString().split('T')[0]}.pdf`
+      pdf.save(filename)
+
       if (originalStyle) {
-        formRef.current.setAttribute('style', originalStyle);
+        formRef.current.setAttribute('style', originalStyle)
       } else {
-        formRef.current.removeAttribute('style');
+        formRef.current.removeAttribute('style')
       }
     } catch (err) {
-      console.error('Error generating PDF', err);
+      console.error('Error generating PDF', err)
     }
-  };
-  
+  }
 
   if (!block) {
     return <div className="flex justify-center items-center h-screen text-gray-600">Loading...</div>
   }
 
   return (
-    <div className="max-w-7xl mx-auto bg-white py-2 px-4 text-black">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Block PDF</h1>
-        <Link href="/block/todi(raskat)" className="text-blue-600 hover:underline">← Back</Link>
-      </div>
-
-      <div ref={formRef}>
-        <div className="pdf-page bg-white p-6 mb-6 border border-gray-200" style={{
-          width: '1200px',
-          height: '1600px',
-          maxWidth: '100%',
-          overflow: 'hidden'
-        }}>
-          <section className="grid grid-cols-6 gap-4" style={{
-            width: '100%',
-            maxWidth: '1200px'
-          }}>
-            <Info label="Block Type" value={block.BlockType} />
-            <Info label="Vendor" value={typeof block.vender_id === 'object' ? block.vender_id.vendor : block.vender_id} />
-            <Info label="Munim" value={block.munim} />
-            <Info label="Date" value={new Date(block.date).toLocaleDateString()} />
-            <Info label="Hydra Cost" value={block.hydra_cost} />
-            <Info label="Truck Cost" value={block.truck_cost} />
-            <Info label="Length (m)" value={block.l} />
-            <Info label="Breadth (m)" value={block.b} />
-            <Info label="Height (m)" value={block.h} />
-            <Info label="Total Groups" value={block.group.length} />
-            <Info label="Total Measures" value={block.group.reduce((total, group) => total + group.block.reduce((bT, b) => bT + b.addmeasures.length, 0), 0)} />
-            <Info label="Total Blocks" value={block.group.reduce((total, group) => total + group.block.length, 0)} />
-            <Info label="Total Todi Cost (₹)" value={Number(block.total_todi_cost).toLocaleString('en-IN')} />
-            <Info label="Total Todi Area (m³)" value={Number(block.total_todi_area).toLocaleString('en-IN')} />
-            <Info label="Estimate Cost (₹)" value={Number(block.estimate_cost).toLocaleString('en-IN')} />
-            <Info label="Depreciation" value={block.depreciation} />
-            <Info label="Final Cost (₹)" value={Number(block.final_cost).toLocaleString('en-IN')} />
-          </section>
+    <div className="max-w-7xl mx-auto bg-white py-2 px-4 text-black overflow-auto">
+      <div
+        className="scale-container"
+        style={{
+          transform: 'scale(1)',
+          transformOrigin: 'top left',
+          width: '1200px'
+        }}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Block PDF</h1>
+          <Link href="/block/todi(raskat)" className="text-blue-600 hover:underline">← Back</Link>
         </div>
 
-        {block.group.map((group, groupIndex) => (
-          <div key={groupIndex} className="pdf-page bg-white p-6 mb-6 border border-gray-200">
-            <section className="border-t pt-4">
-              <h2 className="text-lg font-semibold mb-2">Group {groupIndex + 1}</h2>
-              <div className="grid grid-cols-3 gap-4 mb-4" style={{
-                width: '100%',
-                maxWidth: '1200px'
-              }}>
-                <Info label="Hydra Cost" value={group.g_hydra_cost} />
-                <Info label="Truck Cost" value={group.g_truck_cost} />
-                <Info label="Date" value={new Date(group.date).toLocaleDateString()} />
-              </div>
-
-              <div className="grid gap-4">
-                {group.block.map((blockItem, blockIndex) => (
-                  <div key={blockIndex} className="border rounded p-4 bg-gray-50">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-medium">Block {blockIndex + 1}</h3>
-                    </div>
-
-                    {blockItem.addmeasures?.length > 0 && (
-                      <div className="mt-4">
-                        <h4 className="text-sm font-medium mb-2">Measurements</h4>
-                        <div className="grid grid-cols-4 gap-2" style={{
-                          width: '100%',
-                          maxWidth: '1200px'
-                        }}>
-                          {blockItem.addmeasures.map((measure, measureIndex) => (
-                            <div key={measureIndex} className="bg-white border rounded p-2">
-                              <div className="text-xs font-medium mb-1">Measurement {measureIndex + 1}</div>
-                              <Info label="L" value={measure.l} />
-                              <Info label="B" value={measure.b} />
-                              <Info label="H" value={measure.h} />
-                              <Info label="Area" value={measure.block_area} />
-                              <Info label="Cost" value={measure.block_cost} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+        <div ref={formRef}>
+          <div className="pdf-page bg-white p-6 mb-6 border border-gray-200" style={{ width: '1200px', height: '1600px' }}>
+            <section className="grid grid-cols-6 gap-4">
+              <Info label="Block Type" value={block.BlockType} />
+              <Info label="Vendor" value={typeof block.vender_id === 'object' ? block.vender_id.vendor : block.vender_id} />
+              <Info label="Munim" value={block.munim} />
+              <Info label="Date" value={new Date(block.date).toLocaleDateString()} />
+              <Info label="Hydra Cost" value={block.hydra_cost} />
+              <Info label="Truck Cost" value={block.truck_cost} />
+              <Info label="Length (m)" value={block.l} />
+              <Info label="Breadth (m)" value={block.b} />
+              <Info label="Height (m)" value={block.h} />
+              <Info label="Total Groups" value={block.group.length} />
+              <Info label="Total Measures" value={block.group.reduce((total, group) => total + group.block.reduce((bT, b) => bT + b.addmeasures.length, 0), 0)} />
+              <Info label="Total Blocks" value={block.group.reduce((total, group) => total + group.block.length, 0)} />
+              <Info label="Total Todi Cost (₹)" value={Number(block.total_todi_cost).toLocaleString('en-IN')} />
+              <Info label="Total Todi Area (m³)" value={Number(block.total_todi_area).toLocaleString('en-IN')} />
+              <Info label="Estimate Cost (₹)" value={Number(block.estimate_cost).toLocaleString('en-IN')} />
+              <Info label="Depreciation" value={block.depreciation} />
+              <Info label="Final Cost (₹)" value={Number(block.final_cost).toLocaleString('en-IN')} />
             </section>
           </div>
-        ))}
+
+          {block.group.map((group, groupIndex) => (
+            <div key={groupIndex} className="pdf-page bg-white p-6 mb-6 border border-gray-200" style={{ width: '1200px', height: '1600px' }}>
+              <section className="border-t pt-4">
+                <h2 className="text-lg font-semibold mb-2">Group {groupIndex + 1}</h2>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <Info label="Hydra Cost" value={group.g_hydra_cost} />
+                  <Info label="Truck Cost" value={group.g_truck_cost} />
+                  <Info label="Date" value={new Date(group.date).toLocaleDateString()} />
+                </div>
+
+                <div className="grid gap-4">
+                  {group.block.map((blockItem, blockIndex) => (
+                    <div key={blockIndex} className="border rounded p-4 bg-gray-50">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-medium">Block {blockIndex + 1}</h3>
+                      </div>
+
+                      {blockItem.addmeasures?.length > 0 && (
+                        <div className="mt-4">
+                          <h4 className="text-sm font-medium mb-2">Measurements</h4>
+                          <div className="grid grid-cols-4 gap-2">
+                            {blockItem.addmeasures.map((measure, measureIndex) => (
+                              <div key={measureIndex} className="bg-white border rounded p-2">
+                                <div className="text-xs font-medium mb-1">Measurement {measureIndex + 1}</div>
+                                <Info label="L" value={measure.l} />
+                                <Info label="B" value={measure.b} />
+                                <Info label="H" value={measure.h} />
+                                <Info label="Area" value={measure.block_area} />
+                                <Info label="Cost" value={measure.block_cost} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="mt-6">
