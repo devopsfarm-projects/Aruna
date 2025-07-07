@@ -37,13 +37,6 @@ export default function EditBlock() {
     try {
       const pdf = new jsPDF.jsPDF('p', 'mm', 'a4')
       const pageWidth = 210
-      const marginTop = 20
-  
-      pdf.setFontSize(24)
-      pdf.text('Todi Raskat Block Report', pageWidth / 2, marginTop + 10, { align: 'center' })
-      pdf.setFontSize(12)
-      pdf.text(`Block Type: ${block.BlockType || 'N/A'}`, pageWidth / 2, marginTop + 20, { align: 'center' })
-      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, pageWidth / 2, marginTop + 30, { align: 'center' })
   
       const tempContainer = document.createElement('div')
       tempContainer.style.position = 'absolute'
@@ -52,56 +45,60 @@ export default function EditBlock() {
       tempContainer.style.width = '1200px'
       document.body.appendChild(tempContainer)
   
-      // Render summary + group 1
+      // Clone the full .pdf-summary block with all data
       const summaryClone = formRef.current.querySelector('.pdf-summary')?.cloneNode(true) as HTMLElement
-      if (summaryClone) {
-        tempContainer.innerHTML = ''
-        tempContainer.appendChild(summaryClone)
+      if (!summaryClone) return
   
-        const canvas = await html2canvas(tempContainer, {
-          scale: 2,
-          backgroundColor: '#ffffff',
-          useCORS: true,
-        })
-        const imgData = canvas.toDataURL('image/jpeg', 1.0)
-        const imgHeight = (canvas.height * pageWidth) / canvas.width
-        pdf.addImage(imgData, 'JPEG', 0, 40, pageWidth, imgHeight)
-        pdf.text(`Page 1 of ${block.group.length}`, 10, 290)
-      }
+      tempContainer.innerHTML = ''
+      tempContainer.appendChild(summaryClone)
   
-      // Render remaining groups (2nd onward)
-      for (let i = 1; i < block.group.length; i++) {
-        const container = document.createElement('div')
-        container.style.width = '1200px'
-        container.className = 'pdf-group'
+      const elements = tempContainer.querySelectorAll('*') as NodeListOf<HTMLElement>
+      elements.forEach(el => {
+        el.style.color = 'black'
+        el.style.backgroundColor = 'white'
+        el.style.fontFamily = 'Arial, sans-serif'
+      })
   
-        const groupElement = document.createElement('div')
-        groupElement.innerHTML = renderGroupHTML(block.group[i], i) // <-- render raw HTML
-        container.appendChild(groupElement)
-        tempContainer.innerHTML = ''
-        tempContainer.appendChild(container)
+      const canvas = await html2canvas(tempContainer, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+      })
   
-        const canvas = await html2canvas(tempContainer, {
-          scale: 2,
-          backgroundColor: '#ffffff',
-          useCORS: true,
-        })
+      const imgData = canvas.toDataURL('image/jpeg', 1.0)
+      const imgWidth = pageWidth
+      const imgHeight = (canvas.height * pageWidth) / canvas.width
   
-        const imgData = canvas.toDataURL('image/jpeg', 1.0)
-        const imgHeight = (canvas.height * pageWidth) / canvas.width
+      // Handle pagination if content overflows
+      const pageHeight = 297 // A4 height in mm
+      let heightLeft = imgHeight
+      let position = 0
+  
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+  
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight
         pdf.addPage()
-        pdf.addImage(imgData, 'JPEG', 0, 20, pageWidth, imgHeight)
-        pdf.text(`Page ${i + 1} of ${block.group.length}`, 10, 290)
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
+        heightLeft -= pageHeight
       }
   
       document.body.removeChild(tempContainer)
   
-      const filename = `TodiRaskat-${block.BlockType}-${new Date().toISOString().split('T')[0]}.pdf`
+      const currentDate = new Date().toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).replace(/\//g, '-');
+      const filename = `TodiRaskat-${block.BlockType || 'Report'}-${currentDate}.pdf`
       pdf.save(filename)
+  
     } catch (err) {
       console.error('Error generating PDF', err)
     }
   }
+  
   
 
   if (!block) {
@@ -125,7 +122,8 @@ export default function EditBlock() {
 
         <div ref={formRef}>
   {/* PAGE 1: Summary + Group 1 */}
-  <div className="pdf-page bg-white p-6 mb-6 border border-gray-200" style={{ width: '1200px', height: '1600px' }}>
+  <div className="pdf-page bg-white p-6 mb-6 border border-gray-200 pdf-summary" style={{ width: '1200px' }}>
+   
     <section className="grid grid-cols-6 gap-4 mb-6">
       <Info label="Block Type" value={block.BlockType} />
       <Info label="Vendor" value={typeof block.vender_id === 'object' ? block.vender_id.vendor : block.vender_id} />
@@ -147,7 +145,9 @@ export default function EditBlock() {
     </section>
 
     {/* Group 1 inside page 1 */}
-    <GroupBlock group={block.group[0]} groupIndex={0}  />
+    {block.group.map((group, index) => (
+      <GroupBlock group={group} groupIndex={index} key={index} />
+    ))}
   </div>
 
 
@@ -186,13 +186,19 @@ function Info({ label, value }: { label: string; value: any }) {
 
 
 function renderGroupHTML(group: BlockType['group'][number], index: number): string {
+  const groupDate = new Date(group.date).toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+
   return `
     <div style="padding: 24px; border: 1px solid #ccc; background-color: white; font-family: sans-serif; font-size: 12px;">
       <h2 style="font-weight: bold; margin-bottom: 8px;">Group ${index + 1}</h2>
       <div style="display: flex; gap: 16px; margin-bottom: 12px;">
         <div><strong>Hydra Cost:</strong> ${group.g_hydra_cost}</div>
         <div><strong>Truck Cost:</strong> ${group.g_truck_cost}</div>
-        <div><strong>Date:</strong> ${new Date(group.date).toLocaleDateString()}</div>
+        <div><strong>Date:</strong> ${groupDate}</div>
       </div>
       ${group.block
         .map((blockItem, bIndex) => {
