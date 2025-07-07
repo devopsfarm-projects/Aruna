@@ -5,6 +5,7 @@ import axios from 'axios'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { Stone } from '../../../../collections/Stone'
+import { Message } from '../../components/Message'
 
 interface FormError {
   field: keyof Stone
@@ -19,6 +20,7 @@ export default function EditStone() {
   const [errors, setErrors] = useState<FormError[]>([])
   const id = searchParams.get('id')
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
 
   useEffect(() => {
     const fetchStone = async () => {
@@ -32,7 +34,8 @@ export default function EditStone() {
         setStone(blockData)
       } catch (error) {
         console.error('Error fetching stone:', error)
-        alert('Error loading stone data')
+        setErrorMessage('Error loading stone data')
+        setShowErrorMessage(true)
       } finally {
         setLoading(false)
       }
@@ -79,12 +82,42 @@ export default function EditStone() {
 
     try {
       await axios.patch(`/api/stone/${id}`, stone)
-      setShowSuccessModal(true)
+      setShowSuccessMessage(true)
     } catch (error) {
       console.error('Error updating stone:', error)
-      alert('Error updating stone')
+      setShowErrorMessage(true)
+      setErrorMessage('Failed to update stone. Please check the console for details.')
     }
   }
+
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [errorMessage, setErrorMessage] = useState('')
+
+if (showErrorMessage) {
+  return (
+    <Message 
+    setShowMessage={setShowErrorMessage} 
+    path={'/stone'} 
+    type='error' 
+    message={errorMessage}
+  />
+  )
+}
+
+if (showSuccessMessage) {
+  return (
+    <Message 
+    setShowMessage={setShowSuccessMessage} 
+    path={'/stone'} 
+    type='success' 
+    message='Stone updated successfully.'
+  />
+  )
+}
+
+
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>
@@ -96,48 +129,7 @@ export default function EditStone() {
 
   return (
     <div className=" bg-gray-50 dark:bg-black pt-20 px-4 sm:px-6 lg:px-8">
-        {/* Success Modal */}
-        {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 -lg shadow-lg max-w-md mx-4 z-50 relative">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Success
-              </h2>
-              <button
-                onClick={() => {
-                  setShowSuccessModal(false)
-                  router.push('/stone')
-                }}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="mb-4">
-              <svg className="w-12 h-12 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <p className="text-gray-700 dark:text-gray-300 text-center mb-6">
-              Stone updated successfully!
-            </p>
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setShowSuccessModal(false)
-                  router.push('/stone')
-                }}
-                className="bg-blue-500 text-white px-4 py-2 -md hover:bg-blue-600 transition duration-200"
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Message } from '../../components/Message'
 
 interface Vendor {
   id: number
@@ -17,6 +18,9 @@ export default function EditVendor() {
   const [vendor, setVendor] = useState<Vendor | null>(null)
   const [loading, setLoading] = useState(true)
   const [success, setSuccess] = useState(false)
+const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+const [errorMessage, setErrorMessage] = useState('');
+const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   useEffect(() => {
     if (!id) return
@@ -31,10 +35,35 @@ export default function EditVendor() {
     if (!vendor) return
     try {
       await axios.patch(`/api/vendor/${vendor.id}`, vendor)
-      setSuccess(true)
+      setShowSuccessMessage(true)
     } catch (err) {
-      alert('Update failed')
+    setErrorMessage('Update failed')
+    setShowErrorMessage(true)
     }
+  }
+
+
+
+  if (showErrorMessage) {
+    return (
+      <Message 
+      setShowMessage={setShowErrorMessage} 
+      path={'/vendor'} 
+      type='error' 
+      message={errorMessage}
+    />
+    )
+  }
+
+  if (showSuccessMessage) {
+    return (
+      <Message 
+        setShowMessage={setShowSuccessMessage} 
+        path={'/vendor'} 
+        type='success' 
+        message='Vendor has been updated successfully.'
+      />
+    )
   }
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>

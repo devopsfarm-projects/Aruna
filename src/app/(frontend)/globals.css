@@ -22,6 +22,20 @@
 
 
 
+/* globals.css or inside <style jsx global> block if using module */
+@media (max-width: 768px) {
+  .scale-container {
+    transform: scale(0.33);
+    transform-origin: top left;
+  }
+}
+
+@media (max-width: 480px) {
+  .scale-container {
+    transform: scale(0.25);
+    transform-origin: top left;
+  }
+}
 
 
 @layer base {

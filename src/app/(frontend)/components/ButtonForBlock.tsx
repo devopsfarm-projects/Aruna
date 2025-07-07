@@ -15,6 +15,7 @@ export function EditButtonForBlock({ href }: { href: string }) {
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Message } from './Message'
 
 export function DeleteButtonForBlock({ id ,name}: { id: string ,name:string}) {
   const [loading, setLoading] = useState(false)
@@ -33,11 +34,39 @@ export function DeleteButtonForBlock({ id ,name}: { id: string ,name:string}) {
       router.refresh()
     } catch (error) {
       console.error('Delete failed:', error)
-      alert('Failed to delete')
+      setErrorMessage('Failed to delete')
+      setShowErrorMessage(true)
     } finally {
       setLoading(false)
     }
   }
+
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+const [showErrorMessage, setShowErrorMessage] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [errorMessage, setErrorMessage] = useState('')
+
+if (showErrorMessage) {
+  return (
+    <Message 
+      setShowMessage={setShowErrorMessage} 
+      path={'/block/todi'} 
+      type='error' 
+      message={errorMessage}
+    />
+  )
+}
+
+if (showSuccessMessage) {
+  return (
+    <Message 
+      setShowMessage={setShowSuccessMessage} 
+      path={'/block/todi'} 
+      type='success' 
+      message='Todi has been deleted successfully.'
+    />
+  )
+}
 
   return (
     <DeleteButton

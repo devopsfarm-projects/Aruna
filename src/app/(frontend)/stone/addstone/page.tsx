@@ -29,6 +29,7 @@ const isAxiosError = (
   )
 }
 import { useRouter } from 'next/navigation'
+import { Message } from '../../components/Message'
 
 // Error response types
 interface ValidationError {
@@ -80,6 +81,8 @@ export default function AddStonePage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [newStone, setNewStone] = useState<Stone>({
     vender_id: '',
     stoneType: '',
@@ -127,7 +130,7 @@ export default function AddStonePage() {
       })
 
       if (response.status === 201) {
-        setShowSuccessModal(true)
+        setShowSuccessMessage(true)
       }
     } catch (error: unknown) {
       if (isAxiosError(error)) {
@@ -153,20 +156,53 @@ export default function AddStonePage() {
         if (error.response?.data && isErrorResponse(error.response.data)) {
           if (error.response.data.errors) {
             const errorMessages = error.response.data.errors.map((err) => err.message).join('\n')
-            alert(`Validation errors:\n${errorMessages}`)
+            setErrorMessage(`Validation errors:\n${errorMessages}`)
+            setShowErrorMessage(true)
           } else if (error.response.data.message) {
-            alert(`Error: ${error.response.data.message}`)
+            setErrorMessage(`Failed to add stone. ${error.response.data.message}`)
+            setShowErrorMessage(true)
           }
         } else {
-          alert('Failed to add stone. Please check the console for details.')
+          setErrorMessage('An unknown error occurred. Please check the console for details.')
+          setShowErrorMessage(true)
         }
       } else {
-        alert('An unknown error occurred. Please check the console for details.')
+        setErrorMessage('An unknown error occurred. Please check the console for details.')
+        setShowErrorMessage(true)
       }
     } finally {
       setIsSubmitting(false)
     }
   }
+
+
+
+ const [errorMessage, setErrorMessage] = useState('')
+
+if (showErrorMessage) {
+  return (
+    <Message 
+      setShowMessage={setShowErrorMessage} 
+      path={'/stone'} 
+      type='error' 
+      message={errorMessage}
+    />
+  )
+}
+
+
+
+  if (showSuccessMessage) {
+    return (
+     <Message 
+     setShowMessage={setShowSuccessMessage} 
+     path={'/stone'} 
+     type='success' 
+     message='Stone has been added successfully.'
+   />
+    )
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black pt-24">

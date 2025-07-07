@@ -70,6 +70,9 @@ export default function StoneList({ initialStones }: { initialStones: Stone[] })
     setStoneToDelete(null)
   }
 
+
+  
+
   return (
     <div className=" pt-4 px-4 md:px-8 bg-gray-50 dark:bg-black">
       <div className="max-w-7xl mx-auto">

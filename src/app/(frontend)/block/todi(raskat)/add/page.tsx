@@ -7,6 +7,7 @@ import FetchVendor from '../../components/FetchVendor'
 import Summary from '../../components/Summary'
 import Group from '../../components/Grouptodi'
 import { useRouter } from 'next/navigation'
+import { Message } from '@/app/(frontend)/components/Message'
 
 export default function AddTodiPage() {
   const router = useRouter();
@@ -43,8 +44,9 @@ export default function AddTodiPage() {
     ]
   })
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+const [showErrorMessage, setShowErrorMessage] = useState(false);
 const [isSubmitting, setIsSubmitting] = useState(false);
-  todi.total_block_cost = todi.group.reduce((total, group) => {
+todi.total_block_cost = todi.group.reduce((total, group) => {
     return total + group.block.reduce((groupTotal, block) => {
       return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
         return measureTotal + parseFloat(measure.block_cost || '0');
@@ -66,7 +68,8 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     setIsSubmitting(true);
     const validTodiTypes = ['Brown', 'White'];
     if (!validTodiTypes.includes(todi.BlockType)) {
-      alert('Invalid Todi Type. Please select either "Brown" or "White"');
+      setErrorMessage('Invalid Todi Type. Please select either "Brown" or "White"');
+      setShowErrorMessage(true);
       setIsSubmitting(false);
       return;
     }
@@ -105,41 +108,43 @@ const [isSubmitting, setIsSubmitting] = useState(false);
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to create Todi');
+        setErrorMessage(errorData.message);
+        setShowErrorMessage(true);
+        setIsSubmitting(false);
+        return;
       }
 
       setShowSuccessMessage(true);
       setIsSubmitting(false);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'An error occurred while creating Todi Raskat');
+      setErrorMessage('Failed to create Todi. Please try again.');
+      setShowErrorMessage(true);
       setIsSubmitting(false);
     }
   }
 
+const [errorMessage, setErrorMessage] = useState('')
+
+  if (showErrorMessage) {
+    return (
+      <Message 
+        setShowMessage={setShowErrorMessage} 
+        path={'/block/todi'} 
+        type='error' 
+        message={errorMessage}
+      />
+    )
+  }
 
 
   if (showSuccessMessage) {
     return (
-      <div className="fixed inset-0 dark:bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg">
-          <div className="flex items-center mb-4">
-            <svg className="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <h2 className="text-xl font-bold">Success!</h2>
-          </div>
-          <p className="mb-4">Todi Raskat has been added successfully.</p>
-          <button
-            onClick={async () => {
-              setShowSuccessMessage(false);
-              await router.push('/block/todi(raskat)');
-            }}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-          >
-            OK
-          </button>
-        </div>
-      </div>
+      <Message 
+        setShowMessage={setShowSuccessMessage} 
+        path={'/block/todi'} 
+        type='success' 
+        message='Todi has been added successfully.'
+      />
     )
   }
 

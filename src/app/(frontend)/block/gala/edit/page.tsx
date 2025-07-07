@@ -8,11 +8,11 @@ import Link from 'next/link'
 
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { BlockType,Vendor,Group} from './type'
+import { BlockType,Vendor} from './type'
+import { Message } from '@/app/(frontend)/components/Message';
 
 
 export default function EditBlock() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [currentBlock, setCurrentBlock] = useState<BlockType | null>(null)
   const [newBlock, setNewBlock] = useState<BlockType | null>(null)
@@ -146,7 +146,7 @@ export default function EditBlock() {
   const [loading, setLoading] = useState(true)
   const [loadingData, setLoadingData] = useState(true)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [, setShowSuccessModal] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   // Update currentBlock when newBlock changes
   useEffect(() => {
     if (newBlock) {
@@ -302,7 +302,7 @@ export default function EditBlock() {
        await axios.patch(`/api/Gala/${id}`, newBlock)
        setShowSuccessMessage(true)
      } catch (error) {
-       console.error('Error updating block:', error)
+      setShowErrorMessage(true)
      } finally {
        setIsSubmitting(false)
      }
@@ -321,29 +321,27 @@ export default function EditBlock() {
   }
 
 
+ if (showErrorMessage) {
+  return (
+    <Message 
+    setShowMessage={setShowErrorMessage} 
+    path={'/block/gala'} 
+    type='error' 
+    message='Failed to update block. Please try again.'
+  />
+  )
+}
+
+
 
   if (showSuccessMessage) {
     return (
-      <div className="fixed inset-0 dark:bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg">
-          <div className="flex items-center mb-4">
-            <svg className="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <h2 className="text-xl font-bold">Success!</h2>
-          </div>
-          <p className="mb-4">Block has been updated successfully.</p>
-          <button
-            onClick={() => {
-              setShowSuccessMessage(false);
-              router.push('/block/gala');
-            }}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-          >
-            OK
-          </button>
-        </div>
-      </div>
+     <Message 
+     setShowMessage={setShowSuccessMessage} 
+     path={'/block/gala'} 
+     type='success' 
+     message='Block has been updated successfully.'
+   />
     )
   }
 
