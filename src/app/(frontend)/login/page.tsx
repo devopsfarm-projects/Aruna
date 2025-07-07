@@ -5,10 +5,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('123456')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  const email = `${username}@jodhpurmines.com`
 
   useEffect(() => {
     // Check if dark mode is preferred by the user
@@ -65,13 +67,13 @@ export default function LoginForm() {
             <form>
                 <div className="mb-4">
                     <label className="block font-semibold text-gray-700 mb-2 dark:text-gray-300">
-                        Email Address
+                        Username
                     </label>
                     <input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         className="border rounded w-full py-2 px-3 text-gray-700 dark:text-black leading-tight focus:outline-none focus:shadow-outline"
-                        id="email" type="email" placeholder="Enter your email address" />
+                        id="username" type="text" placeholder="Enter your username" />
                 </div>
                 <div className="mb-4">
                     <label className="block font-semibold text-gray-700 mb-2 dark:text-gray-300" htmlFor="password">
@@ -81,7 +83,7 @@ export default function LoginForm() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="border rounded w-full py-2 px-3 text-gray-700 dark:text-black mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                        id="password" type="password" placeholder="Enter your password" />
+                        id="password" type="password" placeholder="Default password: 123456" />
                     
                 </div>
                 <div className="mb-6">
