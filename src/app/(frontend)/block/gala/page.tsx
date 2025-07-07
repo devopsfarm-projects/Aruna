@@ -50,11 +50,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                 <td className="p-3">₹{todi.total_gala_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-3">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="p-3">
+                <div className="flex items-center space-x-2">
                   <EditButtonForBlock href={`/block/gala/edit?id=${todi.id}`} />
                   <Link href={`/block/gala/view?id=${todi.id}`} className="text-blue-600 ml-2 hover:underline">
                     View
                   </Link>
                   <DeleteButtonForBlock id={todi.id} name="gala" />
+                  </div>
                 </td>
               </tr>
             ))}

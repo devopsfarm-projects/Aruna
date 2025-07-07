@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Message } from '../../components/Message'
 
 interface Vendor {
   id: string
@@ -17,8 +18,11 @@ interface Vendor {
 
 export default function VendorForm() {
   const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+const [errorMessage, setErrorMessage] = useState('')
+const [showErrorMessage, setShowErrorMessage] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
   const [newVendor, setNewVendor] = useState<Vendor>({
     id: '',
     vendor: '',
@@ -41,11 +45,34 @@ export default function VendorForm() {
 
       if (response.status === 201) setShowSuccessModal(true)
     } catch (err) {
-      alert('Failed to add vendor.')
+    setErrorMessage('Failed to add vendor.')
+    setShowErrorMessage(true)
       console.error(err)
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (showErrorMessage) {
+    return (
+      <Message 
+      setShowMessage={setShowErrorMessage} 
+      path={'/vendor'} 
+      type='error' 
+      message={errorMessage}
+    />
+    )
+  }
+
+  if (showSuccessMessage) {
+    return (
+      <Message 
+        setShowMessage={setShowSuccessMessage} 
+        path={'/vendor'} 
+        type='success' 
+        message='Vendor has been added successfully.'
+      />
+    )
   }
 
   return (

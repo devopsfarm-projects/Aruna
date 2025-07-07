@@ -8,6 +8,7 @@ import { PlusIcon } from '@heroicons/react/24/outline'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Message } from '@/app/(frontend)/components/Message';
 
 // Type for error response
 interface ErrorResponse {
@@ -30,6 +31,11 @@ export default function EditBlock() {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [loadingData, setLoadingData] = useState(true)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [errorMessage, setErrorMessage] = useState('')
+const [showErrorMessage, setShowErrorMessage] = useState(false);
+
   const [receivedAmounts, setReceivedAmounts] = useState<Array<{
     id: string
     amount: number
@@ -177,12 +183,35 @@ export default function EditBlock() {
       pdf.save(filename)
     } catch (err) {
       console.error('PDF generation error:', err)
-      alert('Failed to generate PDF. Please try again.')
+      setErrorMessage('Failed to generate PDF. Please try again.')
+      setShowErrorMessage(true)
     }
   }
   
   
-  
+  if (showErrorMessage) {
+    return (
+      <Message 
+      setShowMessage={setShowErrorMessage} 
+      path={'/users'} 
+      type='error' 
+      message={errorMessage}
+    />
+    )
+  }
+
+  if (showSuccessMessage) {
+    return (
+      <Message 
+        setShowMessage={setShowSuccessMessage} 
+        path={'/users'} 
+        type='success' 
+        message='User has been updated successfully.'
+      />
+    )
+  }
+
+
 
    if (loading || loadingData) {
     return (

@@ -21,7 +21,7 @@ function classNames(...classes: string[]) {
 export default function Navbar() {
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-
+  const [isName, setIsName] = useState('')
   const { isDarkMode, toggleDarkMode } = useDarkMode()
 
 
@@ -66,6 +66,18 @@ export default function Navbar() {
 
     fetchUser()
   }, [setUser])
+
+
+    useEffect(() => {
+      const userStr = localStorage.getItem('user')
+      try {
+        const user = userStr ? JSON.parse(userStr) : {}
+        setIsName(user?.name)
+      } catch (err) {
+        console.error('Failed to parse user from localStorage', err)
+      }
+    }, [])
+  
 
   return (
     <>
@@ -129,14 +141,14 @@ export default function Navbar() {
                 transition
                 className="absolute right-0 z-50 mt-2 w-48 origin-top-right -md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black/5 dark:ring-white/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
               >
-                {/* <MenuItem>
+                <MenuItem>
                   <a
                     href="#"
                     className="block px-4 py-2 text-sm text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 data-focus:bg-gray-100 dark:data-focus:bg-gray-700 data-focus:outline-none"
                   >
-                    Your Profile
+                    {isName}
                   </a>
-                </MenuItem> */}
+                </MenuItem>
                 <MenuItem>
                   <button
                     onClick={toggleDarkMode}

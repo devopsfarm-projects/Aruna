@@ -4,81 +4,27 @@ import React, { useState, useEffect } from 'react'
 import type { Vendor as PayloadVendor } from '../../../payload-types'
 import { EditButton } from '../components/Button'
 import { DeleteButton } from '../components/Button'
+import axios from 'axios'
+import { Message } from '../components/Message'
 
-export default function Vendor({ VendorItems }: { VendorItems: PayloadVendor[] }) {
-  const [searchVendor, setSearchVendor] = useState('')
-  const [filteredVendor, setFilteredVendor] = useState<PayloadVendor[]>([])
-  const [vendorLoading, ] = useState(false)
-  const [vendorError,   ] = useState<string | null>(null)
-const [isAdmin, setIsAdmin] = useState(false)
+interface VendorProps {
+  VendorItems: PayloadVendor[]
+}
 
-
-useEffect(() => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
-  setIsAdmin(user?.role === 'admin')
-}, [])
-
-
-  useEffect(() => {
-    const filtered = VendorItems.filter((vendor) => {
-      const matchesVendor =
-        !searchVendor || vendor.vendor?.toLowerCase().includes(searchVendor.toLowerCase())
-      return matchesVendor
-    })
-    setFilteredVendor(filtered)
-  }, [VendorItems, searchVendor])
-
-  const handleDelete = async (id: string) => {
-    const confirmDelete = confirm('Are you sure you want to delete this Vendor?')
-    if (!confirmDelete) return
-
-    try {
-      const res = await fetch(`/api/vendor/${id}`, { method: 'DELETE' })
-      if (res.ok) {
-        alert('Vendor deleted successfully!')
-        window.location.reload()
-      } else {
-        const errorData = await res.json()
-        console.error('Failed to delete Vendor:', errorData)
-        alert('Failed to delete vendor. Please try again.')
-      }
-    } catch (error) {
-      console.error('Error deleting Vendor:', error)
-      alert('An error occurred while deleting the vendor. Please try again.')
-    }
-  }
-
-  const handleBulkDelete = async () => {
-    if (selectedVendor.size === 0) return
-    if (!confirm(`Are you sure you want to delete ${selectedVendor.size} vendor(s)?`)) return
-    try {
-      const res = await axios.delete('/api/vendor/bulk', {
-        params: { ids: Array.from(selectedVendor) },
-      })
-      if (res.status === 200) {
-        alert('Selected vendors deleted successfully!')
-        window.location.reload()
-      } else {
-        alert('Failed to delete vendors. Please try again.')
-      }
-    } catch (err) {
-      console.error('Error deleting vendors:', err)
-      alert('An error occurred while deleting the vendors. Please try again.')
-    }
-  }
-
+export default function Vendor({ VendorItems }: VendorProps) {
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [vendorLoading, setVendorLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
   const [selectedVendor, setSelectedVendor] = useState<Set<string>>(new Set())
   const [isSelectAllVendor, setIsSelectAllVendor] = useState(false)
 
-  const handleSelectAllVendor = () => {
-    if (isSelectAllVendor) {
-      setSelectedVendor(new Set())
-    } else {
-      const newSelection = new Set(VendorItems.map((vendor) => vendor.id.toString()))
-      setSelectedVendor(newSelection)
-    }
-    setIsSelectAllVendor(!isSelectAllVendor)
-  }
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    setIsAdmin(user?.role === 'admin')
+  }, [])
 
   const handleSelectVendor = (id: string) => {
     const newSelection = new Set(selectedVendor)
@@ -88,62 +34,114 @@ useEffect(() => {
     setIsSelectAllVendor(newSelection.size === VendorItems.length)
   }
 
- 
+  const handleBulkDelete = async () => {
+    if (selectedVendor.size === 0) return
+    if (!confirm(`Are you sure you want to delete ${selectedVendor.size} vendor(s)?`)) return
+
+    try {
+      // Convert string IDs to integers and filter out invalid ones
+      const vendorIds = Array.from(selectedVendor)
+        .map(id => {
+          const parsedId = parseInt(id, 10)
+          return !isNaN(parsedId) ? parsedId : null
+        })
+        .filter((id): id is number => id !== null)
+
+      if (vendorIds.length === 0) {
+        setErrorMessage('No valid vendor IDs selected')
+        setShowErrorMessage(true)
+        return
+      }
+
+      const res = await axios.delete(`/api/vendor/bulk`, {
+        params: { ids: vendorIds }
+      })
+
+      if (res.status === 200) {
+        setShowSuccessMessage(true)
+        window.location.reload()
+      } else {
+        console.error('Failed to delete vendors:', res.data)
+        setErrorMessage('Failed to delete vendors. Please try again.')
+        setShowErrorMessage(true)
+      }
+    } catch (err) {
+      console.error('Error deleting vendors:', err)
+      setErrorMessage('An error occurred while deleting the vendors. Please try again.')
+      setShowErrorMessage(true)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    const confirmDelete = confirm('Are you sure you want to delete this Vendor?')
+    if (!confirmDelete) return
+
+    try {
+      // Convert string ID to integer and validate
+      const vendorId = parseInt(id, 10)
+
+      if (isNaN(vendorId)) {
+        setErrorMessage('Invalid vendor ID')
+        setShowErrorMessage(true)
+        return
+      }
+
+      const res = await axios.delete(`/api/vendor/${vendorId}`)
+      if (res.status === 200) {
+        setShowSuccessMessage(true)
+        window.location.reload()
+      } else {
+        console.error('Failed to delete Vendor:', res.data)
+        setErrorMessage('Failed to delete vendor. Please try again.')
+        setShowErrorMessage(true)
+      }
+    } catch (err) {
+      console.error('Error deleting Vendor:', err)
+      setErrorMessage('An error occurred while deleting the vendor. Please try again.')
+      setShowErrorMessage(true)
+    }
+  }
+
+  const filteredVendor = VendorItems.filter(item =>
+    (item.vendor?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    (item.address?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    (item.vendor_no?.toString().includes(searchQuery) ?? false)
+  )
+
+  if (showErrorMessage) {
+    return (
+      <Message
+        setShowMessage={setShowErrorMessage}
+        path={'/vendor'}
+        type='error'
+        message={errorMessage}
+      />
+    )
+  }
+
+  if (showSuccessMessage) {
+    return (
+      <Message
+        setShowMessage={setShowSuccessMessage}
+        path={'/vendor'}
+        type='success'
+        message='Vendor has been added successfully.'
+      />
+    )
+  }
+
   if (vendorLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
-          <svg
-            className="animate-spin h-8 w-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8H4z"
-            ></path>
-          </svg>
-          <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">
-            Loading data...
-          </p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 dark:border-white mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading vendors...</p>
         </div>
       </div>
     )
   }
 
-  if (vendorError) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
-        <div className="text-center">
-          <svg
-            className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 9v2m0 4v2m0-6h2m-4 0h-2m-4 6h2m0 0h2m0 0h2m0-6h2m0 6h2"
-            />
-          </svg>
-          <p className="text-red-600 dark:text-red-400 text-lg font-medium">{vendorError}</p>
-        </div>
-      </div>
-    )
-  } 
+
 
   return (
     <div className=" bg-gray-100 dark:bg-black px-4 py-4 sm:py-4">
@@ -159,8 +157,8 @@ useEffect(() => {
               <div className="flex-1 min-w-0">
                 <input
                   type="text"
-                  value={searchVendor}
-                  onChange={(e) => setSearchVendor(e.target.value)}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by vendor name..."
                   className="w-full px-3 py-2 -md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
@@ -233,12 +231,12 @@ useEffect(() => {
                     
                     {/* Actions */}
                     <div className="flex items-center gap-3">
-                      <input
+                      {/* <input
                         type="checkbox"
                         checked={selectedVendor.has(item.id.toString())}
                         onChange={() => handleSelectVendor(item.id.toString())}
                         className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
-                      />
+                      /> */}
                       <button
                         onClick={() => handleDelete(String(item.id))}
                         className="p-2 rounded-full bg-red-500/10 dark:bg-red-500/20 hover:bg-red-500/20 dark:hover:bg-red-500/30 transition-colors"
