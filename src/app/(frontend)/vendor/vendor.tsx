@@ -24,6 +24,23 @@ export default function Vendor({ VendorItems }: VendorProps) {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}')
     setIsAdmin(user?.role === 'admin')
+
+    // Fetch vendors
+    const fetchVendors = async () => {
+      try {
+        const res = await axios.get('/api/vendor')
+        if (res.status === 200) {
+          setVendorLoading(false)
+        }
+      } catch (err) {
+        console.error('Error fetching vendors:', err)
+        setVendorLoading(false)
+        setErrorMessage('Failed to fetch vendors. Please try again.')
+        setShowErrorMessage(true)
+      }
+    }
+
+    fetchVendors()
   }, [])
 
   const handleSelectVendor = (id: string) => {
@@ -130,16 +147,8 @@ export default function Vendor({ VendorItems }: VendorProps) {
     )
   }
 
-  if (vendorLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 dark:border-white mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading vendors...</p>
-        </div>
-      </div>
-    )
-  }
+
+  
 
 
 
