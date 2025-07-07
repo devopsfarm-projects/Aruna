@@ -42,7 +42,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
             {todis.map((todi: any) => (
               <tr key={todi.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-white">
                 <td className="p-3">{todi.id}</td>
-                <td className="p-3">{todi.BlockType}</td>
+                <td className="p-3">{todi.GalaType}</td>
                 <td className="p-3">{todi.date ? new Date(todi.date).toLocaleDateString() : '-'}</td>
                 <td className="p-3">{typeof todi.vender_id === 'object' ? todi.vender_id?.vendor : '-'}</td>
                 <td className="p-3">{todi.l} x {todi.total_b} x {todi.h}</td>

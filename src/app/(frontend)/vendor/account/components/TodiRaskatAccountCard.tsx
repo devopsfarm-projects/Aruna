@@ -177,7 +177,8 @@ const handleDateChange = () => {
                   <td className="px-4 py-2">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">₹{todi.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">
-                    <Link href={`/vendor/account/todiRaskat/view?id=${todi.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  Edit  </Link>
+                    <Link href={`/vendor/account/todiRaskat/edit?id=${todi.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  Edit  </Link>
+                    <Link href={`/vendor/account/todiRaskat/view?id=${todi.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  View  </Link>
                   </td>
                 </tr>
               ))

@@ -205,10 +205,16 @@ export default function TodiAccountCard({
                   </td>
                   <td className="px-4 py-2">
                     <Link
-                      href={`/vendor/account/todi/view?id=${todi.id}`}
+                      href={`/vendor/account/todi/edit?id=${todi.id}`}
                       className="text-indigo-600 dark:text-indigo-400 hover:underline"
                     >
                       Edit
+                    </Link>
+                    <Link
+                      href={`/vendor/account/todi/view?id=${todi.id}`}
+                      className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                    >
+                      View
                     </Link>
                   </td>
                 </tr>

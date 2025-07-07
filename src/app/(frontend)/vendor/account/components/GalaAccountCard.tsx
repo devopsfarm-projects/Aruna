@@ -179,7 +179,8 @@ const handleDateChange = () => {
                   <td className="px-4 py-2">₹{gala.final_cost?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">₹{gala.partyRemainingPayment?.toLocaleString('en-IN') || '0'}</td>
                   <td className="px-4 py-2">
-                    <Link href={`/vendor/account/gala/view?id=${gala.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  Edit  </Link>
+                    <Link href={`/vendor/account/gala/edit?id=${gala.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  Edit  </Link>
+                    <Link href={`/vendor/account/gala/view?id=${gala.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline" >  View  </Link>
                   </td>
                 </tr>
               ))

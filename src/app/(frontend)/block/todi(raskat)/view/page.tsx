@@ -33,60 +33,76 @@ export default function EditBlock() {
 
   const handleDownloadPDF = async () => {
     if (!formRef.current || !block) return
-
+  
     try {
-      const originalStyle = formRef.current.getAttribute('style')
-      formRef.current.style.width = '1200px'
-      formRef.current.style.maxWidth = 'unset'
-
-      const pages = formRef.current.querySelectorAll('.pdf-page')
-      pages.forEach(page => {
-        const el = page as HTMLElement
-        el.style.width = '1200px'
-        el.style.height = '1600px'
-        el.style.maxWidth = 'unset'
-      })
-
       const pdf = new jsPDF.jsPDF('p', 'mm', 'a4')
+      const pageWidth = 210
+      const marginTop = 20
+  
       pdf.setFontSize(24)
-      pdf.text('Todi Raskat Block Report', 105, 30, { align: 'center' })
+      pdf.text('Todi Raskat Block Report', pageWidth / 2, marginTop + 10, { align: 'center' })
       pdf.setFontSize(12)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(`Block Type: ${block.BlockType || 'N/A'}`, 105, 45, { align: 'center' })
-      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 55, { align: 'center' })
-
-      for (let i = 0; i < pages.length; i++) {
-        const el = pages[i] as HTMLElement
-        const canvas = await html2canvas(el, {
+      pdf.text(`Block Type: ${block.BlockType || 'N/A'}`, pageWidth / 2, marginTop + 20, { align: 'center' })
+      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, pageWidth / 2, marginTop + 30, { align: 'center' })
+  
+      const tempContainer = document.createElement('div')
+      tempContainer.style.position = 'absolute'
+      tempContainer.style.top = '-9999px'
+      tempContainer.style.left = '-9999px'
+      tempContainer.style.width = '1200px'
+      document.body.appendChild(tempContainer)
+  
+      // Render summary + group 1
+      const summaryClone = formRef.current.querySelector('.pdf-summary')?.cloneNode(true) as HTMLElement
+      if (summaryClone) {
+        tempContainer.innerHTML = ''
+        tempContainer.appendChild(summaryClone)
+  
+        const canvas = await html2canvas(tempContainer, {
           scale: 2,
           backgroundColor: '#ffffff',
           useCORS: true,
-          logging: false,
-          width: 1200,
-          height: 1600
         })
-
         const imgData = canvas.toDataURL('image/jpeg', 1.0)
-        const imgWidth = 210
-        const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-        if (i !== 0) pdf.addPage()
-        pdf.addImage(imgData, 'JPEG', 0, 20, imgWidth, imgHeight)
-        pdf.text(`Page ${i + 1} of ${pages.length}`, 10, 290)
+        const imgHeight = (canvas.height * pageWidth) / canvas.width
+        pdf.addImage(imgData, 'JPEG', 0, 40, pageWidth, imgHeight)
+        pdf.text(`Page 1 of ${block.group.length}`, 10, 290)
       }
-
+  
+      // Render remaining groups (2nd onward)
+      for (let i = 1; i < block.group.length; i++) {
+        const container = document.createElement('div')
+        container.style.width = '1200px'
+        container.className = 'pdf-group'
+  
+        const groupElement = document.createElement('div')
+        groupElement.innerHTML = renderGroupHTML(block.group[i], i) // <-- render raw HTML
+        container.appendChild(groupElement)
+        tempContainer.innerHTML = ''
+        tempContainer.appendChild(container)
+  
+        const canvas = await html2canvas(tempContainer, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+        })
+  
+        const imgData = canvas.toDataURL('image/jpeg', 1.0)
+        const imgHeight = (canvas.height * pageWidth) / canvas.width
+        pdf.addPage()
+        pdf.addImage(imgData, 'JPEG', 0, 20, pageWidth, imgHeight)
+        pdf.text(`Page ${i + 1} of ${block.group.length}`, 10, 290)
+      }
+  
+      document.body.removeChild(tempContainer)
+  
       const filename = `TodiRaskat-${block.BlockType}-${new Date().toISOString().split('T')[0]}.pdf`
       pdf.save(filename)
-
-      if (originalStyle) {
-        formRef.current.setAttribute('style', originalStyle)
-      } else {
-        formRef.current.removeAttribute('style')
-      }
     } catch (err) {
       console.error('Error generating PDF', err)
     }
   }
+  
 
   if (!block) {
     return <div className="flex justify-center items-center h-screen text-gray-600">Loading...</div>
@@ -134,16 +150,7 @@ export default function EditBlock() {
     <GroupBlock group={block.group[0]} groupIndex={0}  />
   </div>
 
-  {/* PAGE 2+ : Remaining groups start from index 1 */}
-  {block.group.slice(1).map((group, index) => (
-    <div
-      key={index + 1}
-      className="pdf-page bg-white p-6 mb-6 border border-gray-200"
-      style={{ width: '1200px', height: '1600px' }}
-    >
-      <GroupBlock group={group} groupIndex={index + 1} />
-    </div>
-  ))}
+
 </div>
 
 
@@ -175,4 +182,38 @@ function Info({ label, value }: { label: string; value: any }) {
       </div>
     </div>
   )
+}
+
+
+function renderGroupHTML(group: BlockType['group'][number], index: number): string {
+  return `
+    <div style="padding: 24px; border: 1px solid #ccc; background-color: white; font-family: sans-serif; font-size: 12px;">
+      <h2 style="font-weight: bold; margin-bottom: 8px;">Group ${index + 1}</h2>
+      <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+        <div><strong>Hydra Cost:</strong> ${group.g_hydra_cost}</div>
+        <div><strong>Truck Cost:</strong> ${group.g_truck_cost}</div>
+        <div><strong>Date:</strong> ${new Date(group.date).toLocaleDateString()}</div>
+      </div>
+      ${group.block
+        .map((blockItem, bIndex) => {
+          return `
+          <div style="margin-bottom: 12px; border: 1px solid #eee; padding: 8px;">
+            <h3>Block ${bIndex + 1}</h3>
+            ${blockItem.addmeasures
+              .map(
+                (m, mIndex) => `
+                <div style="margin-top: 4px;">
+                  <strong>Measurement ${mIndex + 1}:</strong>
+                  L: ${m.l}, B: ${m.b}, H: ${m.h},
+                  Area: ${m.block_area}, Cost: ${m.block_cost}
+                </div>
+              `
+              )
+              .join('')}
+          </div>
+        `
+        })
+        .join('')}
+    </div>
+  `
 }
