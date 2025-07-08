@@ -9,6 +9,16 @@ import * as jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { GroupBlock } from './GroupBlock'
 
+type SummaryMetricsProps = {
+  block: {
+    total_gala_area?: string | number;
+    total_gala_cost?: string | number;
+    estimate_cost?: string | number;
+    depreciation?: string | number;
+    final_cost?: string | number;
+  };
+};
+
 export default function EditBlock() {
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
@@ -124,6 +134,36 @@ export default function EditBlock() {
   {/* PAGE 1: Summary + Group 1 */}
   <div className="pdf-page bg-white p-6 mb-6 border border-gray-200 pdf-summary" style={{ width: '1200px' }}>
    
+    {/* Summary Metrics */}
+    <div className="mb-8 p-4 border border-gray-200 rounded-lg">
+      <h2 className="text-lg font-semibold mb-4">Summary Metrics</h2>
+      <div className="grid grid-cols-3 gap-4">
+        {/* Total Gala Area */}
+        <div className="border p-3 rounded">
+          <p className="text-sm text-gray-500">Total Gala Area (m³)</p>
+          <p className="text-xl font-bold">
+            {Number(block.total_gala_area || 0).toFixed(2)}
+          </p>
+        </div>
+
+        {/* Total Gala Cost */}
+        <div className="border p-3 rounded">
+          <p className="text-sm text-gray-500">Total Gala Cost (₹)</p>
+          <p className="text-xl font-bold">
+            ₹{Number(block.total_gala_cost || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+        </div>
+
+        {/* Final Cost */}
+        <div className="border p-3 rounded">
+          <p className="text-sm text-gray-500">Final Cost (₹)</p>
+          <p className="text-xl font-bold">
+            ₹{Number(block.final_cost || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+        </div>
+      </div>
+    </div>
+
     <section className="grid grid-cols-6 gap-4 mb-6">
       <Info label="Block Type" value={block.BlockType} />
       <Info label="Vendor" value={typeof block.vender_id === 'object' ? block.vender_id.vendor : block.vender_id} />

@@ -1,9 +1,8 @@
-
 import React from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
-import { EditButtonForBlock,DeleteButtonForBlock } from '../../components/ButtonForBlock'
+import { EditButtonForBlock, DeleteButtonForBlock } from '../../components/ButtonForBlock'
 
 async function getData(page = 1) {
   const payload = await getPayload({ config })
@@ -11,6 +10,7 @@ async function getData(page = 1) {
     collection: 'Todi',
     limit: 10,
     page,
+    sort: '-createdAt', // Sort by newest first
   })
   return { docs, totalDocs, totalPages, currentPage }
 }
@@ -18,7 +18,7 @@ async function getData(page = 1) {
 export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const params = await searchParams
   const page = Number(params.page || 1)
-  const { docs: todis, totalPages, currentPage } = await getData(page)
+  const { docs: todies, totalPages, currentPage } = await getData(page)
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
@@ -33,23 +33,23 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
               <th className="p-3 text-left">Date</th>
               <th className="p-3 text-left">Vendor</th>
               <th className="p-3 text-left">Dimensions</th>
-              <th className="p-3 text-left">Area</th>
-              <th className="p-3 text-left">Total Cost</th>
-              <th className="p-3 text-left">Final Cost</th>
+              <th className="p-3 text-left">Area (m³)</th>
+              <th className="p-3 text-left">Block Cost (₹)</th>
+              <th className="p-3 text-left">Final Cost (₹)</th>
               <th className="p-3 text-left">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y dark:bg-black">
-            {todis.map((todi: any) => (
+            {todies.map((todi: any) => (
               <tr key={todi.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-white">
                 <td className="p-3">{todi.id}</td>
                 <td className="p-3">{todi.BlockType}</td>
                 <td className="p-3">{todi.date ? new Date(todi.date).toLocaleDateString() : '-'}</td>
                 <td className="p-3">{typeof todi.vender_id === 'object' ? todi.vender_id?.vendor : '-'}</td>
                 <td className="p-3">{todi.l} x {todi.b} x {todi.h}</td>
-                <td className="p-3">{todi.total_todi_area}</td>
-                <td className="p-3">₹{todi.total_todi_cost?.toLocaleString('en-IN') || '0'}</td>
-                <td className="p-3">₹{todi.final_cost?.toLocaleString('en-IN') || '0'}</td>
+                <td className="p-3">{todi.total_block_area || '0.00'}</td>
+                <td className="p-3">₹{(parseFloat(todi.total_block_cost) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td className="p-3">₹{(parseFloat(todi.final_cost) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td className="p-3">
                   <div className="flex items-center space-x-2">
                     <EditButtonForBlock href={`/block/todi/edit?id=${todi.id}`} />
@@ -58,7 +58,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                     </Link>
                     <DeleteButtonForBlock id={todi.id} name="todi" />
                   </div>
-
                 </td>
               </tr>
             ))}
@@ -66,7 +65,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
         </table>
       </div>
 
-      {/* Pagination controls */}
+{/* Pagination controls */}
       <div className="flex justify-center mt-6 space-x-2">
         {Array.from({ length: totalPages }, (_, i) => (
           <Link

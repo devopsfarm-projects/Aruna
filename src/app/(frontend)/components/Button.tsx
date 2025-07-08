@@ -127,37 +127,40 @@ interface FloatButtonProps {
 }
 
 export function FloatButton({ selected, handleBulkDelete, link, title }: FloatButtonProps) {
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [userRole, setUserRole] = useState<string | null>(null)
 
   useEffect(() => {
     const userStr = localStorage.getItem('user')
     try {
       const user = userStr ? JSON.parse(userStr) : {}
-      setIsAdmin(user?.role === 'admin')
+      setUserRole(user?.role || null)
     } catch (err) {
       console.error('Failed to parse user from localStorage', err)
     }
   }, [])
 
-  if (!isAdmin) return null
+  // Show button for admin or user roles
+  const showButton = userRole === 'admin' || userRole === 'user'
+  const showDeleteButton = userRole === 'admin' && selected.size > 0
+
+  if (!showButton) return null
 
   return (
     <div className="fixed bottom-20 right-4 z-50 flex flex-col items-end space-y-2">
-    {isAdmin && selected.size > 0 && (
-      <button
-        onClick={handleBulkDelete}
-        className="bg-red-600 text-white p-3  hover:bg-red-700 shadow-md"
-        title={title}
-      >
-        🗑
-      </button>
-    )}
-   
-    <Link href={link}>
-    <button className="bg-indigo-600 text-white p-3 px-4 shadow hover:bg-indigo-700">
-        +
-      </button>
-    </Link>
-  </div>
+      {showDeleteButton && (
+        <button
+          onClick={handleBulkDelete}
+          className="bg-red-600 text-white p-3 hover:bg-red-700 shadow-md"
+          title={title}
+        >
+          🗑
+        </button>
+      )}
+      <Link href={link}>
+        <button className="bg-indigo-600 text-white p-3 px-4 shadow hover:bg-indigo-700">
+          +
+        </button>
+      </Link>
+    </div>
   )
 }

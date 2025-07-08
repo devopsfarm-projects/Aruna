@@ -17,15 +17,54 @@ export default function ClientAccountPage({
   todiris: any[]
 }) {
   const [select, setSelect] = useState<AccountType>('todi')
+  const [searchTerm, setSearchTerm] = useState('')
+
+  // Filter function for vendor and munim
+  const filterData = (data: any[]) => {
+    if (!searchTerm) return data
+    
+    const term = searchTerm.toLowerCase()
+    return data.filter(item => {
+      const vendorName = typeof item.vender_id === 'object' ? item.vender_id?.vendor?.toLowerCase() || '' : ''
+      const munimName = item.munim?.toLowerCase() || ''
+      return vendorName.includes(term) || munimName.includes(term)
+    })
+  }
+
+  // Apply filter to the selected data type
+  const getFilteredData = () => {
+    const data = select === 'todi' ? todis : 
+                 select === 'gala' ? galas :
+                 select === 'stone' ? stones : todiris
+    return filterData(data)
+  }
 
   return (
     <div className="md:max-w-7xl md:mx-auto px-2 sm:px-4 lg:px-8 py-6 space-y-12">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <div className="flex-1">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex-1 w-full space-y-4">
+         
           <label htmlFor="account-select" className="text-xl font-bold whitespace-nowrap">
             Select Accounts
           </label>
         </div>
+        <div className="relative">
+            <input
+              type="text"
+              placeholder="Search ..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black hover:text-gray-600"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         <div className="flex-none">
           <select
             id="account-select"
@@ -42,10 +81,10 @@ export default function ClientAccountPage({
       </div>
 
 
-      {select === 'todi' && <TableSection data={todis} type="Todi" />}
-      {select === 'gala' && <TableSection data={galas} type="Gala" />}
-      {select === 'stone' && <StoneTable stones={stones} />}
-      {select === 'todirat' && <TableSection data={todiris} type="TodiRaskat" />}
+      {select === 'todi' && <TableSection data={getFilteredData()} type="Todi" />}
+      {select === 'gala' && <TableSection data={getFilteredData()} type="Gala" />}
+      {select === 'stone' && <StoneTable stones={getFilteredData()} />}
+      {select === 'todirat' && <TableSection data={getFilteredData()} type="TodiRaskat" />}
     </div>
   )
 }
