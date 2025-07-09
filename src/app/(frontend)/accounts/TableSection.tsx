@@ -1,18 +1,52 @@
 // src/app/(frontend)/accounts/TableSection.tsx
 "use client"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 export function TableSection({
   data,
   type,
 }: {
-  data: any[]
+  data: Array<{
+    id: string | number;
+    vender_id?: any; // Consider defining a proper type for vender_id
+    munim?: string;
+    BlockType?: string;
+    date?: string;
+    l?: number | string;
+    b?: number | string;
+    h?: number | string;
+    total_todi_area?: number | string;
+    total_gala_area?: number | string;
+    total_todi_cost?: number | string;
+    gala_cost?: number | string;
+    total_gala_cost?: number | string;
+    estimate_cost?: number | string;
+    depreciation?: number | string;
+    final_cost?: number | string;
+  }>
   type: 'Todi' | 'Gala' | 'Stone' | 'TodiRaskat'
 }) {
+    const [userRole, setUserRole] = useState<string>('user') // Default to most restrictive
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user')
+    console.log('Raw user data from localStorage:', userStr) // Debug log
+    try {
+      const user = userStr ? JSON.parse(userStr) : {}
+      console.log('Parsed user object:', user) // Debug log
+      console.log('User role:', user?.role) // Debug log
+      setUserRole(user?.role || '')
+    } catch (err) {
+      console.error('Failed to parse user from localStorage', err)
+    }
+  }, [])
+
   const commonHeaders = [
     'ID', 'Type', 'Date', 'Vendor', 'Munim', 'Dimensions',
     'Area', ...(type === 'Todi' ? ['Total Cost'] : type === 'TodiRaskat' ? ['Total Cost'] : ['Todi Cost', 'Total Cost']),
     'Estimate Cost', 'Depreciation', 'Final Cost',
+    ...(userRole === 'admin' || userRole === 'manager' ? ['Actions'] : [])
   ]
 
   const itemsPerPage = 10
@@ -82,7 +116,7 @@ export function TableSection({
                 <td className="px-4 py-2">{type === 'Todi' || type === 'TodiRaskat' ? item.BlockType : item.GalaType}</td>
                 <td className="px-4 py-2">{item.date ? new Date(item.date).toLocaleDateString() : 'N/A'}</td>
                 <td className="px-4 py-2">
-                  {typeof item.vender_id === 'object' ? item.vender_id?.id || 'N/A' : item.vender_id || 'N/A'}
+                  {typeof item.vender_id === 'object' ? item.vender_id?.vendor || 'N/A' : 'N/A'}
                 </td>
                 <td className="px-4 py-2">{item.munim || 'N/A'}</td>
                 <td className="px-4 py-2">
@@ -102,6 +136,19 @@ export function TableSection({
                 <td className="px-4 py-2">₹{item.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="px-4 py-2">{item.depreciation}%</td>
                 <td className="px-4 py-2">₹{item.final_cost?.toLocaleString('en-IN') || '0'}</td>
+                {(() => {
+                  console.log('Rendering edit button with userRole:', userRole);
+                  return (userRole === 'admin' || userRole === 'manager') && (
+                  <td className="px-4 py-2">
+                    <Link 
+                      href={`/block/${type.toLowerCase()}/edit?id=${item.id}`}
+                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      Edit
+                    </Link>
+                  </td>
+                );
+                })()}
               </tr>
             ))}
           </tbody>

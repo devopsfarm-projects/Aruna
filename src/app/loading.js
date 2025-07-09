@@ -10,7 +10,7 @@ const Mosaic = dynamic(
 
 export default function Loading() {
   return (
-    <div className="loading-overlay opacity-20 w-full h-full">
+    <div className="loading-overlay opacity-20 w-screen h-screen">
       <div className="loading-content">
         <Mosaic 
           color="#32cd32" 
