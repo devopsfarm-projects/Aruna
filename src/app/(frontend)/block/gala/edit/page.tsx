@@ -325,7 +325,6 @@ export default function EditBlock() {
   return (
     <Message 
     setShowMessage={setShowErrorMessage} 
-    path={'/block/gala'} 
     type='error' 
     message='Failed to update block. Please try again.'
   />

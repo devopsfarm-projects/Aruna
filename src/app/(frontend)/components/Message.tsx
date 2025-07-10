@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation'
 
 interface MessageProps {
   setShowMessage: (value: boolean) => void
-  path: string
+  path?: string
   type: 'success' | 'error'
   message?: string
 }
@@ -34,7 +34,9 @@ export function Message({ setShowMessage, path, type, message }: MessageProps) {
         <button
           onClick={async () => {
             setShowMessage(false);
-            await router.push(path);
+            if (type === 'success') {
+              await router.push(path || '/');
+            }
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
         >
