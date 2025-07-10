@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
 import type { Vendor as PayloadVendor } from '../../../payload-types'
-import { EditButton } from '../components/Button'
+import { EditButton ,ActionHeader} from '../components/Button'
 import { DeleteButton } from '../components/Button'
 import axios from 'axios'
 import { Message } from '../components/Message'
@@ -186,7 +186,7 @@ export default function Vendor({ VendorItems }: VendorProps) {
                 <th className="p-4">Vendor</th>
                 <th className="p-4">Address</th>
                 <th className="p-4">Mobile No.</th>
-                {isAdmin && <th className="p-4">Actions</th>}
+               <ActionHeader />
               </tr>
             </thead>
             <tbody>

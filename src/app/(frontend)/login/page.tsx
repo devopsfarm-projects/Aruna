@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('123456')
+  const [password, setPassword] = useState('1234')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 

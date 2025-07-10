@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
           as="script"
         />
       </head>
-      <body className="min-h-full bg-white dark:bg-gray-900">
+      <body className="min-h-full bg-white dark:bg-black">
         <Suspense fallback={null}>
           <Loading />
           <div className="min-h-screen">
