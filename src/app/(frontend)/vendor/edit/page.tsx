@@ -48,7 +48,6 @@ const [showErrorMessage, setShowErrorMessage] = useState(false);
     return (
       <Message 
       setShowMessage={setShowErrorMessage} 
-      path={'/vendor'} 
       type='error' 
       message={errorMessage}
     />

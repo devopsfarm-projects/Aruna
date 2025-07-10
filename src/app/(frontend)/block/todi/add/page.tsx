@@ -128,7 +128,6 @@ const [showErrorMessage, setShowErrorMessage] = useState(false);
     return (
       <Message 
         setShowMessage={setShowErrorMessage} 
-        path={'/block/todi'} 
         type='error' 
         message={errorMessage}
       />

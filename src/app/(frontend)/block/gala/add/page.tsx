@@ -131,12 +131,12 @@ export default function AddTodiPage() {
     return (
       <Message 
         setShowMessage={setShowErrorMessage} 
-        path={'/block/todi'} 
         type='error' 
-        message= {errorMessage}
+        message={errorMessage}
       />
     )
   }
+
 
 
   if (showSuccessMessage) {
