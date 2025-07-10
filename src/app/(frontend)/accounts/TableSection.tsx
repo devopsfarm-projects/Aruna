@@ -1,6 +1,6 @@
 // src/app/(frontend)/accounts/TableSection.tsx
 "use client"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import Link from 'next/link'
 
 export function TableSection({
@@ -8,6 +8,8 @@ export function TableSection({
   type,
 }: {
   data: Array<{
+    total_b: ReactNode;
+    GalaType: ReactNode;
     id: string | number;
     vender_id?: any; // Consider defining a proper type for vender_id
     munim?: string;

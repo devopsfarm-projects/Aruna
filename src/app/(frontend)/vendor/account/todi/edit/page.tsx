@@ -227,8 +227,8 @@ export default function EditBlock() {
                 <div key={block.id} className="bg-white dark:bg-gray-700 p-4  shadow">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     {[
-                      { label: 'Area', name: 'delivered_block_area', type: 'number', value: block.delivered_block_area },
-                      { label: 'Cost', name: 'delivered_block_cost', type: 'number', value: block.delivered_block_cost },
+                      { label: 'Area', name: 'delivered_block_area', type: 'number', value: block.delivered_block_area === 0 ? '' : block.delivered_block_area },
+                      { label: 'Cost', name: 'delivered_block_cost', type: 'number', value: block.delivered_block_cost === 0 ? '' : block.delivered_block_cost },
                       { label: 'Date', name: 'date', type: 'date', value: new Date(block.date).toISOString().split('T')[0] },
                       { label: 'Description', name: 'description', type: 'text', value: block.description }
                     ].map((input, i) => (
@@ -272,7 +272,7 @@ export default function EditBlock() {
                 <div key={amount.id} className="bg-white dark:bg-gray-700 p-4  shadow">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                      { label: 'Amount', name: 'amount', type: 'number', value: amount.amount },
+                      { label: 'Amount', name: 'amount', type: 'number', value: amount.amount === 0 ? '' : amount.amount },
                       { label: 'Date', name: 'date', type: 'date', value: new Date(amount.date).toISOString().split('T')[0] },
                       { label: 'Description', name: 'description', type: 'text', value: amount.description }
                     ].map((input, i) => (
