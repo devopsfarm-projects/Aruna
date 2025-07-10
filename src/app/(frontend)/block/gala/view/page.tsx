@@ -8,16 +8,15 @@ import { BlockType } from './type'
 import * as jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { GroupBlock } from './GroupBlock'
-import Summary from '../../components/Summary'
+
+// Assuming Summary component exists, though it's not used in the provided code.
+// import Summary from '../../components/Summary'
 
 export default function EditBlock() {
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
   const [block, setBlock] = useState<BlockType | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
-
-  const pdfLib = jsPDF.jsPDF
-  const html2canvasLib = html2canvas
 
   useEffect(() => {
     const fetchBlock = async () => {
@@ -46,7 +45,6 @@ export default function EditBlock() {
       tempContainer.style.width = '1200px'
       document.body.appendChild(tempContainer)
 
-      // Clone the full .pdf-summary block with all data
       const summaryClone = formRef.current
         .querySelector('.pdf-summary')
         ?.cloneNode(true) as HTMLElement
@@ -72,7 +70,6 @@ export default function EditBlock() {
       const imgWidth = pageWidth
       const imgHeight = (canvas.height * pageWidth) / canvas.width
 
-      // Handle pagination if content overflows
       const pageHeight = 297 // A4 height in mm
       let heightLeft = imgHeight
       let position = 0
@@ -125,20 +122,46 @@ export default function EditBlock() {
         </div>
 
         <div ref={formRef}>
-          {/* PAGE 1: Summary + Group 1 */}
+          {/* PAGE 1: Summary + Groups */}
           <div
             className="pdf-page bg-white p-6 mb-6 border border-gray-200 pdf-summary"
             style={{ width: '1200px' }}
           >
             {/* Summary Metrics */}
-            <Summary
-              title="Summary"
-              totalBlockArea={block.total_block_area || '0'}
-              totalBlockCost={block.total_block_cost || '0'}
-              remainingAmount={(
-                parseFloat(block.final_cost || '0') - parseFloat(block.total_block_cost || '0')
-              ).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-            />
+            <div className="mb-8 p-4 border border-gray-200 rounded-lg">
+              <h2 className="text-lg font-semibold mb-4">Summary Metrics</h2>
+              <div className="grid grid-cols-3 gap-4">
+                {/* Total Block Area */}
+                <div className="border p-3 rounded">
+                  <p className="text-sm text-gray-500">Total Delivered Block Area (m³)</p>
+                  <p className="text-xl font-bold">{Number(block.total_block_area || 0).toFixed(2)}</p>
+                </div>
+
+                {/* Total Block Cost */}
+                <div className="border p-3 rounded">
+                  <p className="text-sm text-gray-500">Total Delivered Block Cost (₹)</p>
+                  <p className="text-xl font-bold">
+                    ₹
+                    {Number(block.total_block_cost || 0).toLocaleString('en-IN', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                </div>
+
+                {/* Final Cost */}
+                <div className="border p-3 rounded">
+                  <p className="text-sm text-gray-500">Delivered Final Cost (₹)</p>
+                  <p className="text-xl font-bold">
+                    ₹
+                    {Number(block.final_cost || 0).toLocaleString('en-IN', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <section className="grid grid-cols-6 gap-4 mb-6">
               <Info label="Block Type" value={block.BlockType} />
@@ -187,7 +210,7 @@ export default function EditBlock() {
               />
             </section>
 
-            {/* Group 1 inside page 1 */}
+            {/* Render all groups */}
             {block.group.map((group, index) => (
               <GroupBlock group={group} groupIndex={index} key={index} />
             ))}
@@ -218,6 +241,8 @@ function Info({ label, value }: { label: string; value: any }) {
   )
 }
 
+// Note: This function is defined but not used in the component. It can be safely removed
+// if it's not intended for future use.
 function renderGroupHTML(group: BlockType['group'][number], index: number): string {
   const groupDate = new Date(group.date).toLocaleDateString('en-IN', {
     year: 'numeric',
