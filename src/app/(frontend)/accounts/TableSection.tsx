@@ -2,101 +2,39 @@
 "use client"
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+// Import the new, safe types you just created
+import { TableItem } from '@/types/data';
 
-export function TableSection({
-  data,
-  type,
-}: {
-  data: Array<{
-    id: string | number;
-    vender_id?: any; // Consider defining a proper type for vender_id
-    munim?: string;
-    BlockType?: string;
-    date?: string;
-    l?: number | string;
-    b?: number | string;
-    h?: number | string;
-    total_todi_area?: number | string;
-    total_gala_area?: number | string;
-    total_todi_cost?: number | string;
-    gala_cost?: number | string;
-    total_gala_cost?: number | string;
-    estimate_cost?: number | string;
-    depreciation?: number | string;
-    final_cost?: number | string;
-  }>
-  type: 'Todi' | 'Gala' | 'Stone' | 'TodiRaskat'
-}) {
-    const [userRole, setUserRole] = useState<string>('user') // Default to most restrictive
+// The component props are now much cleaner and safer
+export function TableSection({ data }: { data: TableItem[] }) {
+  const [userRole, setUserRole] = useState<string>('user');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user')
-    console.log('Raw user data from localStorage:', userStr) // Debug log
     try {
-      const user = userStr ? JSON.parse(userStr) : {}
-      console.log('Parsed user object:', user) // Debug log
-      console.log('User role:', user?.role) // Debug log
-      setUserRole(user?.role || '')
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      setUserRole(user?.role || 'user');
     } catch (err) {
-      console.error('Failed to parse user from localStorage', err)
+      console.error('Failed to parse user from localStorage', err);
     }
-  }, [])
+  }, []);
 
-  const commonHeaders = [
-    'ID', 'Type', 'Date', 'Vendor', 'Munim', 'Dimensions',
-    'Area', ...(type === 'Todi' ? ['Total Cost'] : type === 'TodiRaskat' ? ['Total Cost'] : ['Todi Cost', 'Total Cost']),
-    'Estimate Cost', 'Depreciation', 'Final Cost',
-    ...(userRole === 'admin' || userRole === 'manager' ? ['Actions'] : [])
-  ]
-
-  const itemsPerPage = 10
-  const [currentPage, setCurrentPage] = useState(1)
-
-  const totalPages = Math.ceil(data.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentItems = data.slice(startIndex, endIndex)
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const currentItems = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
-
-  const renderPagination = () => {
-    const pages = []
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(
-        <button
-          key={i}
-          onClick={() => handlePageChange(i)}
-          className={`px-3 py-1 rounded ${
-            currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'
-          }`}
-        >
-          {i}
-        </button>
-      )
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
     }
+  };
 
-    return (
-      <div className="flex justify-center gap-2 mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700"
-        >
-          Previous
-        </button>
-        {pages}
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700"
-        >
-          Next
-        </button>
-      </div>
-    )
-  }
+  // Headers can be simplified as we'll handle columns dynamically
+  const headers = [
+    'ID', 'Type', 'Date', 'Vendor', 'Munim', 'Dimensions', 'Area', 'Cost/Rate', 'Total Cost',
+    'Estimate Cost', 'Depreciation', 'Final Cost',
+    ...(userRole === 'admin' || userRole === 'manager' ? ['Actions'] : [])
+  ];
 
   return (
     <div>
@@ -104,7 +42,7 @@ export function TableSection({
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-xs">
             <tr>
-              {commonHeaders.map((header) => (
+              {headers.map((header) => (
                 <th key={header} className="px-4 py-2 whitespace-nowrap text-left">{header}</th>
               ))}
             </tr>
@@ -112,50 +50,86 @@ export function TableSection({
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700 text-gray-800 dark:text-white">
             {currentItems.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                {/* ID */}
                 <td className="px-4 py-2">{item.id}</td>
-                <td className="px-4 py-2">{type === 'Todi' || type === 'TodiRaskat' ? item.BlockType : item.GalaType}</td>
+                
+                {/* Type (Using a type guard to be safe) */}
+                <td className="px-4 py-2 font-medium">
+                  {'BlockType' in item ? item.BlockType : 'GalaType' in item ? item.GalaType : 'stoneType' in item ? item.stoneType : 'N/A'}
+                </td>
+                
+                {/* Date */}
                 <td className="px-4 py-2">{item.date ? new Date(item.date).toLocaleDateString() : 'N/A'}</td>
+                
+                {/* Vendor (Using a type guard) */}
                 <td className="px-4 py-2">
-                  {typeof item.vender_id === 'object' ? item.vender_id?.vendor || 'N/A' : 'N/A'}
+                  {'vender_id' in item && item.vender_id ? item.vender_id.vendor : 'N/A'}
                 </td>
+                
+                {/* Munim */}
                 <td className="px-4 py-2">{item.munim || 'N/A'}</td>
-                <td className="px-4 py-2">
-                  {item.l} x {type === 'Gala' ? item.total_b : item.b} x {item.h}
-                </td>
-                <td className="px-4 py-2">{type === 'Todi' || type === 'TodiRaskat' ? item.total_todi_area : item.total_gala_area}</td>
 
-                {type === 'Todi' || type === 'TodiRaskat' ? (
-                  <td className="px-4 py-2">₹{item.total_todi_cost?.toLocaleString('en-IN') || '0'}</td>
-                ) : (
+                {/* Dimensions (Using a type guard for 'b' vs 'total_b') */}
+                <td className="px-4 py-2">
+                  {'l' in item && item.l} x {'b' in item ? item.b : 'total_b' in item ? item.total_b : 'N/A'} x {'h' in item && item.h}
+                </td>
+
+                {/* Area (Using a type guard) */}
+                <td className="px-4 py-2">
+                  {'total_todi_area' in item ? item.total_todi_area : 'total_gala_area' in item ? item.total_gala_area : 'N/A'}
+                </td>
+
+                {/* This section now handles the different cost structures safely */}
+                {'BlockType' in item ? (
+                  // Todi has 1 cost column
+                  <>
+                    <td className="px-4 py-2">--</td>
+                    <td className="px-4 py-2">₹{item.total_todi_cost?.toLocaleString('en-IN') || '0'}</td>
+                  </>
+                ) : 'GalaType' in item ? (
+                  // Gala has 2 cost columns
                   <>
                     <td className="px-4 py-2">₹{item.gala_cost?.toLocaleString('en-IN') || '0'}</td>
                     <td className="px-4 py-2">₹{item.total_gala_cost?.toLocaleString('en-IN') || '0'}</td>
                   </>
+                ) : (
+                  // Stone or others have empty cost columns
+                  <>
+                    <td className="px-4 py-2">--</td>
+                    <td className="px-4 py-2">--</td>
+                  </>
                 )}
 
+                {/* Common financial columns */}
                 <td className="px-4 py-2">₹{item.estimate_cost?.toLocaleString('en-IN') || '0'}</td>
                 <td className="px-4 py-2">{item.depreciation}%</td>
                 <td className="px-4 py-2">₹{item.final_cost?.toLocaleString('en-IN') || '0'}</td>
-                {(() => {
-                  console.log('Rendering edit button with userRole:', userRole);
-                  return (userRole === 'admin' || userRole === 'manager') && (
+
+                {/* Actions column based on role */}
+                {(userRole === 'admin' || userRole === 'manager') && (
                   <td className="px-4 py-2">
                     <Link 
-                      href={`/block/${type.toLowerCase()}/edit?id=${item.id}`}
+                      href={`/block/${'BlockType' in item ? 'todi' : 'gala'}/edit?id=${item.id}`} // Example dynamic link
                       className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                     >
                       Edit
                     </Link>
                   </td>
-                );
-                })()}
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {totalPages > 1 && renderPagination()}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 mt-4">
+          <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 disabled:opacity-50">Previous</button>
+          {[...Array(totalPages)].map((_, i) => (
+            <button key={i} onClick={() => handlePageChange(i + 1)} className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}>{i + 1}</button>
+          ))}
+          <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 disabled:opacity-50">Next</button>
+        </div>
+      )}
     </div>
-  )
+  ) 
 }
-  
