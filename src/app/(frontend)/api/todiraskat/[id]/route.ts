@@ -9,12 +9,12 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
   try {
     const result = await payload.delete({
-      collection: 'Gala',
+      collection: 'TodiRaskat',
       id: id,
     })
 
     if (!result) {
-      return NextResponse.json({ error: 'Gala not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Todi not found' }, { status: 404 })
     }
 
     return NextResponse.json({ message: 'Deleted successfully' }, { status: 200 })
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const result = await payload.create({
-        collection: 'Todi',
+        collection: 'TodiRaskat',
         data: body,
       })
 
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
         try {
           const result = await payload.update({
-            collection: 'Todi',
+            collection: 'TodiRaskat',
             id: id,
             data: body,
           })
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
             try {
                 const result = await payload.findByID({
-                  collection: 'Todi',
+                  collection: 'TodiRaskat',
                   id: id,
                 })
 
