@@ -14,7 +14,6 @@ import { TodiRaskat } from './collections/TodiRaskat'
 import { Gala } from './collections/Gala'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -22,27 +21,24 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [
-    Users,
-    Vendor,
-    Stone,
-    Todi,
-    TodiRaskat,
-    Gala,
-  ],
+  collections: [Users,Vendor,Stone,Todi,TodiRaskat,Gala],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URI || '',
-      ssl: {
-        rejectUnauthorized: false
-      }
-    }
-  }),
+ db: postgresAdapter({
+   pool: {
+     host: process.env.DB_HOST,
+     port: parseInt(process.env.DB_PORT || '6543'),
+     user: process.env.DB_USER,
+     password: process.env.DB_PASSWORD,
+     database: process.env.DB_NAME,
+     ssl: {
+       rejectUnauthorized: false
+     }
+   }
+ }),
   sharp,
   plugins: [
     payloadCloudPlugin(),
