@@ -189,7 +189,6 @@ export default function AddTodiPage() {
   <FormInput label="Gala Cost (₹):" id="gala_cost" name="gala_cost" value={todi.gala_cost ? Number(todi.gala_cost).toLocaleString('en-IN') : ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} />
   <FormInput label="Hydra Cost (₹):" id="hydra_cost" name="hydra_cost" value={todi.hydra_cost} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} />
   <FormInput label="Truck Cost (₹):" id="truck_cost" name="truck_cost" value={todi.truck_cost} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} />
-  <FormInput label="Truck Cost (₹):" id="truck_cost" name="truck_cost" value={todi.truck_cost} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} />
   <FormDisplay label="Total Gala Area (m³):" value={todi.total_gala_area} />
   <FormDisplay label="Total Gala Cost (₹):" value={todi.total_gala_cost} />
   <FormDisplay label="Estimate Cost (₹):" value={todi.estimate_cost} />
