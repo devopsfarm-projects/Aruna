@@ -151,7 +151,7 @@ export default function EditBlock() {
 
                 {/* Final Cost */}
                 <div className="border p-3 rounded">
-                  <p className="text-sm text-gray-500">Delivered Final Cost (₹)</p>
+                  <p className="text-sm text-gray-500">Final Cost (₹)</p>
                   <p className="text-xl font-bold">
                     ₹
                     {Number(block.final_cost || 0).toLocaleString('en-IN', {
