@@ -1,15 +1,37 @@
 // src/app/(frontend)/accounts/TableSection.tsx
 "use client"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import Link from 'next/link'
-// Import the new, safe types you just created
-import { TableItem } from '@/types/data';
 
-// The component props are now much cleaner and safer
-export function TableSection({ data }: { data: TableItem[] }) {
-  const [userRole, setUserRole] = useState<string>('user');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+export function TableSection({
+  data,
+  type,
+}: {
+  data: Array<{
+    total_b: ReactNode;
+    GalaType: ReactNode;
+    id: string | number;
+    vender_id?: any; // Consider defining a proper type for vender_id
+    munim?: string;
+    BlockType?: string;
+    date?: string;
+    l?: number | string;
+    b?: number | string;
+    h?: number | string;
+    total_todi_area?: number | string;
+    total_gala_area?: number | string;
+    total_todi_cost?: number | string;
+    gala_cost?: number | string;
+    total_gala_cost?: number | string;
+    estimate_cost?: number | string;
+    depreciation?: number | string;
+    final_cost?: number | string;
+  }>
+  type: 'Todi' | 'Gala' | 'Stone' | 'TodiRaskat'
+}) {
+    const [userRole, setUserRole] = useState<string>('user') // Default to most restrictive
+    const itemsPerPage = 10;
+    const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     try {

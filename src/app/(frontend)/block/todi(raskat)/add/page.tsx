@@ -125,19 +125,19 @@ todi.total_block_cost = todi.group.reduce((total, group) => {
 
 const [errorMessage, setErrorMessage] = useState('')
 
-  if (showErrorMessage) {
-    return (
-      <Message 
-        setShowMessage={setShowErrorMessage} 
-        path={'/block/todi'} 
-        type='error' 
-        message={errorMessage}
-      />
-    )
-  }
+if (showErrorMessage) {
+  return (
+    <Message 
+      setShowMessage={setShowErrorMessage} 
+      type='error' 
+      message={errorMessage}
+    />
+  )
+}
 
 
-  if (showSuccessMessage) {
+
+if (showSuccessMessage) {
     return (
       <Message 
         setShowMessage={setShowSuccessMessage} 

@@ -99,7 +99,6 @@ if (showErrorMessage) {
   return (
     <Message 
     setShowMessage={setShowErrorMessage} 
-    path={'/stone'} 
     type='error' 
     message={errorMessage}
   />

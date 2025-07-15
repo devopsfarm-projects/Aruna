@@ -325,7 +325,6 @@ export default function EditBlock() {
   return (
     <Message 
     setShowMessage={setShowErrorMessage} 
-    path={'/block/gala'} 
     type='error' 
     message='Failed to update block. Please try again.'
   />
@@ -785,8 +784,8 @@ export default function EditBlock() {
       </div>
 
       <div className="flex justify-between items-center mb-4">
-        <button onClick={() => addBlock(gIdx)} className="text-sm text-blue-600">+ Add Block</button>
-        <button 
+        <button type="button" onClick={() => addBlock(gIdx)} className="text-sm text-blue-600">+ Add Block</button>
+        <button type="button"
           onClick={() => removeGroup(gIdx)} 
           className="text-sm text-red-600 hover:text-red-800"
         >
@@ -798,8 +797,8 @@ export default function EditBlock() {
       {group.block.map((block, bIdx) => (
         <div key={bIdx} className="ml-4 mt-2 border p-3 bg-white dark:bg-gray-800 rounded-md relative">
           <div className="flex justify-between items-center mb-4">
-            <button onClick={() => addMeasure(gIdx, bIdx)} className="text-sm text-green-600">+ Add Measure</button>
-            <button 
+            <button type="button" onClick={() => addMeasure(gIdx, bIdx)} className="text-sm text-green-600">+ Add Measure</button>
+            <button type="button"
               onClick={() => removeBlock(gIdx, bIdx)} 
               className="text-sm text-red-600 hover:text-red-800"
             >
@@ -881,7 +880,7 @@ export default function EditBlock() {
                 <div>
                   <label className="block font-medium">Block Area:</label>
                 </div>
-                <button 
+                <button type="button"
                   onClick={() => removeMeasure(gIdx, bIdx, mIdx)} 
                   className="text-sm text-red-600 hover:text-red-800"
                 >

@@ -140,7 +140,7 @@ export default function EditBlock() {
       <div className="grid grid-cols-3 gap-4">
         {/* Total Block Area */}
         <div className="border p-3 rounded">
-          <p className="text-sm text-gray-500">Total Delevered Block Area (m³)</p>
+          <p className="text-sm text-gray-500">Total Delivered Block Area (m³)</p>
           <p className="text-xl font-bold">
             {Number(block.total_block_area || 0).toFixed(2)}
           </p>
@@ -148,7 +148,7 @@ export default function EditBlock() {
 
         {/* Total Block Cost */}
         <div className="border p-3 rounded">
-          <p className="text-sm text-gray-500">Total Delevered Block Cost (₹)</p>
+          <p className="text-sm text-gray-500">Total Delivered Block Cost (₹)</p>
           <p className="text-xl font-bold">
             ₹{Number(block.total_block_cost || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
