@@ -128,7 +128,7 @@ export default function EditBlock() {
 
       try {
         // Fetch block data
-        const blockRes = await axios.get<BlockType>(`/api/Todi/${id}`)
+        const blockRes = await axios.get<BlockType>(`/api/TodiRaskat/${id}`)
         const blockData = blockRes.data
 
         // Fetch vendors
@@ -278,7 +278,7 @@ export default function EditBlock() {
 
     try {
       setIsSubmitting(true)
-      await axios.patch(`/api/Todi/${id}`, newBlock)
+      await axios.patch(`/api/TodiRaskat/${id}`, newBlock)
       setShowSuccessMessage(true)
     } catch (error) {
       console.error('Error updating block:', error)
@@ -332,7 +332,7 @@ export default function EditBlock() {
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
-          <Link href="/block/todi" className="text-gray-600 hover:text-gray-800">
+          <Link href="/block/todi(raskat)" className="text-gray-600 hover:text-gray-800">
             ← Back to block List
           </Link>
         </div>
@@ -499,7 +499,7 @@ export default function EditBlock() {
         <input
           type="date"
           name="date"
-          value={group.date}
+          value={group.date? new Date(group.date).toISOString().split('T')[0] : ''}
           onChange={(e) => {
             e.preventDefault(); // Prevent form submission
             handleNestedChange(e, 'date', gIdx)

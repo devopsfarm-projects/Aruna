@@ -157,18 +157,6 @@ export default function EditBlock() {
   const id = searchParams.get('id') ?? null
   const [, setIsSubmitting] = useState(false)
 
-  // Fetch munims
-  useEffect(() => {
-    const fetchMunims = async () => {
-      try {
-        const response = await axios.get<string[]>('/api/munims')
-        setMunims(response.data)
-      } catch (error) {
-        console.error('Error fetching munims:', error)
-      }
-    }
-    fetchMunims()
-  }, [])
 
 
   
@@ -346,11 +334,11 @@ export default function EditBlock() {
 
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black pt-24">
+    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black ">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
-          <Link href="/block/todi(raskat)" className="text-gray-600 hover:text-gray-800">
+          <Link href="/block/gala" className="text-gray-600 hover:text-gray-800">
             ← Back to block List
           </Link>
         </div>
@@ -777,36 +765,24 @@ export default function EditBlock() {
         <input
           type="date"
           name="date"
-          value={group.date}
+          value={group.date? new Date(group.date).toISOString().split('T')[0] : ''}
           onChange={(e) => handleNestedChange(e, 'date', gIdx)}
           className="w-full p-2 border dark:bg-gray-700"
         />
       </div>
 
       <div className="flex justify-between items-center mb-4">
-        <button onClick={() => addBlock(gIdx)} className="text-sm text-blue-600">+ Add Block</button>
-        <button 
-          onClick={() => removeGroup(gIdx)} 
-          className="text-sm text-red-600 hover:text-red-800"
-        >
-          × Remove Group
-        </button>
+        <button onClick={(e) => addBlock(gIdx)} className="text-sm text-blue-600">+ Add Block</button>
+        <button onClick={(e) => removeGroup(gIdx)} className="text-sm text-red-600 hover:text-red-800">× Remove Group</button>
       </div>
 
       {/* Blocks */}
       {group.block.map((block, bIdx) => (
         <div key={bIdx} className="ml-4 mt-2 border p-3 bg-white dark:bg-gray-800 rounded-md relative">
           <div className="flex justify-between items-center mb-4">
-            <button onClick={() => addMeasure(gIdx, bIdx)} className="text-sm text-green-600">+ Add Measure</button>
-            <button 
-              onClick={() => removeBlock(gIdx, bIdx)} 
-              className="text-sm text-red-600 hover:text-red-800"
-            >
-              × Remove Block
-            </button>
+            <button onClick={(e) => addMeasure(gIdx, bIdx)} className="text-sm text-green-600">+ Add Measure</button>
+            <button onClick={(e) => removeBlock(gIdx, bIdx)} className="text-sm text-red-600 hover:text-red-800">× Remove Block</button>
           </div>
-
-          {/* Measures */}
 
           {/* Measures */}
           {block.addmeasures.map((m, mIdx) => (

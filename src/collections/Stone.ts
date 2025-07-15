@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 export interface Stone {
+  munim: string | number | readonly string[] | undefined
   id: string
   stoneType: 'Khanda' | 'Gudiya'
   date: string

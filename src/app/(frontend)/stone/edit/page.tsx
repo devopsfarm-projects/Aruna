@@ -174,7 +174,7 @@ if (showSuccessMessage) {
               </label>
               <input
                 type="date"
-                value={stone.date}
+                value={stone.date? new Date(stone.date).toISOString().split('T')[0] : ''}
                 onChange={(e) =>
                   setStone((prev: Stone | null) =>
                     prev ? { ...prev, date: e.target.value } : prev,
@@ -226,15 +226,15 @@ if (showSuccessMessage) {
 
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                minum
+                Munim
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  value={stone.minum}
+                  value={stone.munim}
                   onChange={(e) =>
                     setStone((prev: Stone | null) =>
-                      prev ? { ...prev, minum: e.target.value } : prev,
+                      prev ? { ...prev, munim: e.target.value } : prev,
                     )
                   }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 -lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
@@ -248,7 +248,7 @@ if (showSuccessMessage) {
             {/* Hydra Cost */}
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                hydra cost
+                Hydra Cost
               </label>
               <div className="relative">
                 <input

@@ -498,7 +498,7 @@ export default function EditBlock() {
         <input
           type="date"
           name="date"
-          value={group.date}
+          value={group.date? new Date(group.date).toISOString().split('T')[0] : ''}
           onChange={(e) => {
             e.preventDefault(); // Prevent form submission
             handleNestedChange(e, 'date', gIdx)
