@@ -140,7 +140,7 @@ export function FloatButton({ selected, handleBulkDelete, link, title }: FloatBu
   }, [])
 
   // Show button for admin or user roles
-  const showButton = userRole === 'admin' || userRole === 'user'
+  const showButton = userRole === 'admin' || userRole === 'user' || userRole === 'manager'
   const showDeleteButton = userRole === 'admin' && selected.size > 0
 
   if (!showButton) return null
