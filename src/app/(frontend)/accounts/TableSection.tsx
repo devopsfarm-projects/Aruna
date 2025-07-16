@@ -77,7 +77,7 @@ export function TableSection({
                 
                 {/* Type (Using a type guard to be safe) */}
                 <td className="px-4 py-2 font-medium">
-                  {'BlockType' in item ? item.BlockType : 'GalaType' in item ? item.GalaType : 'stoneType' in item ? item.stoneType : 'N/A'}
+                  {(item as any).BlockType ?? (item as any).GalaType ?? (item as any).stoneType ?? 'N/A'}
                 </td>
                 
                 {/* Date */}
