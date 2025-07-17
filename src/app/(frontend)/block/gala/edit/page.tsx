@@ -88,17 +88,43 @@ export default function EditTodiPage() {
     e.preventDefault()
     if (!todi || !todi.id) return
 
-
     try {
       setIsSubmitting(true)
-      await axios.put(`/api/Gala/${todi.id}`, todi)
+      
+      // Ensure all required fields are present
+      if (!todi.GalaType || !todi.l || !todi.h || !todi.total_b) {
+        throw new Error('Please fill in all required fields')
+      }
+
+      console.log('Attempting to update Gala with ID:', todi.id)
+      console.log('Data to send:', todi)
+
+      // Using the correct API path structure
+      const response = await axios.patch(`/api/gala/${todi.id}`, todi)
+      console.log('Response from server:', response.data)
+      
+      if (!response.data) {
+        throw new Error('Failed to update Gala. No data returned from server')
+      }
+
       setShowSuccessMessage(true)
-    } catch (error) {
-     setShowErrorMessage(true)
+    } catch (error: any) {
+      console.error('Full error details:', error)
+      console.error('Response status:', error.response?.status)
+      console.error('Response data:', error.response?.data)
+      
+      setErrorMessage(
+        error.response?.data?.error || 
+        error.response?.data?.message || 
+        error.message || 
+        `Failed to update Gala. Status: ${error.response?.status || 'unknown'}`
+      )
+      setShowErrorMessage(true)
     } finally {
       setIsSubmitting(false)
     }
   }
+
 
   if (showErrorMessage) {
     return (
@@ -114,9 +140,9 @@ export default function EditTodiPage() {
     return (
       <Message 
         setShowMessage={setShowSuccessMessage} 
-        path={'/block/todi'} 
+        path={'/block/gala'} 
         type='success' 
-        message='Todi has been updated successfully.'
+        message='Gala has been updated successfully.'
       />
     )
   }

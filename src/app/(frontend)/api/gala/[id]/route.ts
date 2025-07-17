@@ -64,3 +64,45 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     return NextResponse.json({ error: 'Failed to delete Gala' }, { status: 500 })
   }
 }
+
+
+// PUT handler to update a Gala
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const payload = await getPayload({ config })
+  try {
+    const { id } = params
+    const body = await request.json()
+
+    console.log('Received PATCH request for Gala ID:', id)
+    console.log('Request body:', body)
+
+    const updated = await payload.update({
+      collection: 'Gala',
+      id,
+      data: body,
+    })
+
+    console.log('Updated Gala:', updated)
+    
+    return NextResponse.json(updated)
+  } catch (error: unknown) {
+    console.error('Error updating Gala:', error)
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Unknown error occurred'
+    
+    // Check if this is a Payload CMS error with status
+    const status = error instanceof Error && 'status' in error 
+      ? (error as any).status 
+      : 400
+    
+    return NextResponse.json(
+      { error: 'Failed to update Gala', message: errorMessage },
+      { status }
+    )
+  }
+}
