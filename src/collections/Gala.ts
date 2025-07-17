@@ -12,6 +12,13 @@ export const Gala: CollectionConfig = {
     read: async ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'admin' || user.role === 'manager' || user.role === 'user') return true
+      if (user.role === 'user') {
+        return {
+          createdBy: {
+            equals: user.id,
+          },
+        }
+      }
       return false
     },
   },

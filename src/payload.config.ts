@@ -40,8 +40,8 @@ export default buildConfig({
    }
  }),
   sharp,
+  cors: ['https://*.vercel.app', 'http://localhost:3000'],
   plugins: [
     payloadCloudPlugin(),
-    // storage-adapter-placeholder
   ],
 })
