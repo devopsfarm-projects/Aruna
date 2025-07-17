@@ -81,7 +81,7 @@ export default function EditStone() {
     }
 
     try {
-      await axios.put(`/api/stone/${id}`, stone)
+      await axios.patch(`/api/stone/${id}`, stone)
       setShowSuccessMessage(true)
     } catch (error) {
       console.error('Error updating stone:', error)
