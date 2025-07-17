@@ -1,21 +1,17 @@
 'use client'
-
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import Link from 'next/link'
 import {BlockType,Vendor,ApiResponse} from './types'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Message } from '@/app/(frontend)/components/Message';
 
 
 export default function EditBlock() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [currentBlock, setCurrentBlock] = useState<BlockType | null>(null)
   const [newBlock, setNewBlock] = useState<BlockType | null>(null)
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [munims, setMunims] = useState<string[]>([])
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingData, setLoadingData] = useState(true)
@@ -109,19 +105,6 @@ export default function EditBlock() {
 
 
 
-  // Fetch munims
-  useEffect(() => {
-    const fetchMunims = async () => {
-      try {
-        const response = await axios.get<string[]>('/api/munims')
-        setMunims(response.data)
-      } catch (error) {
-        console.error('Error fetching munims:', error)
-      }
-    }
-    fetchMunims()
-  }, [])
-
   useEffect(() => {
     const fetchAllData = async () => {
       if (!id) return
@@ -161,46 +144,50 @@ export default function EditBlock() {
   
 
   // Handle nested changes in groups, blocks, and measures
+
   const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, field: string, gIdx: number, bIdx?: number, mIdx?: number) => {
     if (!newBlock) return
-
+  
     const updatedBlock = { ...newBlock }
     const fieldName = e.target.name;
     
     // Update group level fields
     if (bIdx === undefined) {
-      // Update group level fields
       if (fieldName in updatedBlock.group[gIdx]) {
         updatedBlock.group[gIdx][fieldName] = e.target.value;
       }
     }
     // Update block level fields
     else if (mIdx === undefined) {
-      // Get the current block object
-      const currentBlock = updatedBlock.group[gIdx].block[bIdx];
-      // Update group level fields
-      if (fieldName in updatedBlock.group[gIdx]) {
-        updatedBlock.group[gIdx] = {
-          ...updatedBlock.group[gIdx],
-          [fieldName]: e.target.value
+      if (fieldName in updatedBlock.group[gIdx].block[bIdx]) {
+        updatedBlock.group[gIdx].block[bIdx] = {
+          ...updatedBlock.group[gIdx].block[bIdx],
+          [field]: e.target.value
         };
       }
     }
-    // Update block level fields
-    else if (field in updatedBlock.group[gIdx].block[bIdx]) {
-      updatedBlock.group[gIdx].block[bIdx] = {
-        ...updatedBlock.group[gIdx].block[bIdx],
-        [field]: e.target.value
-      };
-    }
     // Update measure level fields
-    else if (bIdx !== undefined && mIdx !== undefined) {
+    else if (fieldName in updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx]) {
+      const measure = updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx];
+      const l = parseFloat(measure.l || '0');
+      const b = parseFloat(measure.b || '0');
+      const h = parseFloat(measure.h || '0');
+      const area = (l * b * h) / 144;
+      
+      // Calculate individual measure cost
+      const truck = parseFloat(updatedBlock.group[gIdx].g_truck_cost || '0');
+      const hydra = parseFloat(updatedBlock.group[gIdx].g_hydra_cost || '0');
+      const todi = parseFloat(newBlock?.todi_cost || '0');
+      const measureCost = area * (truck + hydra + todi);
+      
       updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx] = {
-        ...updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx],
-        [field]: e.target.value
+        ...measure,
+        [field]: e.target.value,
+        block_area: area.toFixed(2),
+        block_cost: measureCost.toFixed(2)
       };
     }
-
+  
     setNewBlock(updatedBlock)
   }
 
@@ -281,7 +268,7 @@ export default function EditBlock() {
       await axios.patch(`/api/TodiRaskat/${id}`, newBlock)
       setShowSuccessMessage(true)
     } catch (error) {
-      console.error('Error updating block:', error)
+      setShowErrorMessage(true)
     } finally {
       setIsSubmitting(false)
     }
@@ -307,7 +294,6 @@ export default function EditBlock() {
   return (
     <Message 
     setShowMessage={setShowErrorMessage} 
-    path={'/block/todi(raskat)'} 
     type='error' 
     message='Failed to update block. Please try again.'
   />
@@ -320,7 +306,7 @@ export default function EditBlock() {
     return (
      <Message 
      setShowMessage={setShowSuccessMessage} 
-     path={'/block/todi(raskat)'} 
+     path={'/block/todi'} 
      type='success' 
      message='Block has been updated successfully.'
    />
@@ -332,7 +318,7 @@ export default function EditBlock() {
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
-          <Link href="/block/todi(raskat)" className="text-gray-600 hover:text-gray-800">
+          <Link href="/block/todi" className="text-gray-600 hover:text-gray-800">
             ← Back to block List
           </Link>
         </div>
@@ -501,7 +487,7 @@ export default function EditBlock() {
           name="date"
           value={group.date? new Date(group.date).toISOString().split('T')[0] : ''}
           onChange={(e) => {
-            e.preventDefault(); // Prevent form submission
+            e.preventDefault(); 
             handleNestedChange(e, 'date', gIdx)
           }}
           className="w-full p-2 border dark:bg-gray-700"
@@ -510,12 +496,12 @@ export default function EditBlock() {
 
       <div className="flex justify-between items-center mb-4">
         <button onClick={(e) => {
-          e.preventDefault(); // Prevent form submission
+          e.preventDefault(); 
           addBlock(gIdx)
         }} className="text-sm text-blue-600">+ Add Block</button>
         <button 
           onClick={(e) => {
-            e.preventDefault(); // Prevent form submission
+            e.preventDefault(); 
             removeGroup(gIdx)
           }} 
           className="text-sm text-red-600 hover:text-red-800"
@@ -529,7 +515,7 @@ export default function EditBlock() {
         <div key={bIdx} className="ml-4 mt-2 border p-3 bg-white dark:bg-gray-800 rounded-md relative">
           <div className="flex justify-between items-center mb-4">
             <button onClick={(e) => {
-              e.preventDefault(); // Prevent form submission
+              e.preventDefault(); 
               addMeasure(gIdx, bIdx)
             }} className="text-sm text-green-600">+ Add Measure</button>
             <button 
@@ -549,6 +535,8 @@ export default function EditBlock() {
                 { label: 'L (लम्बाई)', name: 'l', value: m.l },
                 { label: 'B (चौड़ाई)', name: 'b', value: m.b },
                 { label: 'H (ऊंचाई)', name: 'h', value: m.h },
+                { label: 'Block Area', name: 'block_area', value: m.block_area },
+                { label: 'Block Cost', name: 'block_cost', value: m.block_cost },
               ].map(({ label, name, value }) => (
                 <div key={name}>
                   <label className="block font-medium">{label}:</label>
@@ -627,30 +615,6 @@ export default function EditBlock() {
                   />
                 </div>
               ))}
-
-           
-
-              <div>
-                <label className="block font-medium">Block Area:</label>
-                <input
-                  type="text"
-                  name="block_area"
-                  value={Number(m.block_area).toLocaleString('en-IN')}
-                  disabled
-                  className="w-full p-2 border bg-gray-200 dark:bg-gray-600"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium">Block Cost:</label>
-                <input
-                  type="text"
-                  name="block_cost"
-                  value={Number(m.block_cost).toLocaleString('en-IN')}
-                  disabled
-                  className="w-full p-2 border bg-gray-200 dark:bg-gray-600"
-                />
-              </div>
             </div>
           ))}
         </div>
