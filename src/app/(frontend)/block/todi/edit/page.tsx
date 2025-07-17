@@ -109,18 +109,6 @@ export default function EditBlock() {
 
 
 
-  // Fetch munims
-  useEffect(() => {
-    const fetchMunims = async () => {
-      try {
-        const response = await axios.get<string[]>('/api/munims')
-        setMunims(response.data)
-      } catch (error) {
-        console.error('Error fetching munims:', error)
-      }
-    }
-    fetchMunims()
-  }, [])
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -161,46 +149,50 @@ export default function EditBlock() {
   
 
   // Handle nested changes in groups, blocks, and measures
+
   const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, field: string, gIdx: number, bIdx?: number, mIdx?: number) => {
     if (!newBlock) return
-
+  
     const updatedBlock = { ...newBlock }
     const fieldName = e.target.name;
     
     // Update group level fields
     if (bIdx === undefined) {
-      // Update group level fields
       if (fieldName in updatedBlock.group[gIdx]) {
         updatedBlock.group[gIdx][fieldName] = e.target.value;
       }
     }
     // Update block level fields
     else if (mIdx === undefined) {
-      // Get the current block object
-      const currentBlock = updatedBlock.group[gIdx].block[bIdx];
-      // Update group level fields
-      if (fieldName in updatedBlock.group[gIdx]) {
-        updatedBlock.group[gIdx] = {
-          ...updatedBlock.group[gIdx],
-          [fieldName]: e.target.value
+      if (fieldName in updatedBlock.group[gIdx].block[bIdx]) {
+        updatedBlock.group[gIdx].block[bIdx] = {
+          ...updatedBlock.group[gIdx].block[bIdx],
+          [field]: e.target.value
         };
       }
     }
-    // Update block level fields
-    else if (field in updatedBlock.group[gIdx].block[bIdx]) {
-      updatedBlock.group[gIdx].block[bIdx] = {
-        ...updatedBlock.group[gIdx].block[bIdx],
-        [field]: e.target.value
-      };
-    }
     // Update measure level fields
-    else if (bIdx !== undefined && mIdx !== undefined) {
+    else if (fieldName in updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx]) {
+      const measure = updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx];
+      const l = parseFloat(measure.l || '0');
+      const b = parseFloat(measure.b || '0');
+      const h = parseFloat(measure.h || '0');
+      const area = (l * b * h) / 144;
+      
+      // Calculate individual measure cost
+      const truck = parseFloat(updatedBlock.group[gIdx].g_truck_cost || '0');
+      const hydra = parseFloat(updatedBlock.group[gIdx].g_hydra_cost || '0');
+      const todi = parseFloat(newBlock?.todi_cost || '0');
+      const measureCost = area * (truck + hydra + todi);
+      
       updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx] = {
-        ...updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx],
-        [field]: e.target.value
+        ...measure,
+        [field]: e.target.value,
+        block_area: area.toFixed(2),
+        block_cost: measureCost.toFixed(2)
       };
     }
-
+  
     setNewBlock(updatedBlock)
   }
 
@@ -468,6 +460,8 @@ export default function EditBlock() {
                 handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as any, 'block_cost', gIdx, bIdx, 0)
               })
 
+              
+
               // Update total block area and cost
               const totalBlockArea = currentBlock?.group?.reduce((sum, g) => {
                 return sum + (g.block?.reduce((areaSum, block) => {
@@ -476,7 +470,7 @@ export default function EditBlock() {
                 }, 0) || 0)
               }, 0) || 0
 
-              const totalBlockCost = totalBlockArea * (truck + hydra + todi)
+               const totalBlockCost = totalBlockArea * (truck + hydra + todi)
               
               // Update the state
               setNewBlock((prev) => {
@@ -484,7 +478,7 @@ export default function EditBlock() {
                 return {
                   ...prev,
                   total_block_area: totalBlockArea.toString(),
-                  total_block_cost: totalBlockCost.toFixed(2)
+                  total_block_cost: totalBlockCost.toString()
                 }
               })
             }}
@@ -500,7 +494,7 @@ export default function EditBlock() {
           name="date"
           value={group.date? new Date(group.date).toISOString().split('T')[0] : ''}
           onChange={(e) => {
-            e.preventDefault(); // Prevent form submission
+            e.preventDefault(); 
             handleNestedChange(e, 'date', gIdx)
           }}
           className="w-full p-2 border dark:bg-gray-700"
@@ -509,12 +503,12 @@ export default function EditBlock() {
 
       <div className="flex justify-between items-center mb-4">
         <button onClick={(e) => {
-          e.preventDefault(); // Prevent form submission
+          e.preventDefault(); 
           addBlock(gIdx)
         }} className="text-sm text-blue-600">+ Add Block</button>
         <button 
           onClick={(e) => {
-            e.preventDefault(); // Prevent form submission
+            e.preventDefault(); 
             removeGroup(gIdx)
           }} 
           className="text-sm text-red-600 hover:text-red-800"
@@ -528,9 +522,10 @@ export default function EditBlock() {
         <div key={bIdx} className="ml-4 mt-2 border p-3 bg-white dark:bg-gray-800 rounded-md relative">
           <div className="flex justify-between items-center mb-4">
             <button onClick={(e) => {
-              e.preventDefault(); // Prevent form submission
+              e.preventDefault(); 
               addMeasure(gIdx, bIdx)
             }} className="text-sm text-green-600">+ Add Measure</button>
+            
             <button 
               onClick={() => removeBlock(gIdx, bIdx)} 
               className="text-sm text-red-600 hover:text-red-800"
@@ -539,7 +534,8 @@ export default function EditBlock() {
             </button>
           </div>
 
-          {/* Measures */}
+          
+
 
           {/* Measures */}
           {block.addmeasures.map((m, mIdx) => (
@@ -548,6 +544,8 @@ export default function EditBlock() {
                 { label: 'L (लम्बाई)', name: 'l', value: m.l },
                 { label: 'B (चौड़ाई)', name: 'b', value: m.b },
                 { label: 'H (ऊंचाई)', name: 'h', value: m.h },
+                { label: 'Block Area', name: 'block_area', value: m.block_area },
+                { label: 'Block Cost', name: 'block_cost', value: m.block_cost },
               ].map(({ label, name, value }) => (
                 <div key={name}>
                   <label className="block font-medium">{label}:</label>
@@ -605,12 +603,7 @@ export default function EditBlock() {
                         }, 0) || 0)
                       }, 0) || 0
 
-                      // Calculate total cost using individual block costs
-                      const totalBlockCost = group.block?.reduce((sum, block) => {
-                        const blockArea = block.addmeasures.reduce((sum, measure) => 
-                          sum + (parseFloat(measure.block_area) || 0), 0)
-                        return sum + (blockArea * (truck + hydra + todi))
-                      }, 0) || 0
+                      const totalBlockCost = totalBlockArea * (truck + hydra + todi)
                       
                       // Update the state
                       setNewBlock((prev) => {
@@ -626,30 +619,6 @@ export default function EditBlock() {
                   />
                 </div>
               ))}
-
-           
-
-              <div>
-                <label className="block font-medium">Block Area:</label>
-                <input
-                  type="text"
-                  name="block_area"
-                  value={Number(m.block_area).toLocaleString('en-IN')}
-                  disabled
-                  className="w-full p-2 border bg-gray-200 dark:bg-gray-600"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium">Block Cost:</label>
-                <input
-                  type="text"
-                  name="block_cost"
-                  value={Number(m.block_cost).toLocaleString('en-IN')}
-                  disabled
-                  className="w-full p-2 border bg-gray-200 dark:bg-gray-600"
-                />
-              </div>
             </div>
           ))}
         </div>

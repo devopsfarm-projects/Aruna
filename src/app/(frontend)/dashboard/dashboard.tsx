@@ -16,11 +16,19 @@ interface CardProps {
 
 export default function DashboardPage() {
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}')
     setIsAdmin(user?.role === 'admin')
   }, [])
+
+  const handleNavigation = (link: string) => {
+    setIsLoading(true)
+    setTimeout(() => {
+      window.location.href = link
+    }, 500)
+  }
 
   const cards: CardProps[] = [
 
@@ -83,18 +91,26 @@ export default function DashboardPage() {
                 Streamline your mining operations with our comprehensive management system
               </p>
               <div className="mt-6 flex gap-4">
-                <Link
-                  href="/vendor/addvendor"
+                <button
+                  onClick={() => handleNavigation('/vendor/addvendor')}
                   className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  Add New Vendor
-                </Link>
-                <Link
-                  href="/block"
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600 mr-2"></div>
+                  ) : (
+                    <span>Add New Vendor</span>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleNavigation('/block')}
                   className="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-medium rounded-lg hover:bg-white/20 transition-all duration-300"
                 >
-                  Add New Block
-                </Link>
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-2"></div>
+                  ) : (
+                    <span>Add New Block</span>
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -103,13 +119,21 @@ export default function DashboardPage() {
         {/* Stats Section */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {cards.map((card, index) => (
-            <Link key={index} href={card.link} className="group">
+            <button
+              key={index}
+              onClick={() => handleNavigation(card.link)}
+              className={`group w-full`}
+            >
               <div
-                className={`flex flex-col justify-between h-full -2xl p-6 transition-all duration-300 ${card.color} text-white hover:shadow-xl hover:scale-[1.02]`}
+                className={`flex flex-col justify-between h-full p-6 transition-all duration-300 ${card.color} text-white hover:shadow-xl hover:scale-[1.02]`}
               >
                 <div className="flex items-center gap-4 mb-6">
                   <div className="p-4 -xl bg-white/20 group-hover:bg-white/30">
-                    {card.icon}
+                    {isLoading ? (
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    ) : (
+                      card.icon
+                    )}
                   </div>
                   <div>
                     <h3 className="text-xl sm:text-2xl font-bold">{card.title}</h3>
@@ -118,11 +142,15 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex flex-col gap-4">
                   <div className="flex justify-end">
-                    <span className="text-sm font-medium group-hover:underline">View Details →</span>
+                    {isLoading ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    ) : (
+                      <span className="text-sm font-medium group-hover:underline">View Details →</span>
+                    )}
                   </div>
                 </div>
               </div>
-            </Link>
+            </button>
           ))}
         </section>
       </div>
