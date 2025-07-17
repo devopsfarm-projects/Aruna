@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FormInput, FormSelect, FormDisplay } from '../../components/FormSection'
@@ -12,9 +11,7 @@ import axios from 'axios'
 import FetchVendorEdit from '../../components/FetchVendorEdit'
 
 
-
 export default function EditTodiPage() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [todi, setTodi] = useState<TodiState>({
     todi_cost: '',
@@ -90,16 +87,11 @@ export default function EditTodiPage() {
     try {
       setIsSubmitting(true)
       
-      // Ensure all required fields are present
-      if (!todi.BlockType || !todi.l || !todi.h || !todi.b) {
-        throw new Error('Please fill in all required fields')
-      }
-
       console.log('Attempting to update Todi with ID:', todi.id)
       console.log('Data to send:', todi)
 
       // Using the correct API path structure
-      const response = await axios.patch(`/api/todi/${todi.id}`, todi)
+      const response = await axios.patch(`/api/todiraskat/${todi.id}`, todi)
       console.log('Response from server:', response.data)
       
       if (!response.data) {
@@ -124,15 +116,6 @@ export default function EditTodiPage() {
     }
   }
 
-  if (showErrorMessage) {
-    return (
-      <Message 
-        setShowMessage={setShowErrorMessage} 
-        type='error' 
-        message={errorMessage}
-      />
-    )
-  }
 
   if (showErrorMessage) {
     return (
@@ -148,7 +131,7 @@ export default function EditTodiPage() {
     return (
       <Message 
         setShowMessage={setShowSuccessMessage} 
-        path={'/block/todi'} 
+        path={'/block/todi(raskat)'} 
         type='success' 
         message='Todi has been updated successfully.'
       />
@@ -193,7 +176,7 @@ export default function EditTodiPage() {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
         />
         <FormInput 
-          label="B (चौड़ाई) - Breadth (m):" 
+          label="Total B (चौड़ाई) - Breadth (m):" 
           id="b" 
           name="b" 
           value={todi.b} 

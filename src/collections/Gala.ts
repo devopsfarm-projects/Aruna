@@ -25,12 +25,12 @@ export const Gala: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data }) => {
-        // 1. Default final_cost = estimate_cost if depreciation not provided
+        // Default final_cost = estimate_cost if depreciation not provided
         if (!data.depreciation || data.depreciation === 0) {
           data.final_cost = data.estimate_cost;
         }
   
-        // 2. Calculate partyRemainingPayment
+        // Calculate partyRemainingPayment
         const finalCost = Number(data.final_cost || 0);
         const received = Array.isArray(data.received_amount)
           ? data.received_amount.reduce((sum, amt) => sum + (amt.amount || 0), 0)
@@ -38,10 +38,33 @@ export const Gala: CollectionConfig = {
   
         data.partyRemainingPayment = finalCost - received;
   
+        // ===== Calculate total_block_area and total_block_cost =====
+        let totalBlockArea = 0;
+        let totalBlockCost = 0;
+  
+        if (Array.isArray(data.group)) {
+          for (const groupItem of data.group) {
+            if (Array.isArray(groupItem.block)) {
+              for (const block of groupItem.block) {
+                if (Array.isArray(block.addmeasures)) {
+                  for (const measure of block.addmeasures) {
+                    totalBlockArea += Number(measure.block_area || 0);
+                    totalBlockCost += Number(measure.block_cost || 0);
+                  }
+                }
+              }
+            }
+          }
+        }
+  
+        data.total_block_area = totalBlockArea;
+        data.total_block_cost = totalBlockCost;
+  
         return data;
       },
     ],
   },
+  
   fields: [
     { name: 'GalaType', label: 'Gala Type', type: 'select', required: true, options: ['Brown', 'White'], },
     { name: 'date', label: 'Date', type: 'date', defaultValue: () => new Date(), },

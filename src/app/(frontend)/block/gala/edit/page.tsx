@@ -184,27 +184,26 @@ export default function EditTodiPage() {
           value={todi.l} 
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
         />
-        <FormInput 
-          label="B (चौड़ाई) - Breadth (m):" 
-          id="b" 
-          name="b" 
-          value={todi.front_b} 
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
-        />
-        <FormInput 
-          label="B (चौड़ाई) - Breadth (m):" 
-          id="b" 
-          name="b" 
-          value={todi.back_b} 
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
-        />
-        <FormInput 
-          label="Total B (चौड़ाई) - Breadth (m):" 
-          id="b" 
-          name="b" 
-          value={todi.total_b} 
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
-        />
+  <FormInput label="Front B (चौड़ाई) - Breadth (m):" id="front_b" name="front_b" value={todi.front_b} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+  const { value } = e.target;
+  handleInput(e, setTodi);
+  const frontB = parseFloat(value || '0');
+  const backB = parseFloat(todi.back_b || '0');
+  const totalB = (frontB + backB) / 2;
+  setTodi(prev => ({ ...prev, front_b: value, total_b: totalB.toString() }));
+}}
+  />
+  <FormInput label="Back B (चौड़ाई) - Breadth (m):" id="back_b" name="back_b" value={todi.back_b} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+  const { value } = e.target;
+  handleInput(e, setTodi);
+  const frontB = parseFloat(todi.front_b || '0');
+  const backB = parseFloat(value || '0');
+  const totalB = (frontB + backB) / 2;
+  setTodi(prev => ({ ...prev, back_b: value, total_b: totalB.toString() }));
+}}
+  />
+  <FormInput label="Total B (चौड़ाई) - Breadth (m):" id="total_b" name="total_b" value={todi.total_b} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} disabled />
+
         <FormInput 
           label="H (ऊंचाई) - Height (m):" 
           id="h" 
