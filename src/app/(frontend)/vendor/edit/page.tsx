@@ -34,7 +34,7 @@ const [showErrorMessage, setShowErrorMessage] = useState(false);
     e.preventDefault()
     if (!vendor) return
     try {
-      await axios.patch(`/api/vendor/${vendor.id}`, vendor)
+      await axios.put(`/api/vendor/${vendor.id}`, vendor)
       setShowSuccessMessage(true)
     } catch (err) {
     setErrorMessage('Update failed')

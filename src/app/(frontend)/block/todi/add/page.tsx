@@ -44,22 +44,22 @@ export default function AddTodiPage() {
   })
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-const [showErrorMessage, setShowErrorMessage] = useState(false);
-  todi.total_block_cost = todi.group.reduce((total, group) => {
-    return total + group.block.reduce((groupTotal, block) => {
-      return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
-        return measureTotal + parseFloat(measure.block_cost || '0');
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+    todi.total_block_cost = todi.group.reduce((total, group) => {
+      return total + group.block.reduce((groupTotal, block) => {
+        return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+          return measureTotal + parseFloat(measure.block_cost || '0');
+        }, 0);
       }, 0);
-    }, 0);
-  }, 0).toFixed(2)
+    }, 0).toFixed(2)
 
- todi.total_block_area = todi.group.reduce((total, group) => {
-    return total + group.block.reduce((groupTotal, block) => {
-      return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
-        return measureTotal + parseFloat(measure.block_area || '0');
+  todi.total_block_area = todi.group.reduce((total, group) => {
+      return total + group.block.reduce((groupTotal, block) => {
+        return groupTotal + block.addmeasures.reduce((measureTotal, measure) => {
+          return measureTotal + parseFloat(measure.block_area || '0');
+        }, 0);
       }, 0);
-    }, 0);
-  }, 0).toFixed(2)
+    }, 0).toFixed(2)
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

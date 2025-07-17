@@ -1,285 +1,78 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import axios from 'axios';
-import Link from 'next/link'
-import {BlockType,Vendor,ApiResponse} from './types'
-import { useSearchParams } from 'next/navigation'
-import { Message } from '@/app/(frontend)/components/Message';
+
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { FormInput, FormSelect, FormDisplay } from '../../components/FormSection'
+import { TodiState } from '../../components/type'
+import { handleInput } from '../../components/calculatetodi'
+import Summary from '../../components/Summary'
+import Group from '../../components/GroupEdit'
+import { Message } from '@/app/(frontend)/components/Message'
+import axios from 'axios'
+import FetchVendorEdit from '../../components/FetchVendorEdit'
 
 
-export default function EditBlock() {
+
+export default function EditTodiPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
-  const [currentBlock, setCurrentBlock] = useState<BlockType | null>(null)
-  const [newBlock, setNewBlock] = useState<BlockType | null>(null)
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [vendors, setVendors] = useState<Vendor[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadingData, setLoadingData] = useState(true)
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  // Update currentBlock when newBlock changes
-  useEffect(() => {
-    if (newBlock) {
-      setCurrentBlock(newBlock)
-    }
-  }, [newBlock])
-
-  const id = searchParams.get('id') ?? null
-  const [, setIsSubmitting] = useState(false)
-
-
-
-  useEffect(() => {
-    if (newBlock) {
-      const length = parseFloat(newBlock.l || '0');
-      const totalBreadth = parseFloat(newBlock.b || '0');
-      const height = parseFloat(newBlock.h || '0');
-      const area = length * totalBreadth * height;
-      if (area !== parseFloat(newBlock.total_todi_area || '0')) {
-        setNewBlock(prev =>
-          prev
-            ? {
-                ...prev,
-                total_todi_area: area.toFixed(2),
-              }
-            : prev,
-        );
+  const [todi, setTodi] = useState<TodiState>({
+    todi_cost: '',
+    id: '',
+    total_cost: '',
+    total_todi_cost: '',
+    total_todi_area: '',
+    total_block_cost: '',
+    total_block_area: '',
+    vender_id: '',
+    munim: '',
+    BlockType: '',
+    date: new Date().toISOString(),
+    l: '',
+    b: '',
+    h: '',
+    gala_cost: '',
+    hydra_cost: '',
+    truck_cost: '',
+    estimate_cost: '',
+    depreciation: '',
+    final_cost: '',
+    group: [
+      {
+        g_hydra_cost: '',
+        g_truck_cost: '',
+        date: new Date().toISOString(),
+        block: [],
+        total_block_area: '',
+        total_block_cost: ''
       }
-    }
-  }, [newBlock?.l, newBlock?.b, newBlock?.h]);
-
-  useEffect(() => {
-    if (newBlock) {
-      const totalGalaCost = parseFloat(newBlock.total_todi_cost || '0');
-      const totalGalaArea = parseFloat(newBlock.total_todi_area || '0');
-      const estimateCost = totalGalaCost * totalGalaArea;
-      if (estimateCost !== parseFloat(newBlock.estimate_cost || '0')) {
-        setNewBlock(prev =>
-          prev
-            ? {
-                ...prev,
-                estimate_cost: estimateCost.toFixed(2),
-              }
-            : prev,
-        );
-      }
-    }
-  }, [newBlock?.total_todi_cost, newBlock?.total_todi_area]);
-
-  useEffect(() => {
-    if (newBlock) {
-      const galaCost = parseFloat(newBlock.todi_cost || '0');
-      const hydraCost = parseFloat(newBlock.hydra_cost || '0');
-      const truckCost = parseFloat(newBlock.truck_cost || '0');
-      const totalGalaCost = galaCost + hydraCost + truckCost;
-      if (totalGalaCost !== parseFloat(newBlock.total_todi_cost || '0')) {
-        setNewBlock(prev =>
-          prev
-            ? {
-                ...prev,
-                total_todi_cost: totalGalaCost.toFixed(2),
-              }
-            : prev,
-        );
-      }
-    }
-  }, [newBlock?.todi_cost, newBlock?.hydra_cost, newBlock?.truck_cost]);
-
-
-  useEffect(() => {
-    if (newBlock) {
-      const estimateCost = parseFloat(newBlock.estimate_cost || '0');
-      const depreciation = parseFloat(newBlock.depreciation || '0');
-      const finalCost = estimateCost - ((depreciation / 100) * estimateCost);
-      if (finalCost !== parseFloat(newBlock.final_cost || '0')) {
-        setNewBlock(prev =>
-          prev
-            ? {
-                ...prev,
-                final_cost: finalCost.toFixed(2),
-              }
-            : prev,
-        );
-      }
-    }
-  }, [newBlock?.estimate_cost, newBlock?.depreciation]);
+    ]
+  })
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
 
 
   useEffect(() => {
-    const fetchAllData = async () => {
+    const fetchTodi = async () => {
+      const id = searchParams.get('id')
       if (!id) return
 
       try {
-        // Fetch block data
-        const blockRes = await axios.get<BlockType>(`/api/TodiRaskat/${id}`)
-        const blockData = blockRes.data
-
-        // Fetch vendors
-        const vendorsRes = await axios.get<ApiResponse<Vendor>>('/api/vendor')
-        const vendorsData = vendorsRes.data.docs
-        setVendors(vendorsData)
-        // Ensure measurements array exists
-        if (!blockData.addmeasures) {
-          blockData.addmeasures = []
-        }
-
-        // Set block data and vendor selection
-        setCurrentBlock(blockData)
-        setNewBlock(blockData)
+        const res = await axios.get<TodiState>(`/api/TodiRaskat/${id}`)
+        setTodi(res.data)
       } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setLoading(false)
-        setLoadingData(false)
+        setErrorMessage('Failed to fetch Todi data')
+        setShowErrorMessage(true)
       }
     }
 
-    fetchAllData()
-  }, [id])
+    fetchTodi()
+  }, [searchParams])
 
-
-
-
-
-  
-
-  // Handle nested changes in groups, blocks, and measures
-
-  const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, field: string, gIdx: number, bIdx?: number, mIdx?: number) => {
-    if (!newBlock) return
-  
-    const updatedBlock = { ...newBlock }
-    const fieldName = e.target.name;
-    
-    // Update group level fields
-    if (bIdx === undefined) {
-      if (fieldName in updatedBlock.group[gIdx]) {
-        updatedBlock.group[gIdx][fieldName] = e.target.value;
-      }
-    }
-    // Update block level fields
-    else if (mIdx === undefined) {
-      if (fieldName in updatedBlock.group[gIdx].block[bIdx]) {
-        updatedBlock.group[gIdx].block[bIdx] = {
-          ...updatedBlock.group[gIdx].block[bIdx],
-          [field]: e.target.value
-        };
-      }
-    }
-    // Update measure level fields
-    else if (fieldName in updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx]) {
-      const measure = updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx];
-      const l = parseFloat(measure.l || '0');
-      const b = parseFloat(measure.b || '0');
-      const h = parseFloat(measure.h || '0');
-      const area = (l * b * h) / 144;
-      
-      // Calculate individual measure cost
-      const truck = parseFloat(updatedBlock.group[gIdx].g_truck_cost || '0');
-      const hydra = parseFloat(updatedBlock.group[gIdx].g_hydra_cost || '0');
-      const todi = parseFloat(newBlock?.todi_cost || '0');
-      const measureCost = area * (truck + hydra + todi);
-      
-      updatedBlock.group[gIdx].block[bIdx].addmeasures[mIdx] = {
-        ...measure,
-        [field]: e.target.value,
-        block_area: area.toFixed(2),
-        block_cost: measureCost.toFixed(2)
-      };
-    }
-  
-    setNewBlock(updatedBlock)
-  }
-
-  // Add group
-  const addGroup = () => {
-    if (!newBlock) return
-
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group.push({
-      g_hydra_cost: '',
-      g_truck_cost: '',
-      date: new Date().toISOString().split('T')[0],
-      block: []
-    })
-
-    setNewBlock(updatedBlock)
-  }
-
-  // Add block
-  const addBlock = (gIdx: number) => {
-    if (!newBlock) return
-
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group[gIdx].block.push({
-      addmeasures: [],
-      block_cost: ''
-    })
-
-    setNewBlock(updatedBlock)
-  }
-
-  // Add measure
-  const addMeasure = (gIdx: number, bIdx: number) => {
-    if (!newBlock) return
-
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group[gIdx].block[bIdx].addmeasures.push({
-      l: '',
-      b: '',
-      h: '',
-      block_area: '',
-      block_cost: ''
-    })
-
-    setNewBlock(updatedBlock)
-  }
-
-  // Remove group
-  const removeGroup = (gIdx: number) => {
-    if (!newBlock) return
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group = updatedBlock.group.filter((_, idx) => idx !== gIdx)
-    setNewBlock(updatedBlock)
-  }
-
-  // Remove block
-  const removeBlock = (gIdx: number, bIdx: number) => {
-    if (!newBlock) return
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group[gIdx].block = updatedBlock.group[gIdx].block.filter((_, idx) => idx !== bIdx)
-    setNewBlock(updatedBlock)
-  }
-
-  // Remove measure
-  const removeMeasure = (gIdx: number, bIdx: number, mIdx: number) => {
-    if (!newBlock) return
-    const updatedBlock = { ...newBlock }
-    updatedBlock.group[gIdx].block[bIdx].addmeasures = updatedBlock.group[gIdx].block[bIdx].addmeasures.filter((_, idx) => idx !== mIdx)
-    setNewBlock(updatedBlock)
-  }
-
-   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newBlock || !id) return
-
-    try {
-      setIsSubmitting(true)
-      await axios.patch(`/api/TodiRaskat/${id}`, newBlock)
-      setShowSuccessMessage(true)
-    } catch (error) {
-      setShowErrorMessage(true)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  // Prevent form submission when adding/removing groups or blocks
-  const preventFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-  }
-
-   if (loading || loadingData) {
+  if (!todi) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black">
         <div className="text-center">
@@ -290,377 +83,169 @@ export default function EditBlock() {
     )
   }
 
- if (showErrorMessage) {
-  return (
-    <Message 
-    setShowMessage={setShowErrorMessage} 
-    type='error' 
-    message='Failed to update block. Please try again.'
-  />
-  )
-}
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    
+    if (!todi) return
 
+    const validTodiTypes = ['Brown', 'White']
+    if (!validTodiTypes.includes(todi.BlockType)) {
+      setErrorMessage('Invalid Todi Type. Please select either "Brown" or "White"')
+      setShowErrorMessage(true)
+      setIsSubmitting(false)
+      return
+    }
 
+    const formData = { ...todi }
+    formData.date = formData.date || new Date().toISOString()
 
-  if (showSuccessMessage) {
+    try {
+      const res = await fetch(`/api/TodiRaskat/${todi.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        setErrorMessage(errorData.message)
+        setShowErrorMessage(true)
+        setIsSubmitting(false)
+        return
+      }
+
+      setShowSuccessMessage(true)
+      setIsSubmitting(false)
+    } catch (error) {
+      setErrorMessage('Failed to update Todi. Please try again.')
+      setShowErrorMessage(true)
+      setIsSubmitting(false)
+    }
+  }
+
+  if (showErrorMessage) {
     return (
-     <Message 
-     setShowMessage={setShowSuccessMessage} 
-     path={'/block/todi'} 
-     type='success' 
-     message='Block has been updated successfully.'
-   />
+      <Message 
+        setShowMessage={setShowErrorMessage} 
+        type='error' 
+        message={errorMessage}
+      />
     )
   }
 
+  if (showSuccessMessage) {
+    return (
+      <Message 
+        setShowMessage={setShowSuccessMessage} 
+        path={'/block/todi'} 
+        type='success' 
+        message='Todi has been updated successfully.'
+      />
+    )
+  }
+
+
+  
+
   return (
-    <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 dark:bg-black ">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Edit block</h1>
-          <Link href="/block/todi" className="text-gray-600 hover:text-gray-800">
-            ← Back to block List
-          </Link>
-        </div>
+    <form onSubmit={handleSubmit} className=" max-w-7xl mx-auto p-6 py-4 space-y-6">
+      <h1 className="text-xl font-bold">Edit Todi</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white dark:bg-gray-800 -2xl p-8 shadow-md"
+      <div className="px-4 py-6 bg-gray-50 dark:bg-black rounded-lg shadow-md max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <FormSelect 
+          label="Block Type:" 
+          id="BlockType" 
+          name="BlockType" 
+          value={todi.BlockType} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)}
         >
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-  {[
-    { label: 'Block Type', key: 'BlockType', type: 'select', options: ['Brown', 'White'] },
-    { label: 'Vendor Name', key: 'vender_id', type: 'vendor' },
-    { label: 'Munim', key: 'munim' },
-    { label: 'Length (लम्बाई)', key: 'l' },
-    { label: 'Breadth (चौड़ाई)', key: 'b' },
-    { label: 'Height (ऊंचाई)', key: 'h' },
-    { label: 'todi_cost', key: 'todi_cost' },
-    { label: 'hydra_cost', key: 'hydra_cost' },
-    { label: 'truck_cost', key: 'truck_cost' },
-    { label: 'total_todi_area', key: 'total_todi_area', editable: "disabled" },
-    { label: 'total_todi_cost', key: 'total_todi_cost', editable: "disabled" },
-    { label: 'estimate_cost', key: 'estimate_cost', editable: "disabled" },
-    { label: 'depreciation', key: 'depreciation' },
-    { label: 'final_cost', key: 'final_cost', editable: "disabled" },
-  ].map(({ label, key, type, options, editable }) => (
-    <div key={key}>
-      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-        {label}
-      </label>
-
-      {type === 'select' ? (
-        <select
-          value={newBlock?.[key as keyof BlockType] || ''}
-          onChange={(e) =>
-            setNewBlock((prev) =>
-              prev ? { ...prev, [key]: e.target.value } : prev
-            )
-          }
-          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600  bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          {options?.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      ) : type === 'vendor' ? (
-        <select
-          value={newBlock?.vender_id || ''}
-          onChange={(e) => {
-            const selectedId = Number(e.target.value)
-            const vendor = vendors.find((v) => v.id === selectedId)
-            setNewBlock((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    vender_id: selectedId,
-                    vendor_no: vendor?.vendor_no ?? '',
-                  }
-                : prev
-            )
-          }}
-          disabled={loadingData}
-          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600  bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="">Select Vendor</option>
-          {vendors.map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.vendor}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          type="text"
-          value={
-            typeof newBlock?.[key as keyof BlockType] === 'number'
-              ? Number(newBlock[key as keyof BlockType]).toLocaleString('en-IN')
-              : newBlock?.[key as keyof BlockType] || ''
-          }
-          onChange={(e) =>
-            setNewBlock((prev) =>
-              prev ? { ...prev, [key]: e.target.value } : prev
-            )
-          }
-          disabled={editable === 'disabled'}
-          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          <option value="">Select Type</option>
+          <option value="White">White</option>
+          <option value="Brown">Brown</option>
+        </FormSelect>
+        <FetchVendorEdit 
+          todi={todi}
+          setTodi={setTodi} 
+        />  
+        <FormInput 
+          label="Munim:" 
+          id="munim" 
+          name="munim" 
+          value={todi.munim} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
         />
-      )}
-    </div>
-  ))}
-</div>
-
-
-{/* Groups */}
-<div className="space-y-4">
-  <h2 className="text-lg font-semibold">Groups</h2>
-
-  {currentBlock?.group?.map((group, gIdx) => (
-    <div key={gIdx} className="border p-4 space-y-4 bg-gray-50 dark:bg-gray-800 rounded-md relative">
-      
-      {/* Group Inputs */}
-      {[
-        { label: 'Hydra Cost', name: 'g_hydra_cost', value: group.g_hydra_cost },
-        { label: 'Truck Cost', name: 'g_truck_cost', value: group.g_truck_cost },
-      ].map(({ label, name, value }) => (
-        <div key={name}>
-          <label className="block font-medium">{label}:</label>
-          <input
-            type="text"
-            name={name}
-            value={value}
-            onChange={(e) => {
-              e.preventDefault(); // Prevent form submission
-              handleNestedChange(e, name, gIdx)
-              // Calculate group total area and cost
-              const groupTotalArea = group.block?.reduce((sum, block) => {
-                return sum + block.addmeasures.reduce((areaSum, measure) => {
-                  return areaSum + (parseFloat(measure.block_area) || 0)
-                }, 0)
-              }, 0) || 0
-
-              const truck = name === 'g_truck_cost' ? parseFloat(e.target.value) : parseFloat(group.g_truck_cost) || 0
-              const hydra = name === 'g_hydra_cost' ? parseFloat(e.target.value) : parseFloat(group.g_hydra_cost) || 0
-              const todi = parseFloat(newBlock?.todi_cost || '0')
-              
-              // Update group total cost
-              const groupTotalCost = groupTotalArea * (truck + hydra + todi)
-              
-              // Update block costs in the group
-              group.block?.forEach((block, bIdx) => {
-                const blockArea = block.addmeasures.reduce((sum, measure) => sum + (parseFloat(measure.block_area) || 0), 0)
-                const blockCost = blockArea * (truck + hydra + todi)
-                handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as any, 'block_cost', gIdx, bIdx, 0)
-              })
-
-              // Update total block area and cost
-              const totalBlockArea = currentBlock?.group?.reduce((sum, g) => {
-                return sum + (g.block?.reduce((areaSum, block) => {
-                  return areaSum + block.addmeasures.reduce((measureSum, measure) => 
-                    measureSum + (parseFloat(measure.block_area) || 0), 0)
-                }, 0) || 0)
-              }, 0) || 0
-
-              const totalBlockCost = totalBlockArea * (truck + hydra + todi)
-              
-              // Update the state
-              setNewBlock((prev) => {
-                if (!prev) return prev
-                return {
-                  ...prev,
-                  total_block_area: totalBlockArea.toString(),
-                  total_block_cost: totalBlockCost.toFixed(2)
-                }
-              })
-            }}
-            className="w-full p-2 border dark:bg-gray-700"
-          />
-        </div>
-      ))}
-
-      <div>
-        <label className="block font-medium">Date:</label>
-        <input
-          type="date"
-          name="date"
-          value={group.date? new Date(group.date).toISOString().split('T')[0] : ''}
-          onChange={(e) => {
-            e.preventDefault(); 
-            handleNestedChange(e, 'date', gIdx)
-          }}
-          className="w-full p-2 border dark:bg-gray-700"
+        <FormInput 
+          label="L (लम्बाई) - Length (m):" 
+          id="l" 
+          name="l" 
+          value={todi.l} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
         />
+        <FormInput 
+          label="B (चौड़ाई) - Breadth (m):" 
+          id="b" 
+          name="b" 
+          value={todi.b} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
+        />
+        <FormInput 
+          label="H (ऊंचाई) - Height (m):" 
+          id="h" 
+          name="h" 
+          value={todi.h} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
+        />
+        <FormInput 
+          label="Todi Cost (₹):" 
+          id="todi_cost" 
+          name="todi_cost" 
+          value={todi.todi_cost ? Number(todi.todi_cost).toLocaleString('en-IN') : ''} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
+        />
+        <FormInput 
+          label="Hydra Cost (₹):" 
+          id="hydra_cost" 
+          name="hydra_cost" 
+          value={todi.hydra_cost} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
+        />
+        <FormInput 
+          label="Truck Cost (₹):" 
+          id="truck_cost" 
+          name="truck_cost" 
+          value={todi.truck_cost} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
+        />
+        <FormDisplay label="Total Todi Area (m³):" value={todi.total_todi_area} />
+        <FormDisplay label="Total Todi Cost (₹):" value={todi.total_todi_cost} />
+        <FormDisplay label="Estimate Cost (₹):" value={todi.estimate_cost} />
+        <FormInput 
+          label="Depreciation (%):" 
+          id="depreciation" 
+          name="depreciation" 
+          value={todi.depreciation} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInput(e, setTodi)} 
+        />
+        <FormDisplay label="Final Cost (₹):" value={todi.final_cost} />
       </div>
 
-      <div className="flex justify-between items-center mb-4">
-        <button onClick={(e) => {
-          e.preventDefault(); 
-          addBlock(gIdx)
-        }} className="text-sm text-blue-600">+ Add Block</button>
-        <button 
-          onClick={(e) => {
-            e.preventDefault(); 
-            removeGroup(gIdx)
-          }} 
-          className="text-sm text-red-600 hover:text-red-800"
-        >
-          × Remove Group
-        </button>
-      </div>
+      <Group todi={todi} setTodi={setTodi} />
 
-      {/* Blocks */}
-      {group.block.map((block, bIdx) => (
-        <div key={bIdx} className="ml-4 mt-2 border p-3 bg-white dark:bg-gray-800 rounded-md relative">
-          <div className="flex justify-between items-center mb-4">
-            <button onClick={(e) => {
-              e.preventDefault(); 
-              addMeasure(gIdx, bIdx)
-            }} className="text-sm text-green-600">+ Add Measure</button>
-            
-            <button 
-              onClick={() => removeBlock(gIdx, bIdx)} 
-              className="text-sm text-red-600 hover:text-red-800"
-            >
-              × Remove Block
-            </button>
-          </div>
+      <Summary 
+        title="Summary"
+        totalBlockArea={todi.total_block_area}
+        totalBlockCost={todi.total_block_cost}
+        remainingAmount={(parseFloat(todi.final_cost || '0') - parseFloat(todi.total_block_cost)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+      />
 
-          {/* Measures */}
-
-          {/* Measures */}
-          {block.addmeasures.map((m, mIdx) => (
-            <div key={mIdx} className="mt-4 space-y-2 border p-3 bg-gray-100 dark:bg-gray-700 rounded-md relative">
-              {[
-                { label: 'L (लम्बाई)', name: 'l', value: m.l },
-                { label: 'B (चौड़ाई)', name: 'b', value: m.b },
-                { label: 'H (ऊंचाई)', name: 'h', value: m.h },
-                { label: 'Block Area', name: 'block_area', value: m.block_area },
-                { label: 'Block Cost', name: 'block_cost', value: m.block_cost },
-              ].map(({ label, name, value }) => (
-                <div key={name}>
-                  <label className="block font-medium">{label}:</label>
-                  <input
-                    type="text"
-                    name={name}
-                    value={value}
-                    onChange={(e) => {
-                      handleNestedChange(e, name, gIdx, bIdx, mIdx)
-                      const l = name === 'l' ? parseFloat(e.target.value) : parseFloat(m.l) || 0
-                      const b = name === 'b' ? parseFloat(e.target.value) : parseFloat(m.b) || 0
-                      const h = name === 'h' ? parseFloat(e.target.value) : parseFloat(m.h) || 0
-                      const area = (l * b * h) / 144
-                      handleNestedChange({ target: { name: 'block_area', value: area.toFixed(2) } } as any, 'block_area', gIdx, bIdx, mIdx)
-                      
-                      // Calculate group total area and cost
-                      const groupTotalArea = group.block?.reduce((sum, block) => {
-                        return sum + block.addmeasures.reduce((areaSum, measure) => {
-                          return areaSum + (parseFloat(measure.block_area) || 0)
-                        }, 0)
-                      }, 0) || 0
-
-                      const truck = parseFloat(group.g_truck_cost || '0') || 0
-                      const hydra = parseFloat(group.g_hydra_cost || '0') || 0
-                      const todi = parseFloat(newBlock?.todi_cost || '0') || 0
-                      
-                      // Update group total cost
-                      const groupTotalCost = groupTotalArea * (truck + hydra + todi)
-                      console.log(groupTotalCost)
-                      // Update block costs in the group
-                      group.block?.forEach((block, blockIdx) => {
-                        // Calculate individual block area
-                        const blockArea = block.addmeasures.reduce((sum, measure) => 
-                          sum + (parseFloat(measure.block_area) || 0), 0)
-                        
-                        // Calculate individual block cost
-                        const blockCost = blockArea * (truck + hydra + todi)
-                        
-                        // Update the block cost
-                        if (!isNaN(blockCost)) {
-                          handleNestedChange({ 
-                            target: { 
-                              name: 'block_cost', 
-                              value: blockCost.toFixed(2)
-                            } 
-                          } as any, 'block_cost', gIdx, blockIdx, 0)
-                        }
-                      })
-
-                      // Update total block area and cost
-                      const totalBlockArea = currentBlock?.group?.reduce((sum, g) => {
-                        return sum + (g.block?.reduce((areaSum, block) => {
-                          return areaSum + block.addmeasures.reduce((measureSum, measure) => 
-                            measureSum + (parseFloat(measure.block_area) || 0), 0)
-                        }, 0) || 0)
-                      }, 0) || 0
-
-                      // Calculate total cost using individual block costs
-                      const totalBlockCost = totalBlockArea * (truck + hydra + todi)
-                      
-                      // Update the state
-                      setNewBlock((prev) => {
-                        if (!prev) return prev
-                        return {
-                          ...prev,
-                          total_block_area: totalBlockArea.toString(),
-                          total_block_cost: totalBlockCost.toString()
-                        }
-                      })
-                    }}
-                    className="w-full p-2 border dark:bg-gray-600"
-                  />
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-  ))}
-
-  <button type="button" onClick={addGroup} className="bg-blue-500 text-white px-4 py-2 rounded-md">
-    + Add Group
-  </button>
-</div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Total Block Area
-                      </label>
-                      <input
-                        type="text"
-                        value={newBlock?.total_block_area ? Number(newBlock?.total_block_area).toLocaleString('en-IN') : ''}
-                        disabled
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        Total Block Cost
-                      </label>
-                      <input
-                        type="text"
-                        value={newBlock?.total_block_cost ? Number(newBlock?.total_block_cost).toLocaleString('en-IN') : ''}
-                        disabled
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
-
-          <div className="mt-8">
-        <button
-          type="submit"
-          className="bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-2 -lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
-          disabled={!newBlock}
-        >
-          Save Changes
-        </button>
-      </div>
-        </form>
-     
-      </div>
-    
-    </div>
+      <button 
+        type="submit" 
+        className="bg-green-600 text-white px-4 py-2 mt-6"
+        disabled={isSubmitting || !todi}
+      >
+        {isSubmitting ? 'Updating...' : 'Update'}
+      </button>
+    </form>
   )
 }
