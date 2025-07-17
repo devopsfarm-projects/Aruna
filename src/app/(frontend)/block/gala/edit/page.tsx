@@ -37,7 +37,7 @@ export default function EditTodiPage() {
     estimate_cost: '',
     depreciation: '',
     final_cost: '',
-    todi_cost: (todi_cost: any) => {}, // Added the missing function property
+    todi_cost: (todi_cost: any) => {}, 
     group: [
       {
         g_hydra_cost: '',
@@ -84,43 +84,18 @@ export default function EditTodiPage() {
     )
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
-    
-    if (!todi) return
+    if (!todi || !todi.id) return
 
-    const validTodiTypes = ['Brown', 'White']
-    if (!validTodiTypes.includes(todi.GalaType)) {
-      setErrorMessage('Invalid Todi Type. Please select either "Brown" or "White"')
-      setShowErrorMessage(true)
-      setIsSubmitting(false)
-      return
-    }
-
-    const formData = { ...todi }
-    formData.date = formData.date || new Date().toISOString()
 
     try {
-      const res = await fetch(`/api/Gala/${todi.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      if (!res.ok) {
-        const errorData = await res.json()
-        setErrorMessage(errorData.message)
-        setShowErrorMessage(true)
-        setIsSubmitting(false)
-        return
-      }
-
+      setIsSubmitting(true)
+      await axios.put(`/api/Gala/${todi.id}`, todi)
       setShowSuccessMessage(true)
-      setIsSubmitting(false)
     } catch (error) {
-      setErrorMessage('Failed to update Todi. Please try again.')
-      setShowErrorMessage(true)
+     setShowErrorMessage(true)
+    } finally {
       setIsSubmitting(false)
     }
   }

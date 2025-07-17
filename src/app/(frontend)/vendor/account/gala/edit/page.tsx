@@ -238,7 +238,7 @@ export default function EditBlock() {
         delivered_block: deliveredBlock
       }
 
-      await axios.put(`/api/Gala/${id}`, updatedBlock)
+      await axios.patch(`/api/Gala/${id}`, updatedBlock)
       setShowSuccessModal(true)
       router.push('/vendor/account')
     } catch (error) {
