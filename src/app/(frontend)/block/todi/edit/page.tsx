@@ -460,6 +460,8 @@ export default function EditBlock() {
                 handleNestedChange({ target: { name: 'block_cost', value: blockCost.toFixed(2) } } as any, 'block_cost', gIdx, bIdx, 0)
               })
 
+              
+
               // Update total block area and cost
               const totalBlockArea = currentBlock?.group?.reduce((sum, g) => {
                 return sum + (g.block?.reduce((areaSum, block) => {
@@ -468,7 +470,7 @@ export default function EditBlock() {
                 }, 0) || 0)
               }, 0) || 0
 
-              const totalBlockCost = totalBlockArea * (truck + hydra + todi)
+               const totalBlockCost = totalBlockArea * (truck + hydra + todi)
               
               // Update the state
               setNewBlock((prev) => {
@@ -476,7 +478,7 @@ export default function EditBlock() {
                 return {
                   ...prev,
                   total_block_area: totalBlockArea.toString(),
-                  total_block_cost: totalBlockCost.toFixed(2)
+                  total_block_cost: totalBlockCost.toString()
                 }
               })
             }}
@@ -523,6 +525,7 @@ export default function EditBlock() {
               e.preventDefault(); 
               addMeasure(gIdx, bIdx)
             }} className="text-sm text-green-600">+ Add Measure</button>
+            
             <button 
               onClick={() => removeBlock(gIdx, bIdx)} 
               className="text-sm text-red-600 hover:text-red-800"
@@ -531,7 +534,8 @@ export default function EditBlock() {
             </button>
           </div>
 
-          {/* Measures */}
+          
+
 
           {/* Measures */}
           {block.addmeasures.map((m, mIdx) => (
@@ -599,12 +603,7 @@ export default function EditBlock() {
                         }, 0) || 0)
                       }, 0) || 0
 
-                      // Calculate total cost using individual block costs
-                      const totalBlockCost = group.block?.reduce((sum, block) => {
-                        const blockArea = block.addmeasures.reduce((sum, measure) => 
-                          sum + (parseFloat(measure.block_area) || 0), 0)
-                        return sum + (blockArea * (truck + hydra + todi))
-                      }, 0) || 0
+                      const totalBlockCost = totalBlockArea * (truck + hydra + todi)
                       
                       // Update the state
                       setNewBlock((prev) => {

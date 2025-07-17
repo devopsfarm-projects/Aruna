@@ -518,6 +518,7 @@ export default function EditBlock() {
               e.preventDefault(); 
               addMeasure(gIdx, bIdx)
             }} className="text-sm text-green-600">+ Add Measure</button>
+            
             <button 
               onClick={() => removeBlock(gIdx, bIdx)} 
               className="text-sm text-red-600 hover:text-red-800"
@@ -595,11 +596,7 @@ export default function EditBlock() {
                       }, 0) || 0
 
                       // Calculate total cost using individual block costs
-                      const totalBlockCost = group.block?.reduce((sum, block) => {
-                        const blockArea = block.addmeasures.reduce((sum, measure) => 
-                          sum + (parseFloat(measure.block_area) || 0), 0)
-                        return sum + (blockArea * (truck + hydra + todi))
-                      }, 0) || 0
+                      const totalBlockCost = totalBlockArea * (truck + hydra + todi)
                       
                       // Update the state
                       setNewBlock((prev) => {
