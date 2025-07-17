@@ -169,7 +169,7 @@ export default function EditBlock() {
         delivered_block: deliveredBlock
       }
 
-      await axios.patch(`/api/TodiRaskat/${id}`, updatedBlock)
+      await axios.put(`/api/TodiRaskat/${id}`, updatedBlock)
       setShowSuccessModal(true)
       router.push('/vendor/account')
     } catch (error) {
