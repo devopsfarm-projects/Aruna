@@ -69,12 +69,12 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 // PUT handler to update a Gala
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const payload = await getPayload({ config })
   try {
-    const { id } = params
+    const id = (await params).id
     const body = await request.json()
 
     console.log('Received PATCH request for Gala ID:', id)
