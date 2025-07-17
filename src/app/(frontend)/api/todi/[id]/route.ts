@@ -81,3 +81,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch Todi' }, { status: 500 })
     }
   }
+
+
+
+  export async function PATCH(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) {
+    const payload = await getPayload({ config })
+    try {
+      const id = (await params).id
+      const body = await request.json()
+  
+      console.log('Received PATCH request for Gala ID:', id)
+      console.log('Request body:', body)
+  
+      const updated = await payload.update({
+        collection: 'Todi',
+        id,
+        data: body,
+      })
+  
+      console.log('Updated Todi:', updated)
+      
+      return NextResponse.json(updated)
+    } catch (error: unknown) {
+      console.error('Error updating Todi:', error)
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Unknown error occurred'
+      
+      // Check if this is a Payload CMS error with status
+      const status = error instanceof Error && 'status' in error 
+        ? (error as any).status 
+        : 400
+      
+      return NextResponse.json(
+        { error: 'Failed to update Todi', message: errorMessage },
+        { status }
+      )
+    }
+  }
+  

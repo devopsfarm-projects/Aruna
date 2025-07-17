@@ -87,13 +87,38 @@ export default function EditTodiPage() {
     e.preventDefault()
     if (!todi || !todi.id) return
 
-
     try {
       setIsSubmitting(true)
-      await axios.put(`/api/Todi/${todi.id}`, todi)
+      
+      // Ensure all required fields are present
+      if (!todi.BlockType || !todi.l || !todi.h || !todi.b) {
+        throw new Error('Please fill in all required fields')
+      }
+
+      console.log('Attempting to update Todi with ID:', todi.id)
+      console.log('Data to send:', todi)
+
+      // Using the correct API path structure
+      const response = await axios.patch(`/api/todi/${todi.id}`, todi)
+      console.log('Response from server:', response.data)
+      
+      if (!response.data) {
+        throw new Error('Failed to update Todi. No data returned from server')
+      }
+
       setShowSuccessMessage(true)
-    } catch (error) {
-     setShowErrorMessage(true)
+    } catch (error: any) {
+      console.error('Full error details:', error)
+      console.error('Response status:', error.response?.status)
+      console.error('Response data:', error.response?.data)
+      
+      setErrorMessage(
+        error.response?.data?.error || 
+        error.response?.data?.message || 
+        error.message || 
+        `Failed to update Todi. Status: ${error.response?.status || 'unknown'}`
+      )
+      setShowErrorMessage(true)
     } finally {
       setIsSubmitting(false)
     }
